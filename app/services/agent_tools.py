@@ -285,7 +285,7 @@ async def search_photos(
         ]
         next_cursor = None
         if len(page) == limit and len(scored) > limit:
-            last_p, _, _, last_score = page[-1]
+            last_p, _, _, _, last_score = page[-1]
             next_cursor = encode_cursor(last_score, last_p.id)
 
         parsed_dict = parsed_obj.model_dump() if parsed_obj else None

@@ -122,15 +122,16 @@ async def evaluate_dataset(dataset_path: str) -> dict[str, Any]:
     scene_ok = sum(1 for r in results if r.get("scene_ok"))
     persons_ok = sum(1 for r in results if r.get("persons_ok"))
 
-    tp_obj = sum(r["tp_obj"] for r in results)
-    fp_obj = sum(r["fp_obj"] for r in results)
-    fn_obj = sum(r["fn_obj"] for r in results)
+    # 失败样本没有指标字段；把它们视为 0 命中并单独计入 errors，
+    # 避免评测聚合本身因为单条外部服务异常而中断。
+    tp_obj = sum(r.get("tp_obj", 0) for r in results)
+    fp_obj = sum(r.get("fp_obj", 0) for r in results)
+    fn_obj = sum(r.get("fn_obj", 0) for r in results)
     obj_precision = tp_obj / (tp_obj + fp_obj) if (tp_obj + fp_obj) else 0.0
     obj_recall = tp_obj / (tp_obj + fn_obj) if (tp_obj + fn_obj) else 0.0
 
-    tp_ocr = sum(r["tp_ocr"] for r in results)
-    fp_ocr = sum(r["fp_ocr"] for r in results)
-    fn_ocr = sum(r["fn_ocr"] for r in results)
+    tp_ocr = sum(r.get("tp_ocr", 0) for r in results)
+    fp_ocr = sum(r.get("fp_ocr", 0) for r in results)
     ocr_precision = tp_ocr / (tp_ocr + fp_ocr) if (tp_ocr + fp_ocr) else 0.0
     ocr_fpr = fp_ocr / total if total else 0.0
 

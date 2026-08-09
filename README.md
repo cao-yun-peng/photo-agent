@@ -299,15 +299,15 @@ docker compose exec api python scripts/seed_skills.py  # 灌 10 个官方 Skill
 
 | model 值 | 后端 | 状态 |
 |---|---|---|
-| `wanx-v1` | DashScope 通义万相 image2image | ✓（同一个 DashScope Key） |
+| `wanx2.1-imageedit` | DashScope 通义万相通用图像编辑 | ✓（同一个 DashScope Key） |
 | `gpt-image-2` | OpenAI images/edits | ✓（需填 `OPENAI_API_KEY`） |
 | `mock` | 直接返回原图 | ✓（本地开发用） |
 
 想接第三个模型（Stable Diffusion / Midjourney）只需实现一个 `_generate_xxx()` 函数并注册。
 
-### 参考图会真的被送到模型
+### 参考图能力边界
 
-D15–D17 特意选了 "**方案 B**"：用户在 Skill 里加的参考图不只是 UI 展示，会作为 `style_ref_img`（万相）或 `image[]`（gpt-image）一起送给模型，让 AI 学它们的风格。这也是"用户 Skill = 真正的个性化"的关键。
+`gpt-image-2` 会把用户在 Skill 中添加的参考图作为 `image[]` 发送给模型。`wanx2.1-imageedit` 的官方接口只接受一张 `base_image_url`，因此当前仅使用待改造原图，额外参考图不会发送；需要多图参考时请选择 `gpt-image-2`。
 
 ### Worker 任务链路（`generate_photo`）
 
@@ -316,7 +316,7 @@ D15–D17 特意选了 "**方案 B**"：用户在 Skill 里加的参考图不只
 2. 拉 Skill → 拉 Photo → 拼 prompt（skill.prompt_template + extra_prompt）
 3. sign_get_url(source) + sign_get_url(refs)
 4. image_gen.generate(source_url, prompt, ref_urls, model)
-5. httpx 下载模型返回的 URL → oss.put_object 存回自己 OSS（避免 24h 过期）
+5. 统一处理万相临时 URL / OpenAI Base64 → oss.put_object 存回自己 OSS
 6. 更新 generations 表 · 增 rate_limit · 增 skill.use_count
 ```
 

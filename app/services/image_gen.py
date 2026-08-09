@@ -1,18 +1,20 @@
 """图像生成抽象层：统一 wanx2.1-imageedit (通义万相) 和 gpt-image-2 (OpenAI)。
 
-对外只暴露一个函数 generate(source_image_url, prompt, refs, model) → 生成图 URL。
+对外只暴露一个函数 generate(source_image_url, prompt, refs, model) → 统一生成结果。
 新增模型时只需实现 _generate_<model_name> 私有函数并注册到 _REGISTRY。
 
 设计要点
 --------
 - **异步轮询模式**：万相是异步 API，先创建任务拿 task_id，之后轮询直到 SUCCEEDED。
-- **参考图=真送到模型**：万相通过 base_image_url 字段；gpt-image-2 通过 images[] 参数。
+- **输入能力如实区分**：万相 2.1 接收一张原图；gpt-image-2 可额外接收参考图。
 - **未配置时走 mock**：dev 环境跑通链路不需要真实计费。
 - **wanx-v1 已弃用**：在 generate() 入口自动重定向到 wanx2.1-imageedit。
 """
 from __future__ import annotations
 
 import asyncio
+import base64
+import binascii
 import logging
 from dataclasses import dataclass
 from typing import Any
@@ -40,9 +42,11 @@ _GPT_TIMEOUT = httpx.Timeout(120.0, connect=5.0)
 # ---- 数据结构 --------------------------------------------------------
 @dataclass(slots=True)
 class GenResult:
-    image_url: str        # 生成结果的公网 URL（模型返回的临时 URL）
     cost_yuan: float      # 估算成本
     model: str
+    image_url: str | None = None
+    image_bytes: bytes | None = None
+    content_type: str = "image/jpeg"
 
 
 class GenerationError(RuntimeError):
@@ -79,7 +83,7 @@ async def generate(
     ----------
     source_image_url : 原图公网 URL（sign_get_url 拿到的）
     prompt           : 生图指令，已经把 Skill 模板渲染好的完整 prompt
-    reference_urls   : 参考图公网 URL 列表（Skill 里的 reference_keys 转出来的）
+    reference_urls   : 参考图公网 URL 列表；仅 gpt-image-2 支持额外参考图
     model            : "wanx2.1-imageedit" | "wanx-v1" | "gpt-image-2" | "mock"
     function         : wanx2.1-imageedit 功能模式
                        - description_edit: 指令编辑（简单修改，如换发色、加配饰）
@@ -95,8 +99,13 @@ async def generate(
     if model == "mock" or (model in _wanx_models and _is_dashscope_mock()):
         return await _generate_mock(source_image_url, prompt)
     if model in _wanx_models:
+        if reference_urls:
+            logger.warning(
+                "wanx2.1-imageedit does not support extra reference images; ignored=%d",
+                len(reference_urls),
+            )
         return await _generate_wanx(
-            source_image_url, prompt, reference_urls, model, function, strength
+            source_image_url, prompt, model, function, strength
         )
     if model == "gpt-image-2":
         if _is_openai_mock():
@@ -116,7 +125,6 @@ async def _generate_mock(source_image_url: str, prompt: str) -> GenResult:
 async def _generate_wanx(
     source_image_url: str,
     prompt: str,
-    reference_urls: list[str],
     model: str = "wanx2.1-imageedit",
     function: str = "description_edit",
     strength: float = 0.7,
@@ -220,24 +228,28 @@ async def _generate_gpt_image(
         raise GenerationError("OPENAI_API_KEY not configured")
 
     async with httpx.AsyncClient(timeout=_GPT_TIMEOUT) as client:
-        # 下载原图
-        source_bytes = (await client.get(source_image_url)).content
-        # 下载参考图
-        ref_bytes = []
-        for u in reference_urls[:4]:  # gpt-image-2 支持最多 4 张
-            ref_bytes.append((await client.get(u)).content)
-
-        # 拼 multipart
-        files = [("image", ("source.jpg", source_bytes, "image/jpeg"))]
-        for i, b in enumerate(ref_bytes):
-            files.append(("image", (f"ref{i}.jpg", b, "image/jpeg")))
+        image_parts = []
+        for index, url in enumerate([source_image_url, *reference_urls[:4]]):
+            image_resp = await client.get(url)
+            if image_resp.status_code != 200:
+                raise GenerationError(
+                    f"download input image HTTP {image_resp.status_code}: {url}"
+                )
+            content_type = _image_content_type(image_resp)
+            suffix = _IMAGE_SUFFIXES[content_type]
+            image_parts.append(
+                (
+                    "image[]",
+                    (f"input-{index}{suffix}", image_resp.content, content_type),
+                )
+            )
 
         resp = await client.post(
             _GPT_IMAGE_URL,
-            files=files,
+            files=image_parts,
             data={
                 "prompt": prompt[:1000],
-                "model": "gpt-image-1",   # OpenAI 目前正式名，兼容 image-2 别名
+                "model": "gpt-image-2",
                 "n": 1,
                 "size": "1024x1024",
             },
@@ -249,7 +261,32 @@ async def _generate_gpt_image(
         )
     data = resp.json()
     try:
-        result_url = data["data"][0]["url"]
+        encoded = data["data"][0]["b64_json"]
     except (KeyError, IndexError) as exc:
         raise GenerationError(f"gpt-image unexpected: {data}") from exc
-    return GenResult(image_url=result_url, cost_yuan=0.30, model="gpt-image-2")
+    try:
+        image_bytes = base64.b64decode(encoded, validate=True)
+    except (binascii.Error, ValueError, TypeError) as exc:
+        raise GenerationError("gpt-image returned invalid base64 image data") from exc
+    if not image_bytes:
+        raise GenerationError("gpt-image returned an empty image")
+    return GenResult(
+        cost_yuan=0.30,
+        model="gpt-image-2",
+        image_bytes=image_bytes,
+        content_type="image/png",
+    )
+
+
+_IMAGE_SUFFIXES = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+}
+
+
+def _image_content_type(response: httpx.Response) -> str:
+    """提取 OpenAI 支持的输入图片类型，缺失时按 JPEG 处理。"""
+    content_type = response.headers.get("content-type", "image/jpeg")
+    content_type = content_type.partition(";")[0].strip().lower()
+    return content_type if content_type in _IMAGE_SUFFIXES else "image/jpeg"

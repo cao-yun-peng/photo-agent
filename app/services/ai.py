@@ -9,6 +9,7 @@
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import random
@@ -28,6 +29,12 @@ from app.services.metrics import metrics
 
 
 logger = logging.getLogger(__name__)
+
+
+def _stable_mock_seed(text: str) -> int:
+    """生成跨进程稳定的 mock 随机种子。"""
+    digest = hashlib.sha256(text.encode("utf-8")).digest()
+    return int.from_bytes(digest[:8], byteorder="big", signed=False)
 
 
 # ---- API 常量 ---------------------------------------------------------
@@ -295,7 +302,7 @@ async def embed_text(text: str) -> list[float]:
     """调 text-embedding-v3 得到 1024 维向量。"""
     if _is_mock():
         # 确定性随机数（同样的输入永远同样的输出），L2 归一化
-        rng = random.Random(hash(text) & 0xFFFF_FFFF)
+        rng = random.Random(_stable_mock_seed(text))
         v = [rng.gauss(0, 1) for _ in range(1024)]
         norm = sum(x * x for x in v) ** 0.5 or 1.0
         return [x / norm for x in v]

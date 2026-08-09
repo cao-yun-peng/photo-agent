@@ -13,8 +13,8 @@
   # 只测新 Skill（不测基线）
   python scripts/prompt_test.py --images URL1 URL2 --new-only
 
-  # 只测 wanx-v1 模型
-  python scripts/prompt_test.py --images URL1 --models wanx-v1
+  # 只测 wanx2.1-imageedit 模型
+  python scripts/prompt_test.py --images URL1 --models wanx2.1-imageedit
 
   # 指定输出路径
   python scripts/prompt_test.py --images URL1 --output reports/test_001.html
@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import base64
 import json
 import logging
 import sys
@@ -41,7 +42,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 import httpx
 
@@ -49,8 +50,9 @@ import httpx
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from app.config import settings
-from scripts.test_skills_config import (
+from app.config import settings  # noqa: E402
+from app.services import image_gen as image_gen_service  # noqa: E402
+from scripts.test_skills_config import (  # noqa: E402
     EXISTING_SKILLS,
     NEW_SKILLS,
     PASS_THRESHOLD,
@@ -60,28 +62,23 @@ from scripts.test_skills_config import (
 logger = logging.getLogger(__name__)
 
 # ---- API 常量 -----------------------------------------------------------
-WANX_CREATE_URL = (
-    "https://dashscope.aliyuncs.com/api/v1/services/aigc/image2image/image-synthesis"
-)
-WANX_TASK_URL = "https://dashscope.aliyuncs.com/api/v1/tasks/{task_id}"
 VL_URL = (
     "https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation"
 )
-GPT_IMAGE_URL = "https://api.openai.com/v1/images/edits"
 
 TIMEOUT = httpx.Timeout(120.0, connect=10.0)
-POLL_INTERVAL = 3.0
-MAX_POLLS = 40
 
 
 # ---- 数据结构 -----------------------------------------------------------
 @dataclass
 class TestResult:
     """一次生成 + 评分的完整结果。"""
+    __test__: ClassVar[bool] = False
+
     skill_name: str
     skill_category: str
     is_new: bool                    # True=新 Skill, False=基线
-    model: str                      # wanx-v1 / gpt-image-2
+    model: str                      # wanx2.1-imageedit / gpt-image-2
     image_url: str                  # 原图 URL
     prompt: str                     # 实际发送的 prompt
     generated_url: str = ""         # 生成结果 URL
@@ -96,97 +93,39 @@ class TestResult:
 
 # ---- 生成函数 -----------------------------------------------------------
 async def generate_wanx(
-    client: httpx.AsyncClient,
     source_url: str,
     prompt: str,
     negative_prompt: str = "",
 ) -> tuple[str, float]:
-    """调 wanx-v1 图生图，返回 (result_url, cost)。"""
-    payload: dict[str, Any] = {
-        "model": "wanx-v1",
-        "input": {
-            "prompt": prompt[:500],
-            "ref_img": source_url,
-        },
-        "parameters": {
-            "style": "<auto>",
-            "size": "1024*1024",
-            "n": 1,
-        },
-    }
+    """通过生产代码调用万相 2.1，避免评测脚本与主链路协议漂移。"""
     if negative_prompt:
-        payload["input"]["negative_prompt"] = negative_prompt[:200]
-
-    headers = {
-        "Authorization": f"Bearer {settings.dashscope_api_key}",
-        "Content-Type": "application/json",
-        "X-DashScope-Async": "enable",
-    }
-
-    resp = await client.post(WANX_CREATE_URL, json=payload, headers=headers)
-    if resp.status_code != 200:
-        raise RuntimeError(f"wanx create HTTP {resp.status_code}: {resp.text[:300]}")
-
-    data = resp.json()
-    task_id = data.get("output", {}).get("task_id")
-    if not task_id:
-        raise RuntimeError(f"wanx no task_id: {data}")
-
-    # 轮询
-    poll_headers = {"Authorization": f"Bearer {settings.dashscope_api_key}"}
-    for _ in range(MAX_POLLS):
-        await asyncio.sleep(POLL_INTERVAL)
-        poll_resp = await client.get(
-            WANX_TASK_URL.format(task_id=task_id), headers=poll_headers
-        )
-        poll_data = poll_resp.json()
-        status = poll_data.get("output", {}).get("task_status")
-        if status == "SUCCEEDED":
-            results = poll_data.get("output", {}).get("results", [])
-            if results and results[0].get("url"):
-                return results[0]["url"], 0.14
-            raise RuntimeError(f"wanx no result url: {poll_data}")
-        if status in ("FAILED", "CANCELED"):
-            msg = poll_data.get("output", {}).get("message", str(poll_data))
-            raise RuntimeError(f"wanx task {status}: {msg}")
-    raise RuntimeError("wanx task timeout")
+        prompt = f"{prompt}\n请避免：{negative_prompt[:200]}"
+    result = await image_gen_service.generate(
+        source_image_url=source_url,
+        prompt=prompt,
+        model="wanx2.1-imageedit",
+    )
+    if not result.image_url:
+        raise RuntimeError("wanx returned no image URL")
+    return result.image_url, result.cost_yuan
 
 
 async def generate_gpt_image(
-    client: httpx.AsyncClient,
     source_url: str,
     prompt: str,
 ) -> tuple[str, float]:
-    """调 gpt-image-2 图生图，返回 (result_url, cost)。"""
-    key = settings.openai_api_key or ""
-    if not key or key == "sk-openai-xxx":
-        raise RuntimeError("OPENAI_API_KEY not configured")
-
-    # 下载原图
-    img_resp = await client.get(source_url)
-    if img_resp.status_code != 200:
-        raise RuntimeError(f"download source HTTP {img_resp.status_code}")
-
-    files = [("image", ("source.jpg", img_resp.content, "image/jpeg"))]
-    resp = await client.post(
-        GPT_IMAGE_URL,
-        files=files,
-        data={
-            "prompt": prompt[:1000],
-            "model": "gpt-image-1",
-            "n": 1,
-            "size": "1024x1024",
-        },
-        headers={"Authorization": f"Bearer {key}"},
+    """通过生产代码调用 GPT Image 2，并转成可供报告/VL 使用的数据 URL。"""
+    result = await image_gen_service.generate(
+        source_image_url=source_url,
+        prompt=prompt,
+        model="gpt-image-2",
     )
-    if resp.status_code != 200:
-        raise RuntimeError(f"gpt-image HTTP {resp.status_code}: {resp.text[:300]}")
-
-    data = resp.json()
-    try:
-        return data["data"][0]["url"], 0.30
-    except (KeyError, IndexError) as exc:
-        raise RuntimeError(f"gpt-image unexpected: {data}") from exc
+    if result.image_url:
+        return result.image_url, result.cost_yuan
+    if result.image_bytes:
+        encoded = base64.b64encode(result.image_bytes).decode("ascii")
+        return f"data:{result.content_type};base64,{encoded}", result.cost_yuan
+    raise RuntimeError("gpt-image returned no image data")
 
 
 # ---- 评分函数 -----------------------------------------------------------
@@ -301,14 +240,14 @@ async def run_single_test(
             logger.info(
                 "[生成] %s × %s (%s)", skill["name"], _short_url(image_url), model
             )
-            if model == "wanx-v1":
+            if model == "wanx2.1-imageedit":
                 gen_url, cost = await generate_wanx(
-                    client, image_url, skill["prompt_template"],
+                    image_url, skill["prompt_template"],
                     skill.get("negative_prompt", ""),
                 )
             elif model == "gpt-image-2":
                 gen_url, cost = await generate_gpt_image(
-                    client, image_url, skill["prompt_template"],
+                    image_url, skill["prompt_template"],
                 )
             else:
                 raise RuntimeError(f"unsupported model: {model}")
@@ -628,7 +567,7 @@ async def main(args: argparse.Namespace) -> None:
             skills_to_test.append((s, False))
 
     # 确定模型
-    models = args.models or ["wanx-v1"]
+    models = args.models or ["wanx2.1-imageedit"]
 
     # 总任务数
     total = len(skills_to_test) * len(args.images) * len(models)
@@ -687,8 +626,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--models", nargs="+", default=None,
-        choices=["wanx-v1", "gpt-image-2"],
-        help="测试的模型列表（默认 wanx-v1）",
+        choices=["wanx2.1-imageedit", "gpt-image-2"],
+        help="测试的模型列表（默认 wanx2.1-imageedit）",
     )
     parser.add_argument(
         "--new-only", action="store_true",

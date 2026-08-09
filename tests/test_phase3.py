@@ -19,7 +19,7 @@ from app.services.agent import (
     ToolSpec,
     _generate_clarification,
 )
-from app.services.agent_tools import recommend_skills_for_agent
+from app.services.agent_tools import recommend_skills_for_agent, search_photos
 from app.services.recommend import (
     _freshness_score,
     _keyword_match_score,
@@ -129,6 +129,51 @@ async def test_recommend_skills_for_agent_tool() -> None:
 # ------------------------------------------------------------------
 # 主动澄清
 # ------------------------------------------------------------------
+@pytest.mark.asyncio
+async def test_agent_search_photos_builds_next_cursor() -> None:
+    """Agent 搜索结果超过一页时，应按五元组正确生成下一页游标。"""
+    now = datetime.now(timezone.utc)
+    photos = []
+    for index in range(3):
+        photo = MagicMock()
+        photo.id = uuid4()
+        photo.thumb_key = f"thumb-{index}.jpg"
+        photo.oss_key = f"photo-{index}.jpg"
+        photo.taken_at = now - timedelta(days=index)
+        photo.ai_description = f"测试照片 {index}"
+        photo.status = "done"
+        photo.ai_analysis = {}
+        photos.append(photo)
+
+    query_result = MagicMock()
+    query_result.all.return_value = [
+        (photo, 0.1 + index * 0.1)
+        for index, photo in enumerate(photos)
+    ]
+    db = AsyncMock()
+    db.execute.return_value = query_result
+
+    with (
+        patch(
+            "app.services.agent_tools.get_query_embedding",
+            new=AsyncMock(return_value=([0.0] * 1024, False)),
+        ),
+        patch("app.services.agent_tools.get_user_profile", new=AsyncMock(return_value=None)),
+        patch("app.services.agent_tools.sign_get_url", side_effect=lambda key: f"https://example.com/{key}"),
+    ):
+        result = await search_photos(
+            user_id=uuid4(),
+            db=db,
+            query="测试照片",
+            limit=2,
+            auto_parse=False,
+        )
+
+    assert result["ok"] is True
+    assert len(result["items"]) == 2
+    assert result["next_cursor"] is not None
+
+
 @pytest.mark.asyncio
 async def test_generate_clarification_options() -> None:
     """对模糊查询应自动生成时间/地点/类型等澄清选项。"""

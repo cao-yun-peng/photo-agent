@@ -118,15 +118,25 @@ async def generate_photo(ctx: dict[str, Any], generation_id: str) -> dict[str, A
                     strength=gen_strength,
                 )
 
-            # 下载生成结果 → 存回自己 OSS，避免 24h 过期
-            new_key = _build_gen_key(gen.user_id)
-            async with httpx.AsyncClient(timeout=60.0) as client:
-                resp = await client.get(result.image_url)
+            # 万相返回临时 URL，OpenAI 返回 Base64；统一转成 bytes 后存入 OSS。
+            if result.image_bytes is not None:
+                image_bytes = result.image_bytes
+                content_type = result.content_type
+            elif result.image_url:
+                async with httpx.AsyncClient(timeout=60.0) as client:
+                    resp = await client.get(result.image_url)
                 if resp.status_code != 200:
                     raise RuntimeError(
                         f"download result HTTP {resp.status_code}: {resp.text[:200]}"
                     )
-                await oss.put_object(new_key, resp.content, content_type="image/jpeg")
+                image_bytes = resp.content
+                content_type = resp.headers.get("content-type", "image/jpeg")
+                content_type = content_type.partition(";")[0].strip().lower()
+            else:
+                raise RuntimeError("image generation returned no image data")
+
+            new_key = _build_gen_key(gen.user_id, content_type)
+            await oss.put_object(new_key, image_bytes, content_type=content_type)
 
             gen.result_oss_key = new_key
             gen.status = "done"
@@ -203,9 +213,13 @@ async def generate_photo(ctx: dict[str, Any], generation_id: str) -> dict[str, A
             raise
 
 
-def _build_gen_key(user_id: UUID) -> str:
+def _build_gen_key(user_id: UUID, content_type: str = "image/jpeg") -> str:
     today = datetime.now(timezone.utc).strftime("%Y/%m/%d")
-    return f"generations/{user_id}/{today}/{uuid4().hex}.jpg"
+    suffix = {
+        "image/png": ".png",
+        "image/webp": ".webp",
+    }.get(content_type, ".jpg")
+    return f"generations/{user_id}/{today}/{uuid4().hex}{suffix}"
 
 
 async def _bump_rate_limit(db, user_id: UUID) -> None:

@@ -7,8 +7,8 @@ import pytest
 from PIL import Image
 
 from app.schemas.analysis import ImageAnalysis
-from app.services.agent import AgentConstraints, PhotoAgent
-from app.services.ai import parse_vl_response
+from app.services.agent import PhotoAgent
+from app.services.ai import _stable_mock_seed, parse_vl_response
 from app.services.quality import (
     QualityGateResult,
     can_transition,
@@ -21,6 +21,11 @@ from app.services.quality import (
 # ------------------------------------------------------------------
 # VL 结构化分析解析
 # ------------------------------------------------------------------
+def test_mock_embedding_seed_is_stable() -> None:
+    assert _stable_mock_seed("去年在西湖拍的照片") == 13096972177322108030
+    assert _stable_mock_seed("去年在西湖拍的照片") != _stable_mock_seed("海边的猫")
+
+
 def test_parse_vl_response_ok() -> None:
     raw = """{"scene": "户外", "scene_detail": "海边", "persons": {"count": 2},
     "objects": ["沙滩", "海浪"], "text_in_image": [], "mood": "轻松",

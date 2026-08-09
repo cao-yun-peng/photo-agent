@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-import oss2
+import oss2  # noqa: E402
 from oss2.models import CorsRule  # noqa: E402
 
 from app.config import settings  # noqa: E402

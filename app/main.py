@@ -1,5 +1,6 @@
 """FastAPI 应用入口."""
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,6 +25,17 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    logger.info("photo-agent api starting up | env=%s", settings.app_env)
+    try:
+        await _seed_official_skills()
+    except Exception:  # noqa: BLE001
+        logger.warning("seed official skills skipped (DB not ready?)", exc_info=True)
+    yield
+    logger.info("photo-agent api shutting down")
+
+
 # ---------- 应用实例 ----------
 app = FastAPI(
     title="Photo Agent API",
@@ -31,6 +43,7 @@ app = FastAPI(
     description="中文语境 · 隐私优先 · AI 语义搜索照片管家的后端",
     docs_url="/docs",
     redoc_url=None,
+    lifespan=lifespan,
 )
 
 
@@ -76,16 +89,6 @@ async def health() -> dict:
 
 # ---------- 挂载业务路由 ----------
 app.include_router(api_router)
-
-
-@app.on_event("startup")
-async def on_startup() -> None:
-    logger.info("photo-agent api starting up | env=%s", settings.app_env)
-    # 自动播种/更新官方 Skill（读 JSON 文件，upsert 模式）
-    try:
-        await _seed_official_skills()
-    except Exception:  # noqa: BLE001
-        logger.warning("seed official skills skipped (DB not ready?)", exc_info=True)
 
 
 async def _seed_official_skills() -> None:
@@ -159,8 +162,3 @@ async def _seed_official_skills() -> None:
         "official skills sync: inserted=%d updated=%d skipped=%d total=%d",
         inserted, updated, skipped, len(official_skills),
     )
-
-
-@app.on_event("shutdown")
-async def on_shutdown() -> None:
-    logger.info("photo-agent api shutting down")

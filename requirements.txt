@@ -29,6 +29,7 @@ oss2==2.19.0
 dashscope==1.20.11
 
 # Image
+numpy==2.1.2
 Pillow==10.4.0
 pyexiv2==2.15.4
 

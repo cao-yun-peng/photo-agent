@@ -620,6 +620,29 @@ def test_evaluate_dataset_summary(tmp_path: Any) -> None:
     assert summary["parse_ok_rate"] == 1.0
 
 
+def test_evaluate_dataset_keeps_summary_when_sample_fails(tmp_path: Any) -> None:
+    dataset = tmp_path / "ground_truth_with_error.json"
+    dataset.write_text(
+        json.dumps(
+            [{"image_url": "http://example.com/bad.jpg", "expected": {"scene": "户外"}}],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    with patch(
+        "scripts.offline_eval.ai_service.analyze_image",
+        new=AsyncMock(side_effect=RuntimeError("network error")),
+    ):
+        result = asyncio.run(evaluate_dataset(str(dataset)))
+
+    summary = result["summary"]
+    assert summary["total"] == 1
+    assert summary["errors"] == 1
+    assert summary["scene_accuracy"] == 0.0
+    assert summary["object_precision"] == 0.0
+
+
 # ------------------------------------------------------------------
 # 健康检查
 # ------------------------------------------------------------------

@@ -20,10 +20,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from sqlalchemy import select
+from sqlalchemy import select  # noqa: E402
 
-from app.database import AsyncSessionLocal
-from app.models.skill import Skill
+from app.database import AsyncSessionLocal  # noqa: E402
+from app.models.skill import Skill  # noqa: E402
 
 
 async def main() -> None:
