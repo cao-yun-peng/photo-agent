@@ -1,0 +1,46 @@
+.page { padding: 40rpx 30rpx 60rpx; }
+
+.hero { margin-bottom: 40rpx; }
+.hero__title { font-size: 44rpx; font-weight: 700; color: var(--ink); }
+.hero__sub { font-size: 24rpx; color: var(--muted); margin-top: 8rpx; }
+
+.actions {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+.actions .btn { flex: 1; }
+
+.list { display: flex; flex-direction: column; gap: 16rpx; }
+.row {
+  display: flex;
+  gap: 20rpx;
+  align-items: center;
+  padding: 20rpx;
+}
+.row__thumb {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 8rpx;
+  background: var(--surface-muted);
+  flex-shrink: 0;
+}
+.row__body { flex: 1; }
+.row__meta { font-size: 22rpx; color: var(--muted); }
+.row__status {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: var(--muted);
+}
+.status--done { color: #22b573; }
+.status--failed { color: #d9534f; }
+.status--uploading, .status--signing, .status--hashing, .status--finishing {
+  color: var(--brand);
+}
+
+.footer {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+}
+.footer .btn { flex: 1; }

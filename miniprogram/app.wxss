@@ -1,0 +1,98 @@
+/* app.wxss —— 全局样式 */
+page {
+  --brand: #c2410c;
+  --brand-soft: #fdece2;
+  --ink: #1a1a1a;
+  --muted: #6b6b6b;
+  --border: #d9d5cc;
+  --surface: #ffffff;
+  --surface-muted: #f5f0e8;
+  --radius: 8rpx;
+  --radius-card: 16rpx;
+
+  background: #fbfbfa;
+  color: var(--ink);
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  font-size: 28rpx;
+  line-height: 1.55;
+}
+
+view, text {
+  box-sizing: border-box;
+}
+
+/* 按钮通用 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 40rpx;
+  background: var(--brand);
+  color: #fff;
+  border-radius: var(--radius);
+  font-size: 30rpx;
+  font-weight: 500;
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--brand);
+  border: 1rpx solid var(--brand);
+}
+.btn--block {
+  width: 100%;
+  padding: 26rpx 0;
+}
+.btn::after { border: none; }
+button[disabled] { opacity: 0.5; }
+
+/* 输入框 */
+.input {
+  background: var(--surface);
+  border: 1rpx solid var(--border);
+  border-radius: var(--radius);
+  padding: 22rpx 24rpx;
+  font-size: 30rpx;
+}
+
+/* 卡片 */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  padding: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.03);
+}
+
+/* Tag pill */
+.tag {
+  display: inline-block;
+  padding: 4rpx 16rpx;
+  background: var(--surface-muted);
+  color: var(--muted);
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  margin-right: 8rpx;
+}
+.tag--brand {
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+/* 空状态 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 40rpx;
+  color: var(--muted);
+}
+.empty__title { font-size: 32rpx; margin-bottom: 12rpx; color: var(--ink); }
+.empty__hint { font-size: 26rpx; }
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 40rpx 0;
+  color: var(--muted);
+  font-size: 26rpx;
+}

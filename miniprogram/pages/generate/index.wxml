@@ -1,0 +1,44 @@
+<view class="page">
+  <view wx:if="{{skill}}" class="skill-info card">
+    <view class="skill-info__name">{{skill.name}}</view>
+    <view class="skill-info__prompt">{{skill.prompt_template}}</view>
+  </view>
+
+  <view class="step">
+    <view class="step__title">① 选一张要改造的照片</view>
+    <scroll-view class="pick" scroll-x="{{true}}">
+      <block wx:for="{{photos}}" wx:key="id">
+        <view class="pick__item {{selectedPhotoId === item.id ? 'pick__item--on' : ''}}"
+              bindtap="onSelectPhoto" data-id="{{item.id}}">
+          <image src="{{item.thumb_url_full}}" mode="aspectFill" class="pick__img"/>
+        </view>
+      </block>
+      <view wx:if="{{photos.length === 0}}" class="pick__empty">还没照片，先去上传一张</view>
+    </scroll-view>
+  </view>
+
+  <view class="step">
+    <view class="step__title">② 附加要求（可选）</view>
+    <textarea class="input textarea"
+              placeholder="例：让画面更明亮一点、加一只猫..."
+              value="{{extraPrompt}}" bindinput="onExtraInput" maxlength="200"/>
+  </view>
+
+  <button class="btn btn--block" bindtap="onGenerate"
+          loading="{{submitting}}" disabled="{{submitting || !selectedPhotoId}}">
+    {{submitting ? '生成中...' : '开始改造'}}
+  </button>
+
+  <view wx:if="{{genStatus}}" class="result">
+    <view class="result__hint" wx:if="{{genStatus !== 'done' && genStatus !== 'failed'}}">
+      正在处理 · {{genStatus}}
+    </view>
+    <view wx:if="{{genError}}" class="result__err">失败：{{genError}}</view>
+    <image wx:if="{{genResultUrl}}" class="result__img"
+           src="{{genResultUrl}}" mode="widthFix"/>
+    <button wx:if="{{genResultUrl}}" class="btn btn--ghost btn--block"
+            style="margin-top:20rpx;" bindtap="onSave">
+      保存到手机相册
+    </button>
+  </view>
+</view>

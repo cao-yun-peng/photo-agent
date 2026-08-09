@@ -1,0 +1,47 @@
+[
+  {
+    "image_url": "https://example.com/eval/outdoor_cat.jpg",
+    "expected": {
+      "scene": "户外",
+      "objects": ["猫", "草地"],
+      "text_in_image": [],
+      "persons_count": 0
+    }
+  },
+  {
+    "image_url": "https://example.com/eval/restaurant_menu.jpg",
+    "expected": {
+      "scene": "餐厅",
+      "objects": ["食物", "菜单"],
+      "text_in_image": ["招牌菜"],
+      "persons_count": 0
+    }
+  },
+  {
+    "image_url": "https://example.com/eval/indoor_family.jpg",
+    "expected": {
+      "scene": "室内",
+      "objects": ["沙发", "人物"],
+      "text_in_image": [],
+      "persons_count": 3
+    }
+  },
+  {
+    "image_url": "https://example.com/eval/street_sign.jpg",
+    "expected": {
+      "scene": "街道",
+      "objects": ["路标", "建筑"],
+      "text_in_image": ["中山路"],
+      "persons_count": 0
+    }
+  },
+  {
+    "image_url": "https://example.com/eval/blank_white.jpg",
+    "expected": {
+      "scene": "其他",
+      "objects": [],
+      "text_in_image": [],
+      "persons_count": 0
+    }
+  }
+]

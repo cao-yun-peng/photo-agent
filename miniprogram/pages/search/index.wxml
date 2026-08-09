@@ -1,0 +1,82 @@
+<view class="page">
+  <view class="searchbar">
+    <input
+      class="input searchbar__input"
+      placeholder="试试：上个月的美食"
+      value="{{q}}"
+      bindinput="onQChange"
+      confirm-type="search"
+      bindconfirm="onSearch"
+      data-auto="true"
+    />
+    <view
+      class="searchbar__mic {{recording ? 'searchbar__mic--rec' : ''}}"
+      bindtouchstart="onVoiceStart"
+      bindtouchend="onVoiceEnd"
+    >
+      🎤
+    </view>
+  </view>
+
+  <scroll-view class="chips" scroll-x="{{true}}">
+    <block wx:for="{{quickChips}}" wx:key="*this">
+      <view
+        class="chip {{activeChip === item ? 'chip--active' : ''}}"
+        bindtap="onTapChip"
+        data-chip="{{item}}"
+      >
+        {{item}}
+      </view>
+    </block>
+  </scroll-view>
+
+  <view class="actions">
+    <button class="btn" bindtap="onSearch" data-auto="true" loading="{{loading}}">
+      智能搜索（识别时间/地点）
+    </button>
+    <button class="btn btn--ghost" bindtap="onSearch" data-auto="false">
+      纯语义搜索
+    </button>
+  </view>
+
+  <view wx:if="{{parsed}}" class="parsed card">
+    <view class="parsed__title">解析结果</view>
+    <view class="parsed__row">
+      <text class="tag tag--brand">语义：{{parsed.semantic}}</text>
+    </view>
+    <view wx:if="{{parsed.from_date}}" class="parsed__row">
+      <text class="tag">时间：{{parsed.from_date}} ~ {{parsed.to_date}}</text>
+    </view>
+    <view wx:if="{{parsed.place}}" class="parsed__row">
+      <text class="tag">地点：{{parsed.place}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{cacheHit}}" class="cache-badge">⚡ 命中缓存</view>
+
+  <view wx:if="{{results.length === 0 && !loading}}" class="empty">
+    <view class="empty__title">试着搜一下</view>
+    <view class="empty__hint">"上周西湖" · "夕阳" · "小橘" 都可以</view>
+  </view>
+
+  <view wx:else class="results">
+    <block wx:for="{{results}}" wx:key="id">
+      <view class="result card">
+        <image class="result__thumb" src="{{item.thumb_url_full}}" mode="aspectFill" />
+        <view class="result__body">
+          <view class="result__desc">{{item.ai_description || '（还在处理）'}}</view>
+          <view class="result__scores">
+            <text class="tag">相关 {{item.score_semantic}}</text>
+            <text class="tag">新鲜 {{item.score_recency}}</text>
+            <text class="tag tag--brand">综合 {{item.score_final}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+  <view wx:if="{{nextCursor && !loading}}" class="more" bindtap="onLoadMore">
+    加载更多
+  </view>
+</view>

@@ -1,0 +1,98 @@
+[
+  {
+    "name": "法国绘本风",
+    "description": "温柔治愈的法式插画绘本风格",
+    "prompt_template": "转换成法国绘本风格",
+    "model": "wanx2.1-imageedit",
+    "function": "stylization_all",
+    "strength": 0.9
+  },
+  {
+    "name": "金箔艺术",
+    "description": "华贵金箔质感艺术风格",
+    "prompt_template": "转换成金箔艺术风格",
+    "model": "wanx2.1-imageedit",
+    "function": "stylization_all",
+    "strength": 0.9
+  },
+  {
+    "name": "宫崎骏动画风",
+    "description": "把照片变成温柔明亮的宫崎骏电影场景",
+    "prompt_template": "将这张照片转换成宫崎骏吉卜力动画风格，水彩笔触，温暖饱和色调，蓬松白云，手绘质感",
+    "model": "wanx2.1-imageedit",
+    "function": "description_edit",
+    "strength": 0.9
+  },
+  {
+    "name": "3D 泡泡玛特",
+    "description": "圆润可爱的潮玩公仔风格",
+    "prompt_template": "把照片中的人物变成3D潮玩公仔，圆润大头小身比例，光滑塑料质感，盲盒玩具风格",
+    "model": "wanx2.1-imageedit",
+    "function": "description_edit",
+    "strength": 0.9
+  },
+  {
+    "name": "赛博朋克 2077",
+    "description": "夜之城霓虹机械感重度未来风",
+    "prompt_template": "将照片转换成赛博朋克风格，紫粉青蓝霓虹灯光，夜景城市，机械电子元素，高对比度",
+    "model": "wanx2.1-imageedit",
+    "function": "description_edit",
+    "strength": 0.9
+  },
+  {
+    "name": "复古油画",
+    "description": "厚重笔触的欧洲古典油画",
+    "prompt_template": "将照片转换成19世纪欧洲古典油画风格，厚涂笔触，暖色调，戏剧化光影",
+    "model": "wanx2.1-imageedit",
+    "function": "description_edit",
+    "strength": 0.85
+  },
+  {
+    "name": "水墨中国画",
+    "description": "留白与山水意境的传统水墨",
+    "prompt_template": "把照片转换成中国传统水墨画风格，黑白灰为主，留白意境，皴法笔触，少量朱红点缀",
+    "model": "wanx2.1-imageedit",
+    "function": "description_edit",
+    "strength": 0.85
+  },
+  {
+    "name": "港风霓虹",
+    "description": "王家卫电影里的湿漉漉香港街头",
+    "prompt_template": "将照片转换成90年代香港电影风格，潮湿街道，霓虹灯反射，高对比颗粒感，绿粉色调",
+    "model": "wanx2.1-imageedit",
+    "function": "description_edit",
+    "strength": 0.85
+  },
+  {
+    "name": "极简线条插画",
+    "description": "黑白线条勾勒的极简艺术",
+    "prompt_template": "把照片转换成极简线条插画，黑色轮廓线勾勒主体，去除阴影细节，白色背景",
+    "model": "wanx2.1-imageedit",
+    "function": "description_edit",
+    "strength": 0.85
+  },
+  {
+    "name": "证件照",
+    "description": "干净白底、专业光线的正式证件照",
+    "prompt_template": "把照片修改为标准证件照，纯白背景，均匀正面光，面部清晰，服装整齐",
+    "model": "wanx2.1-imageedit",
+    "function": "description_edit",
+    "strength": 0.7
+  },
+  {
+    "name": "低饱和电影感",
+    "description": "现代文艺片调色",
+    "prompt_template": "将照片色调调整为低饱和电影感，青绿奶油色调，肤色自然，画面留白多",
+    "model": "wanx2.1-imageedit",
+    "function": "description_edit",
+    "strength": 0.7
+  },
+  {
+    "name": "宝丽来胶片",
+    "description": "怀旧胶片颗粒和白色边框",
+    "prompt_template": "把照片处理成宝丽来胶片效果，轻微褪色发黄，颗粒感，温暖过曝",
+    "model": "wanx2.1-imageedit",
+    "function": "description_edit",
+    "strength": 0.6
+  }
+]

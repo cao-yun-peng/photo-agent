@@ -1,0 +1,54 @@
+.page { padding: 30rpx 30rpx 80rpx; }
+
+.skill-info { margin-bottom: 24rpx; background: var(--brand-soft); }
+.skill-info__name { font-size: 30rpx; font-weight: 700; color: var(--brand); }
+.skill-info__prompt {
+  font-size: 24rpx;
+  color: var(--muted);
+  margin-top: 8rpx;
+  line-height: 1.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.step { margin-bottom: 30rpx; }
+.step__title { font-size: 28rpx; font-weight: 500; margin-bottom: 16rpx; }
+
+.pick { white-space: nowrap; }
+.pick__item {
+  display: inline-block;
+  width: 160rpx;
+  height: 160rpx;
+  margin-right: 12rpx;
+  border-radius: 8rpx;
+  overflow: hidden;
+  border: 4rpx solid transparent;
+  background: var(--surface-muted);
+}
+.pick__item--on { border-color: var(--brand); }
+.pick__img { width: 100%; height: 100%; }
+.pick__empty {
+  display: inline-block;
+  padding: 40rpx 20rpx;
+  color: var(--muted);
+  font-size: 24rpx;
+}
+
+.textarea { min-height: 140rpx; }
+
+.result {
+  margin-top: 30rpx;
+  padding: 20rpx;
+  background: var(--surface-muted);
+  border-radius: 12rpx;
+}
+.result__hint { color: var(--brand); font-size: 26rpx; }
+.result__err { color: #d9534f; font-size: 26rpx; }
+.result__img {
+  width: 100%;
+  border-radius: 8rpx;
+  margin-top: 16rpx;
+}

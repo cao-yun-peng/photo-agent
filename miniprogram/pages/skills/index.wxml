@@ -1,0 +1,48 @@
+<view class="page">
+  <view class="hero">
+    <view class="hero__title">Skill 广场</view>
+    <view class="hero__sub">选一个风格 · 让 AI 给你的照片换个样子</view>
+    <view wx:if="{{quota}}" class="quota">
+      今日剩余 <text class="quota__num">{{quota.remaining}}</text>/{{quota.quota}} 次生成
+    </view>
+  </view>
+
+  <view class="tabs">
+    <view class="tab {{tab === 'plaza' ? 'tab--on' : ''}}"
+          data-tab="plaza" bindtap="onSwitchTab">广场（官方 + 用户）</view>
+    <view class="tab {{tab === 'mine' ? 'tab--on' : ''}}"
+          data-tab="mine" bindtap="onSwitchTab">我的</view>
+  </view>
+
+  <view class="actions">
+    <button class="btn btn--ghost" bindtap="onCreate">＋ 新建 Skill</button>
+    <button class="btn btn--ghost" bindtap="onViewHistory">我的生成历史</button>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <view wx:elif="{{items.length === 0}}" class="empty">
+    <view class="empty__title">还没有 Skill</view>
+    <view class="empty__hint">点上方"新建 Skill"创建自己的风格</view>
+  </view>
+
+  <view wx:else class="grid">
+    <block wx:for="{{items}}" wx:key="id">
+      <view class="card skill" bindtap="onTapSkill" data-id="{{item.id}}">
+        <image wx:if="{{item.cover_url}}" class="skill__cover"
+               src="{{item.cover_url}}" mode="aspectFill"/>
+        <view wx:else class="skill__cover skill__cover--empty">🎨</view>
+        <view class="skill__body">
+          <view class="skill__name">{{item.name}}</view>
+          <view class="skill__desc">{{item.description || '（无描述）'}}</view>
+          <view class="skill__meta">
+            <text wx:if="{{item.is_official}}" class="tag tag--brand">官方</text>
+            <text wx:elif="{{item.is_public}}" class="tag">公开</text>
+            <text wx:else class="tag">私有</text>
+            <text class="tag">用过 {{item.use_count}} 次</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

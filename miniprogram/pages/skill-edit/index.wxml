@@ -1,0 +1,58 @@
+<view class="page">
+  <view class="hero__title">{{id ? '修改' : '创建'}} Skill</view>
+
+  <view class="field">
+    <view class="field__label">名字（10 字内更好记）</view>
+    <input class="input" placeholder="如：我的赛博朋克"
+           value="{{name}}" bindinput="onNameInput" maxlength="30"/>
+  </view>
+
+  <view class="field">
+    <view class="field__label">简介（可选）</view>
+    <input class="input" placeholder="一句话描述这个 Skill 干什么"
+           value="{{description}}" bindinput="onDescInput" maxlength="100"/>
+  </view>
+
+  <view class="field">
+    <view class="field__label">提示词（AI 会照着这句话改造照片）</view>
+    <textarea class="input textarea"
+              placeholder="例：把照片变成 90 年代港风霓虹雨夜..."
+              value="{{prompt_template}}" bindinput="onPromptInput"
+              maxlength="500"/>
+    <view class="field__hint">占位符 &lbrace;&lbrace;photo&rbrace;&rbrace; 会被替换为原图</view>
+  </view>
+
+  <view class="field">
+    <view class="field__label">参考图（最多 5 张，AI 会学它们的风格）</view>
+    <view class="refs">
+      <block wx:for="{{reference_urls}}" wx:key="*this">
+        <view class="ref">
+          <image class="ref__img" src="{{item}}" mode="aspectFill"/>
+          <view class="ref__x" bindtap="onRemoveRef" data-index="{{index}}">×</view>
+        </view>
+      </block>
+      <view wx:if="{{reference_keys.length < 5}}" class="ref ref--add" bindtap="onAddRef">＋</view>
+    </view>
+  </view>
+
+  <view class="field row">
+    <view class="field__label">使用模型</view>
+    <radio-group bindchange="onModelChange">
+      <label class="radio">
+        <radio value="wanx-v1" checked="{{model === 'wanx-v1'}}"/>通义万相
+      </label>
+      <label class="radio">
+        <radio value="gpt-image-2" checked="{{model === 'gpt-image-2'}}"/>GPT-Image-2
+      </label>
+    </radio-group>
+  </view>
+
+  <view class="field row">
+    <view class="field__label">公开到广场</view>
+    <switch checked="{{is_public}}" bindchange="onPublicChange" color="#c2410c"/>
+  </view>
+
+  <button class="btn btn--block" bindtap="onSave" loading="{{saving}}" disabled="{{saving}}">
+    保存
+  </button>
+</view>

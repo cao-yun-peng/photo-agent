@@ -1,0 +1,110 @@
+.page { padding: 30rpx; }
+
+.searchbar {
+  display: flex;
+  gap: 16rpx;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+.searchbar__input { flex: 1; }
+.searchbar__mic {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: var(--surface-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  flex-shrink: 0;
+}
+.searchbar__mic--rec {
+  background: var(--brand);
+  color: #fff;
+  animation: pulse 1s infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+.chips {
+  white-space: nowrap;
+  margin-bottom: 20rpx;
+}
+.chip {
+  display: inline-block;
+  padding: 12rpx 24rpx;
+  background: var(--surface-muted);
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  color: var(--muted);
+  margin-right: 12rpx;
+}
+.chip--active {
+  background: var(--brand);
+  color: #fff;
+}
+
+.actions {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+.actions .btn { flex: 1; }
+
+.parsed {
+  margin-bottom: 20rpx;
+  background: var(--brand-soft);
+}
+.parsed__title { font-size: 24rpx; color: var(--brand); margin-bottom: 12rpx; font-weight: 500; }
+.parsed__row { margin-top: 8rpx; }
+
+.cache-badge {
+  display: inline-block;
+  font-size: 22rpx;
+  color: var(--muted);
+  margin-bottom: 16rpx;
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.result {
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx;
+}
+.result__thumb {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 8rpx;
+  flex-shrink: 0;
+  background: var(--surface-muted);
+}
+.result__body { flex: 1; min-width: 0; }
+.result__desc {
+  font-size: 28rpx;
+  color: var(--ink);
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+.result__scores {
+  display: flex;
+  gap: 8rpx;
+  margin-top: 16rpx;
+  flex-wrap: wrap;
+}
+
+.more {
+  text-align: center;
+  padding: 30rpx 0;
+  color: var(--brand);
+  font-size: 28rpx;
+}

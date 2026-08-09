@@ -1,0 +1,57 @@
+<wxs module="fmt">
+module.exports = {
+  kb: function(bytes) {
+    if (!bytes) return '0 KB';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
+    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+  }
+};
+</wxs>
+
+<view class="page">
+  <view class="hero">
+    <view class="hero__title">上传照片</view>
+    <view class="hero__sub">单次最多 9 张 · AI 会自动生成中文描述</view>
+  </view>
+
+  <view class="actions">
+    <button class="btn btn--ghost" bindtap="onChooseMedia" disabled="{{uploading}}">
+      选择照片
+    </button>
+    <button
+      class="btn"
+      bindtap="onStartUpload"
+      disabled="{{uploading || tasks.length === 0}}"
+      loading="{{uploading}}"
+    >
+      开始上传 ({{tasks.length}})
+    </button>
+  </view>
+
+  <view wx:if="{{tasks.length === 0}}" class="empty">
+    <view class="empty__title">还没选照片</view>
+    <view class="empty__hint">点上方"选择照片"从相册或相机选</view>
+  </view>
+
+  <view wx:else class="list">
+    <block wx:for="{{tasks}}" wx:key="tmpPath">
+      <view class="row card">
+        <image class="row__thumb" src="{{item.tmpPath}}" mode="aspectFill" />
+        <view class="row__body">
+          <view class="row__meta">{{fmt.kb(item.size)}}</view>
+          <view class="row__status status--{{item.status}}">{{item.message}}</view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{tasks.length > 0}}" class="footer">
+    <button class="btn btn--ghost" size="mini" bindtap="onClearDone">
+      清除已完成
+    </button>
+    <button class="btn" size="mini" bindtap="onViewTimeline">
+      查看时间线
+    </button>
+  </view>
+</view>

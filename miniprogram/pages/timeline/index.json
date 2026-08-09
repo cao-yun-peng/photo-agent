@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "时间线",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "onReachBottomDistance": 80,
+  "usingComponents": {}
+}

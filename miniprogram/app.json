@@ -1,0 +1,39 @@
+{
+  "pages": [
+    "pages/login/index",
+    "pages/timeline/index",
+    "pages/upload/index",
+    "pages/search/index",
+    "pages/skills/index",
+    "pages/skill-edit/index",
+    "pages/generate/index",
+    "pages/generations/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "photo-agent",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#fbfbfa"
+  },
+  "tabBar": {
+    "color": "#8a8a8f",
+    "selectedColor": "#c2410c",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/timeline/index", "text": "时间线" },
+      { "pagePath": "pages/search/index",   "text": "搜索" },
+      { "pagePath": "pages/skills/index",   "text": "广场" },
+      { "pagePath": "pages/upload/index",   "text": "上传" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于给照片添加地理位置信息（可选）"
+    }
+  }
+}

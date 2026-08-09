@@ -1,0 +1,23 @@
+<view class="page">
+  <view wx:if="{{items.length === 0 && !loading}}" class="empty">
+    <view class="empty__title">还没有生成记录</view>
+    <view class="empty__hint">去广场挑一个 Skill 试试</view>
+  </view>
+
+  <view wx:else class="list">
+    <block wx:for="{{items}}" wx:key="id">
+      <view class="row card" bindtap="onPreview" data-url="{{item.result_url}}">
+        <image wx:if="{{item.result_url}}" class="row__img"
+               src="{{item.result_url}}" mode="aspectFill"/>
+        <view wx:else class="row__img row__img--empty">
+          {{item.status === 'failed' ? '×' : '⋯'}}
+        </view>
+        <view class="row__body">
+          <view class="row__status status--{{item.status}}">{{item.status}}</view>
+          <view class="row__meta">{{item.model}} · {{item.cost_yuan}} 元</view>
+          <view wx:if="{{item.error_message}}" class="row__err">{{item.error_message}}</view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

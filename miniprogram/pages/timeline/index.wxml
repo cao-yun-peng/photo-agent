@@ -1,0 +1,29 @@
+<view class="page">
+  <view class="topbar">
+    <view class="topbar__title">时间线</view>
+    <view class="topbar__hint">共 {{items.length}} 张</view>
+  </view>
+
+  <view wx:if="{{items.length === 0 && !loading}}" class="empty">
+    <view class="empty__title">还没有照片</view>
+    <view class="empty__hint">试试点右下角的"上传"按钮</view>
+    <button class="btn" style="margin-top:40rpx;" bindtap="onTapUpload">开始上传</button>
+  </view>
+
+  <view wx:else class="grid">
+    <block wx:for="{{items}}" wx:key="id">
+      <view class="cell" bindtap="onTapItem" data-id="{{item.id}}">
+        <image
+          class="cell__img"
+          src="{{item.thumb_url_full}}"
+          mode="aspectFill"
+          lazy-load="{{true}}"
+        />
+        <view wx:if="{{item.status !== 'done'}}" class="cell__badge">{{item.status}}</view>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+  <view wx:if="{{!hasMore && items.length > 0}}" class="loading">— 已到底 —</view>
+</view>
