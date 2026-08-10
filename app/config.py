@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     app_name: str = "photo-agent"
     app_env: str = "dev"
     log_level: str = "INFO"
+    log_dir: str = ""  # 日志文件目录，空则仅输出到控制台
+    log_json_format: bool = False  # dev环境用彩色控制台，生产环境用JSON
 
     # DB
     database_url: str

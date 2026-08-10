@@ -1,13 +1,33 @@
-"""FastAPI 应用入口."""
-import logging
+"""FastAPI 应用入口 - 生产级增强版.
+
+改进点:
+- 统一错误码 + 全局异常处理
+- LogID全链路追踪 + JSON结构化日志
+- 优雅关闭与资源清理
+- 预留Skill热更新入口
+"""
+from __future__ import annotations
+
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from pydantic import ValidationError
 
 from app import __version__
 from app.api import api_router
 from app.config import settings
+from app.core.errors import (
+    ApiError,
+    INVALID_PARAMS,
+    SYSTEM_ERROR,
+    UNKNOWN_ERROR,
+)
+from app.core.logger import get_logger, set_logging_context, setup_logging
+from app.core.middleware import LogIDMiddleware
+from app.database import engine
 from app.services.circuit_breaker import (
     agent_llm_breaker,
     embedding_breaker,
@@ -17,23 +37,82 @@ from app.services.circuit_breaker import (
 )
 from app.services.lock import get_redis
 
-# ---------- 日志 ----------
-logging.basicConfig(
-    level=getattr(logging, settings.log_level.upper(), logging.INFO),
-    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+# ---------- 日志初始化（最先执行）----------
+setup_logging(
+    log_level=settings.log_level,
+    log_dir=settings.log_dir or None,
+    json_format=settings.log_json_format,
 )
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
+
+
+# ---------- 全局HTTP客户端（复用连接池）----------
+_http_client = None
+
+
+async def _get_http_client():
+    """获取全局复用的httpx异步客户端."""
+    global _http_client
+    if _http_client is None or _http_client.is_closed:
+        import httpx
+        _http_client = httpx.AsyncClient(
+            timeout=30.0,
+            limits=httpx.Limits(
+                max_connections=200,
+                max_keepalive_connections=50,
+                keepalive_expiry=60,
+            ),
+        )
+    return _http_client
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    logger.info("photo-agent api starting up | env=%s", settings.app_env)
+    """应用生命周期管理."""
+    logger.info(
+        "photo-agent api starting up | env=%s version=%s",
+        settings.app_env, __version__,
+    )
+
+    # 初始化HTTP连接池
+    await _get_http_client()
+
+    # 初始化官方Skill（失败不阻断启动）
     try:
         await _seed_official_skills()
     except Exception:  # noqa: BLE001
         logger.warning("seed official skills skipped (DB not ready?)", exc_info=True)
+
     yield
-    logger.info("photo-agent api shutting down")
+
+    # ---------- 优雅关闭：按依赖顺序逆序清理资源 ----------
+    logger.info("photo-agent api shutting down, cleaning up resources...")
+
+    # 1. 关闭HTTP连接池
+    global _http_client
+    if _http_client and not _http_client.is_closed:
+        try:
+            await _http_client.aclose()
+            logger.info("http client closed")
+        except Exception:  # noqa: BLE001
+            logger.warning("error closing http client", exc_info=True)
+
+    # 2. 关闭Redis连接
+    try:
+        redis = await get_redis()
+        await redis.close()
+        logger.info("redis connection closed")
+    except Exception:  # noqa: BLE001
+        logger.warning("error closing redis", exc_info=True)
+
+    # 3. 关闭数据库引擎
+    try:
+        await engine.dispose()
+        logger.info("database engine disposed")
+    except Exception:  # noqa: BLE001
+        logger.warning("error disposing database engine", exc_info=True)
+
+    logger.info("photo-agent api shutdown complete")
 
 
 # ---------- 应用实例 ----------
@@ -47,14 +126,82 @@ app = FastAPI(
 )
 
 
-# ---------- CORS（开发阶段全开，生产上要收紧） ----------
+# ---------- 中间件注册 ----------
+
+# 1. LogID全链路追踪（最先注册，最外层）
+app.add_middleware(LogIDMiddleware, app_name=settings.app_name)
+
+# 2. CORS（开发阶段全开，生产上要收紧）
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"] if settings.app_env == "dev" else [],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Log-ID"],
 )
+
+
+# ---------- 全局异常处理 ----------
+
+@app.exception_handler(ApiError)
+async def api_error_handler(_: Request, exc: ApiError) -> JSONResponse:
+    """业务异常统一处理."""
+    logger.warning(
+        "ApiError: code=%d msg=%s",
+        exc.error_code.code, exc.message,
+    )
+    return JSONResponse(
+        status_code=exc.http_status,
+        content=exc.to_dict(),
+        headers={"X-Log-ID": getattr(_.state, "log_id", "-")},
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_error_handler(_: Request, exc: RequestValidationError) -> JSONResponse:
+    """请求参数校验失败."""
+    errors = exc.errors()
+    logger.warning("request validation failed: %s", errors)
+    return JSONResponse(
+        status_code=422,
+        content={
+            "errNo": INVALID_PARAMS.code,
+            "errMsg": "参数错误",
+            "data": {"errors": errors},
+        },
+        headers={"X-Log-ID": getattr(_.state, "log_id", "-")},
+    )
+
+
+@app.exception_handler(ValidationError)
+async def pydantic_validation_error_handler(_: Request, exc: ValidationError) -> JSONResponse:
+    """Pydantic数据校验失败."""
+    logger.warning("data validation failed: %s", exc.errors())
+    return JSONResponse(
+        status_code=422,
+        content={
+            "errNo": INVALID_PARAMS.code,
+            "errMsg": "数据格式错误",
+            "data": {"errors": exc.errors()},
+        },
+        headers={"X-Log-ID": getattr(_.state, "log_id", "-")},
+    )
+
+
+@app.exception_handler(Exception)
+async def unknown_error_handler(_: Request, exc: Exception) -> JSONResponse:
+    """未知异常兜底处理."""
+    logger.error("unhandled exception: %s", exc, exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "errNo": SYSTEM_ERROR.code,
+            "errMsg": "系统内部错误" if settings.app_env == "prod" else str(exc),
+            "data": None,
+        },
+        headers={"X-Log-ID": getattr(_.state, "log_id", "-")},
+    )
 
 
 # ---------- 健康检查 ----------
@@ -74,6 +221,19 @@ async def health() -> dict:
     except Exception as exc:  # noqa: BLE001
         checks["redis"] = f"error: {exc}"
         checks["status"] = "degraded"
+        logger.error("redis health check failed: %s", exc)
+
+    # 数据库连通性检查（新增）
+    try:
+        from sqlalchemy import text
+        from app.database import AsyncSessionLocal
+        async with AsyncSessionLocal() as db:
+            await db.execute(text("SELECT 1"))
+        checks["database"] = "ok"
+    except Exception as exc:  # noqa: BLE001
+        checks["database"] = f"error: {exc}"
+        checks["status"] = "degraded"
+        logger.error("database health check failed: %s", exc)
 
     # 熔断器状态快照
     checks["circuit_breakers"] = {
@@ -85,6 +245,12 @@ async def health() -> dict:
     }
 
     return checks
+
+
+@app.get("/ready", tags=["meta"], summary="存活检查（K8s readiness）")
+async def ready() -> dict:
+    """简单存活检查，不验证依赖（用于K8s liveness/readiness探针）."""
+    return {"status": "success"}
 
 
 # ---------- 挂载业务路由 ----------
@@ -162,3 +328,15 @@ async def _seed_official_skills() -> None:
         "official skills sync: inserted=%d updated=%d skipped=%d total=%d",
         inserted, updated, skipped, len(official_skills),
     )
+    logger.notice("official_skills_sync", {
+        "inserted": inserted,
+        "updated": updated,
+        "skipped": skipped,
+        "total": len(official_skills),
+    })
+
+
+# ---------- 导出全局HTTP客户端供各服务使用 ----------
+def get_global_http_client():
+    """获取全局复用的httpx客户端（在lifespan启动后可用）."""
+    return _http_client

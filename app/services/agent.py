@@ -53,15 +53,19 @@ _DEFAULT_SYSTEM_PROMPT = """你是 Photo Agent，一个帮助用户从个人相�
 7. ask_clarification：当需求模糊或搜索失败 2 次时，向用户提出澄清问题并提供 2-4 个选项。
 8. final_answer：向用户给出最终回复，必须包含清晰结论。
 
-工作原则：
-- 每次用户请求后，先判断意图：搜索/生成/其他。
-- 如果需求非常模糊（缺少时间、地点、人物、物体等关键线索），调用 ask_clarification 向用户澄清，最多澄清 2 次。
-- 搜索时先用 search_photos；若结果不满意（为空或用户否定），可换关键词重试；累计搜索失败 2 次后，系统会自动生成澄清选项。
-- 若多次搜索仍无满意结果，调用 fallback_search 进行三级兜底，不要直接放弃。
-- 当用户找到/提到某张照片，可能想对其进行改造时，可调用 recommend_skills 推荐相关 Skill。
-- 只有用户明确想要"改造/生成"某张照片时，才调用 apply_skill。
-- 每次决策前，简要说明你的思考（reasoning）。
-- 必须以 final_answer 结束对话，告知用户结果或下一步操作建议。"""
+工作原则（严格遵守）：
+1. 意图判断：每次用户请求后，先判断是搜索、生成、还是其他意图。
+2. **搜索优先原则**：只要用户查询中包含任何具体线索（物体名如"猫/樱花/海边"、地点、颜色、时间、特征词等），**必须先调用 search_photos 尝试搜索**，禁止直接调用 ask_clarification。
+3. **澄清触发条件（严格限制）**：ask_clarification 仅在以下情况使用：
+   - 用户查询完全没有任何具体关键词（例如只说"找照片"、"帮我找一下"），此时可以首次澄清；
+   - 累计调用 search_photos 搜索失败 2 次后仍无结果，系统自动触发澄清；
+   - 其他情况一律先搜索，不要因为"缺少时间/地点"就直接澄清，用户可能只记得物体关键词。
+4. 搜索重试：若 search_photos 结果为空，可换个关键词或放宽条件重试 1 次。
+5. 兜底策略：累计搜索失败 2 次后，调用 fallback_search 进行三级兜底，不要直接放弃。
+6. 生成意图：当用户明确想要"改造/生成/变成XX风格"某张照片时，且上下文中已有确认的照片，才调用 apply_skill。
+7. Skill 推荐：当用户找到某张照片后询问"有什么风格/滤镜可以用"时，调用 recommend_skills。
+8. 每次决策前，简要说明你的思考（reasoning）。
+9. 必须以 final_answer 结束对话，告知用户结果或下一步操作建议。"""
 
 
 # ------------------------------------------------------------------
@@ -208,8 +212,13 @@ async def ask_clarification(
     *,
     question: str,
     options: list[str] | None = None,
+    **kwargs: Any,
 ) -> dict:
-    """向用户发起澄清问题。Agent 遇到此结果会暂停并等待用户回复。"""
+    """向用户发起澄清问题。Agent 遇到此结果会暂停并等待用户回复。
+
+    **kwargs 用于吸收 Agent 循环注入的 user_id、db 等公共参数，
+    ask_clarification 不需要这些参数，直接忽略。
+    """
     return {
         "ok": True,
         "needs_clarification": True,
@@ -564,6 +573,9 @@ class PhotoAgent:
         if initial_state is not None:
             state = initial_state
             state.original_query = query
+            # 新一轮用户输入，重置步数计数，但保留上下文信息
+            state.step = 0
+            state.search_attempts = 0
             state.expires_at = datetime.now(timezone.utc) + timedelta(minutes=10)
         else:
             state = AgentState(
