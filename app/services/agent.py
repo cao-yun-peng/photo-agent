@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import logging
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
@@ -22,6 +21,8 @@ import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.core.logger import get_logger
+from app.core.registry import prompt_registry
 from app.services.agent_tools import (
     _classify_exception,
     apply_skill,
@@ -33,8 +34,14 @@ from app.services.agent_tools import (
 )
 from app.services.circuit_breaker import ServiceDegradedError, agent_llm_breaker
 from app.services.query_parser import parse_query
+from app.utils.json_parser import (
+    extract_json_field_by_regex,
+    parse_as_dict,
+    parse_json_field,
+    parse_json_or_default,
+)
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 # DashScope Chat API（兼容 OpenAI 格式，支持 function calling）
 _CHAT_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
@@ -520,17 +527,48 @@ async def _llm_decide(
         if resp.status_code != 200:
             raise RuntimeError(f"Agent LLM HTTP {resp.status_code}: {resp.text[:300]}")
 
-        data = resp.json()
+        # 响应JSON解析容错
         try:
-            choice = data["choices"][0]
+            data = resp.json()
+        except Exception:
+            # JSON解析失败，尝试从文本中提取
+            resp_text = resp.text
+            logger.warning("LLM response json parse failed, raw: %s", resp_text[:500])
+            raise RuntimeError(f"Agent LLM invalid JSON response: {resp_text[:300]}")
+
+        try:
+            choices = data.get("choices", [])
+            if not choices:
+                # 无choices时，检查是否有error字段
+                error = data.get("error", {})
+                if error:
+                    raise RuntimeError(f"Agent LLM API error: {error}")
+                # content为空时，尝试取reasoning_content兜底
+                logger.warning("LLM returned empty choices, returning empty message")
+                return {"role": "assistant", "content": "", "tool_calls": []}, {
+                    "total_tokens": 0, "prompt_tokens": 0, "completion_tokens": 0
+                }
+
+            choice = choices[0]
+            message = choice.get("message", {})
+
+            # content为空时，尝试取reasoning_content兜底（兼容推理模型）
+            if not message.get("content") and message.get("reasoning_content"):
+                logger.debug("using reasoning_content as fallback for empty content")
+                message["content"] = message.get("reasoning_content", "")
+
+            # tool_calls字段容错：确保是列表
+            if "tool_calls" not in message or message["tool_calls"] is None:
+                message["tool_calls"] = []
+
             usage = data.get("usage", {})
-            return choice["message"], {
+            return message, {
                 "total_tokens": usage.get("total_tokens", 0),
                 "prompt_tokens": usage.get("prompt_tokens", 0),
                 "completion_tokens": usage.get("completion_tokens", 0),
             }
         except (KeyError, IndexError, TypeError) as exc:
-            raise RuntimeError(f"Agent LLM unexpected response: {data}") from exc
+            raise RuntimeError(f"Agent LLM unexpected response: {str(data)[:500]}") from exc
 
     return await agent_llm_breaker.call(_do_call)
 
@@ -551,7 +589,8 @@ class PhotoAgent:
         self.db = db
         self.constraints = constraints or AgentConstraints()
         self.registry = registry or DEFAULT_REGISTRY
-        self.system_prompt = system_prompt or _DEFAULT_SYSTEM_PROMPT
+        # 优先使用传入的prompt，否则从热更新注册表获取
+        self.system_prompt = system_prompt or prompt_registry.get_agent_system_prompt()
 
     async def run(
         self,
@@ -793,23 +832,58 @@ class PhotoAgent:
         arguments_str: str,
         state: AgentState,
     ) -> dict:
-        """根据 tool 名称分发并执行，同时更新 State。"""
-        # final_answer 是伪工具，直接返回
+        """根据 tool 名称分发并执行，同时更新 State。
+
+        参数解析三级容错:
+        1. 优先 json.loads 标准解析
+        2. 失败用 parse_json_field 宽松解析（剥离markdown、提取JSON片段、修复尾逗号等）
+        3. final_answer 兜底：直接把原始字符串作为message返回
+        """
+        # final_answer 是伪工具，直接返回（容错最强）
         if tool_name == "final_answer":
-            try:
-                args = json.loads(arguments_str)
-                return {"ok": True, "message": args.get("message", "")}
-            except json.JSONDecodeError:
-                return {"ok": True, "message": arguments_str}
+            # 三级解析兜底
+            args = parse_json_or_default(arguments_str, default=None)
+            if isinstance(args, dict) and args.get("message"):
+                return {"ok": True, "message": str(args.get("message", ""))}
+            # JSON解析失败，正则提取message字段
+            msg_by_regex = extract_json_field_by_regex(arguments_str or "", "message", "")
+            if msg_by_regex:
+                return {"ok": True, "message": msg_by_regex}
+            # 最终兜底：把整个字符串作为回答内容
+            return {"ok": True, "message": str(arguments_str or "好的，已为你找到相关照片。")}
 
         spec = self.registry.get(tool_name)
         if spec is None:
+            logger.warning("unknown tool called: %s", tool_name)
             return {"ok": False, "error": f"未知工具：{tool_name}"}
 
-        try:
-            args = json.loads(arguments_str) if arguments_str else {}
-        except json.JSONDecodeError:
-            return {"ok": False, "error": f"参数不是合法 JSON：{arguments_str}"}
+        # 参数解析三级容错
+        args = parse_as_dict(arguments_str) if arguments_str else {}
+
+        # 空参数检查：对需要参数的工具做提示
+        if not args and arguments_str and arguments_str.strip() not in ("{}", ""):
+            logger.warning(
+                "tool args parse failed, using empty dict | tool=%s raw=%s",
+                tool_name, arguments_str[:200],
+            )
+            # 尝试用正则提取关键参数
+            if tool_name in ("search_photos", "fallback_search"):
+                query_regex = extract_json_field_by_regex(arguments_str, "query", "")
+                if query_regex:
+                    args = {"query": query_regex}
+            elif tool_name == "get_photo_detail":
+                pid_regex = extract_json_field_by_regex(arguments_str, "photo_id", "")
+                if pid_regex:
+                    args = {"photo_id": pid_regex}
+            elif tool_name == "apply_skill":
+                pid_regex = extract_json_field_by_regex(arguments_str, "photo_id", "")
+                sid_regex = extract_json_field_by_regex(arguments_str, "skill_id", "")
+                prompt_regex = extract_json_field_by_regex(arguments_str, "prompt", "")
+                args = {k: v for k, v in {
+                    "photo_id": pid_regex,
+                    "skill_id": sid_regex,
+                    "prompt": prompt_regex,
+                }.items() if v}
 
         # 注入公共参数
         args.setdefault("user_id", user_id)
