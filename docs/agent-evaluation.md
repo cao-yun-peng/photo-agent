@@ -60,6 +60,14 @@ python scripts/agent_eval.py --mode real \
 `real` 使用生产 Agent 的系统 Prompt、工具 Schema 和 DashScope function calling。
 如果 Key 为空或仍是 `sk-xxx` 等占位值，脚本会退出并返回代码 `2`，不会静默降级成 Mock。
 
+正式运行前会发送一次最小连通性预检。网络、Key、Endpoint 或模型权限异常时，评测会在
+产生能力分数前停止；不会把熔断后的降级回复统计成模型低分。运行期间如果连续出现
+3 条模型服务错误，评测也会提前终止，可用 `--max-infra-errors` 调整：
+
+```bash
+python scripts/agent_eval.py --mode real --max-infra-errors 1
+```
+
 真实模式会产生模型费用。建议先筛选 P0 或单个维度：
 
 ```bash
@@ -288,6 +296,30 @@ python scripts/agent_eval.py --mode real \
 
 确认当前进程能读取 `DASHSCOPE_API_KEY`，且不是 `sk-xxx`、空字符串或示例值。修改
 `.env` 后重新启动终端，或者在当前 Shell 显式设置环境变量。
+
+### `ConnectError`、`TimeoutError` 或熔断降级
+
+这些属于基础设施错误，不是 Agent 能力低分。按顺序检查：
+
+1. 当前终端是否能访问 `DASHSCOPE_CHAT_URL`；
+2. Key 所在地域是否与 Endpoint 一致；
+3. 使用 `sk-ws-` 子工作区 Key 时，是否已为该工作区授权 `qwen-plus`；
+4. `.env` 中的 `QWEN_CHAT_MODEL` 是否在当前地域和工作区可用；
+5. 是否存在防火墙、代理或 VPN 拦截。
+
+默认地址是：
+
+```dotenv
+DASHSCOPE_CHAT_URL=https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
+```
+
+子工作区或海外地域可能需要控制台给出的含 WorkspaceId 专属 Endpoint。修改后先运行：
+
+```bash
+python scripts/agent_eval.py --mode real --dimensions D1 --priority P0
+```
+
+报告中只要 `errors` 或 `infra_errors` 大于 0，就不要发布该次准确率。
 
 ### 某用例参数存在但参数分仍为 0
 

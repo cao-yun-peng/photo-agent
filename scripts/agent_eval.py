@@ -48,6 +48,7 @@ logger = logging.getLogger(__name__)
 
 ToolFn = Callable[..., Awaitable[dict[str, Any]]]
 CONTROL_TOOLS = {"final_answer"}
+INFRA_ERROR_TYPES = {"model_service_error", "model_service_degraded"}
 
 
 def _json_safe(value: Any) -> Any:
@@ -644,13 +645,28 @@ def _collect_result_from_events(
     clarify_events = [event for event in events if event.get("type") == "clarify"]
     final_events = [event for event in events if event.get("type") == "final"]
     error_events = [event for event in events if event.get("type") == "error"]
-    if clarify_events:
+    degraded_events = [
+        event
+        for event in final_events
+        if event.get("payload", {}).get("fallback") == "browse_candidates"
+    ]
+    if degraded_events:
+        result.final_status = "error"
+        result.error_type = "model_service_degraded"
+        result.final_message = str(
+            degraded_events[-1].get("payload", {}).get("message", "")
+        )
+        result.error = result.final_message or "Agent LLM circuit breaker is open"
+    elif clarify_events:
         result.final_status = "clarified"
         result.final_message = str(clarify_events[-1].get("payload", {}).get("question", ""))
     elif error_events and not final_events:
+        payload = error_events[-1].get("payload", {})
         result.final_status = "error"
-        result.error_type = "agent_error"
-        result.final_message = str(error_events[-1].get("payload", {}).get("message", ""))
+        result.error_type = "model_service_error"
+        result.final_message = str(payload.get("message", ""))
+        source_type = payload.get("error_type", "unknown")
+        result.error = f"{source_type}: {result.final_message}"
     elif state.fallback_level > 0 or any(
         call["tool"] == "fallback_search" for call in result.tool_calls
     ):
@@ -713,6 +729,11 @@ async def run_single_test(
             return evaluate_test_case(result, test_case)
 
         from app.services.agent import AgentConstraints, PhotoAgent, _build_registry
+        from app.services.circuit_breaker import agent_llm_breaker
+
+        if mode == "real":
+            # 每条评测用例应相互独立，不能让前一条的熔断状态污染后续分数。
+            agent_llm_breaker.reset()
 
         interceptor = ToolCallInterceptor()
         stubs = build_tool_stubs(test_case, photo_library)
@@ -742,6 +763,7 @@ async def run_single_test(
 
         patches = [
             patch("app.services.agent.fallback_search", new=wrapped_stubs["fallback_search"]),
+            patch("app.services.agent.browse_candidates", new=wrapped_stubs["browse_candidates"]),
         ]
         async def deterministic_clarification(_: str) -> dict[str, Any]:
             return {
@@ -917,12 +939,57 @@ def validate_real_mode() -> None:
         )
 
 
+async def validate_real_connectivity() -> None:
+    """用最小请求验证真实模型连通性，失败时不产生误导性的能力分数。"""
+    from app.config import settings
+    from app.services.agent import _llm_decide
+    from app.services.circuit_breaker import agent_llm_breaker
+
+    agent_llm_breaker.reset()
+    final_answer_schema = {
+        "type": "function",
+        "function": {
+            "name": "final_answer",
+            "description": "Return a short final answer.",
+            "parameters": {
+                "type": "object",
+                "properties": {"message": {"type": "string"}},
+                "required": ["message"],
+            },
+        },
+    }
+    try:
+        await _llm_decide(
+            [
+                {"role": "system", "content": "You are a connectivity probe."},
+                {"role": "user", "content": "Reply briefly."},
+            ],
+            [final_answer_schema],
+        )
+    except Exception as exc:
+        detail = str(exc) or type(exc).__name__
+        workspace_hint = (
+            " 当前使用子工作区 Key，请同时确认 qwen-plus 调用权限和地域对应的专属 Endpoint。"
+            if settings.dashscope_api_key.startswith("sk-ws-")
+            else ""
+        )
+        raise ValueError(
+            "DashScope 连通性预检失败，未开始能力评测："
+            f"{type(exc).__name__}: {detail}.{workspace_hint} "
+            "请先检查网络、DASHSCOPE_CHAT_URL、Key 权限和模型名。"
+        ) from exc
+    finally:
+        agent_llm_breaker.reset()
+
+
 async def run_evaluation(
     dataset_path: str,
     mode: str = "replay",
     dimensions: list[str] | None = None,
     priority: str | None = None,
     output_path: str = "agent_eval_result.json",
+    preflight: bool = True,
+    max_infra_errors: int = 3,
 ) -> dict[str, Any]:
     normalized_mode = "replay" if mode == "mock" else mode
     if mode == "mock":
@@ -932,6 +999,8 @@ async def run_evaluation(
     validate_dataset(dataset)
     if normalized_mode == "real":
         validate_real_mode()
+        if preflight:
+            await validate_real_connectivity()
 
     test_cases = list(dataset.get("test_cases", []))
     if dimensions:
@@ -940,11 +1009,32 @@ async def run_evaluation(
         test_cases = [case for case in test_cases if case.get("priority") == priority]
     logger.info("Photo Agent 评测 | mode=%s | cases=%d", normalized_mode, len(test_cases))
 
-    results = [
-        await run_single_test(case, dataset.get("photo_library", {}), normalized_mode)
-        for case in test_cases
-    ]
+    requested_total = len(test_cases)
+    results: list[TestCaseResult] = []
+    infra_errors = 0
+    aborted = False
+    for case in test_cases:
+        result = await run_single_test(
+            case,
+            dataset.get("photo_library", {}),
+            normalized_mode,
+        )
+        results.append(result)
+        if result.error_type in INFRA_ERROR_TYPES:
+            infra_errors += 1
+            if normalized_mode == "real" and max_infra_errors > 0 and infra_errors >= max_infra_errors:
+                aborted = True
+                logger.error(
+                    "连续基础设施错误达到上限（%d），提前终止真实评测",
+                    max_infra_errors,
+                )
+                break
     summary = build_summary(results, dataset.get("scoring", {}), normalized_mode)
+    summary["requested_total"] = requested_total
+    summary["aborted"] = aborted
+    summary["infra_errors"] = infra_errors
+    if aborted:
+        summary["gate_passed"] = False
     output = {
         "metadata": {
             "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -972,6 +1062,11 @@ def print_summary(summary: dict[str, Any]) -> None:
     if not summary["model_metrics_valid"]:
         print("注意：replay 仅验证评测管线，以下分数不是模型能力指标。")
     print("=" * 68)
+    if summary.get("aborted"):
+        print(
+            f"基础设施错误达到上限，已提前终止："
+            f"完成 {summary['total']}/{summary['requested_total']} 条。"
+        )
     print(
         f"用例 {summary['total']} | 通过 {summary['passed']} | "
         f"失败 {summary['failed']} | 运行错误 {summary['errors']}"
@@ -1016,6 +1111,17 @@ def main() -> int:
     )
     parser.add_argument("--dimensions", help="维度列表，如 D1,D2,D8")
     parser.add_argument("--priority", choices=["P0", "P1", "P2", "P3"])
+    parser.add_argument(
+        "--skip-preflight",
+        action="store_true",
+        help="跳过真实模型连通性预检（不推荐）",
+    )
+    parser.add_argument(
+        "--max-infra-errors",
+        type=int,
+        default=3,
+        help="真实评测最多容忍的模型服务错误数，0 表示不提前终止",
+    )
     args = parser.parse_args()
     dimensions = args.dimensions.split(",") if args.dimensions else None
     try:
@@ -1026,6 +1132,8 @@ def main() -> int:
                 dimensions=dimensions,
                 priority=args.priority,
                 output_path=args.output,
+                preflight=not args.skip_preflight,
+                max_infra_errors=args.max_infra_errors,
             )
         )
     except ValueError as exc:

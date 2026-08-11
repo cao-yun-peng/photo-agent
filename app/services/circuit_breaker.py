@@ -99,6 +99,12 @@ class CircuitBreaker:
                 self.failure_count,
             )
 
+    def reset(self) -> None:
+        """清空运行状态；主要用于相互隔离的评测用例和运维恢复。"""
+        self.failure_count = 0
+        self.state = "closed"
+        self.last_failure_time = 0.0
+
     def to_dict(self) -> dict[str, Any]:
         """返回当前状态，供健康检查使用。"""
         return {

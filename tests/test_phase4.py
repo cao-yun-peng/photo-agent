@@ -178,6 +178,19 @@ def test_circuit_breaker_to_dict() -> None:
     assert "last_failure_time" in d
 
 
+def test_circuit_breaker_reset_clears_runtime_state() -> None:
+    cb = CircuitBreaker("agent", failure_threshold=1, recovery_interval=300)
+    cb.failure_count = 3
+    cb.state = "open"
+    cb.last_failure_time = 123.0
+
+    cb.reset()
+
+    assert cb.failure_count == 0
+    assert cb.state == "closed"
+    assert cb.last_failure_time == 0.0
+
+
 # ------------------------------------------------------------------
 # Redis 分布式锁
 # ------------------------------------------------------------------

@@ -1,11 +1,17 @@
 """评测器自身的回归测试。"""
 from __future__ import annotations
 
+from unittest.mock import AsyncMock, patch
+
+import pytest
+
 from scripts.agent_eval import (
     TestCaseResult as EvalCaseResult,
     _parameter_matches,
     build_summary,
     evaluate_test_case,
+    run_single_test,
+    validate_real_connectivity,
 )
 
 
@@ -60,3 +66,43 @@ def test_error_codes_are_globally_unique() -> None:
 
     assert INVALID_PARAMS.code != AUTH_JWT_EXPIRED.code
     assert get_error_code(INVALID_PARAMS.code) is INVALID_PARAMS
+
+
+@pytest.mark.asyncio
+async def test_degraded_llm_uses_stub_and_is_counted_as_infra_error() -> None:
+    from app.services.circuit_breaker import ServiceDegradedError
+
+    test_case = {
+        "id": "TC-INFRA",
+        "dimension": "D1",
+        "priority": "P0",
+        "user_query": "找猫的照片",
+        "context": {"photos_available": True},
+        "expected": {
+            "expected_tools": ["search_photos", "final_answer"],
+            "expected_final_status": "completed",
+        },
+        "rubric": {"pass_threshold": 0.8},
+    }
+    with patch(
+        "app.services.agent._llm_decide",
+        new=AsyncMock(
+            side_effect=ServiceDegradedError("dashscope_chat", "circuit open")
+        ),
+    ):
+        result = await run_single_test(test_case, {"photos": []}, mode="real")
+
+    assert result.error_type == "model_service_degraded"
+    assert result.error
+    assert not result.passed
+    assert any(call["tool"] == "browse_candidates" for call in result.tool_calls)
+
+
+@pytest.mark.asyncio
+async def test_real_connectivity_preflight_reports_exception_type() -> None:
+    with patch(
+        "app.services.agent._llm_decide",
+        new=AsyncMock(side_effect=TimeoutError()),
+    ):
+        with pytest.raises(ValueError, match="TimeoutError"):
+            await validate_real_connectivity()

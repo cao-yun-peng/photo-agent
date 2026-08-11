@@ -37,7 +37,6 @@ from app.services.query_parser import parse_query
 logger = logging.getLogger(__name__)
 
 # DashScope Chat API（兼容 OpenAI 格式，支持 function calling）
-_CHAT_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
 _CHAT_TIMEOUT = httpx.Timeout(30.0, connect=5.0)
 
 # 默认系统 Prompt，定义 Agent 的行为边界
@@ -514,8 +513,12 @@ async def _llm_decide(
             "Content-Type": "application/json",
         }
 
-        async with httpx.AsyncClient(timeout=_CHAT_TIMEOUT) as client:
-            resp = await client.post(_CHAT_URL, json=payload, headers=headers)
+        async with httpx.AsyncClient(timeout=_CHAT_TIMEOUT, trust_env=False) as client:
+            resp = await client.post(
+                settings.dashscope_chat_url,
+                json=payload,
+                headers=headers,
+            )
 
         if resp.status_code != 200:
             raise RuntimeError(f"Agent LLM HTTP {resp.status_code}: {resp.text[:300]}")
@@ -650,8 +653,15 @@ class PhotoAgent:
                 break
             except Exception as exc:
                 logger.exception("Agent LLM decision failed")
-                final_message = f"决策服务暂时不可用：{exc}，请稍后再试。"
-                emit("error", {"message": final_message})
+                detail = str(exc) or type(exc).__name__
+                final_message = f"决策服务暂时不可用：{detail}，请稍后再试。"
+                emit(
+                    "error",
+                    {
+                        "message": final_message,
+                        "error_type": type(exc).__name__,
+                    },
+                )
                 break
 
             reasoning = decision.get("content", "")

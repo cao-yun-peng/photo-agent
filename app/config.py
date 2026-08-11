@@ -36,6 +36,9 @@ class Settings(BaseSettings):
 
     # DashScope
     dashscope_api_key: str = ""
+    dashscope_chat_url: str = (
+        "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    )
     qwen_vl_model: str = "qwen-vl-plus"
     qwen_embedding_model: str = "text-embedding-v3"
     # Agent 决策用的文本模型（支持 function calling）
