@@ -652,8 +652,8 @@ def test_health_endpoint_returns_breaker_status() -> None:
     from app.main import app
 
     with patch(
-        "app.main.get_redis",
-        new=AsyncMock(return_value=FakeRedis()),
+        "app.main._dependency_checks",
+        new=AsyncMock(return_value={"redis": "ok", "database": "ok"}),
     ):
         client = TestClient(app)
         response = client.get("/health")
@@ -672,12 +672,11 @@ def test_health_endpoint_degraded_when_redis_down() -> None:
 
     from app.main import app
 
-    async def broken_redis() -> FakeRedis:
-        raise RuntimeError("redis down")
-
     with patch(
-        "app.main.get_redis",
-        new=broken_redis,
+        "app.main._dependency_checks",
+        new=AsyncMock(
+            return_value={"redis": "error: redis down", "database": "ok"}
+        ),
     ):
         client = TestClient(app)
         response = client.get("/health")
@@ -686,6 +685,36 @@ def test_health_endpoint_degraded_when_redis_down() -> None:
     data = response.json()
     assert data["status"] == "degraded"
     assert "error" in data["redis"]
+
+
+def test_liveness_does_not_require_dependencies() -> None:
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    client = TestClient(app)
+    response = client.get("/live")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
+def test_readiness_returns_503_when_dependency_is_down() -> None:
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    with patch(
+        "app.main._dependency_checks",
+        new=AsyncMock(
+            return_value={"redis": "ok", "database": "error: database down"}
+        ),
+    ):
+        client = TestClient(app)
+        response = client.get("/ready")
+
+    assert response.status_code == 503
+    assert response.json()["status"] == "not_ready"
 
 
 # ------------------------------------------------------------------

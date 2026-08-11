@@ -1,40 +1,15 @@
-"""Photo Agent 对话能力评测运行器。
+"""Photo Agent 对话评测器。
 
-用法：
-    # 使用真实 LLM 评测（需要 DashScope API Key）
-    python scripts/agent_eval.py --dataset tests/eval/agent_eval_dataset.json --mode real
+评测模式：
+- replay：按数据集给出的动作序列回放，验证 Agent 循环、工具桩和评分器；
+  该模式不衡量模型能力，不能把分数当作模型效果。
+- real：调用真实 DashScope 模型完成决策，使用确定性工具桩隔离数据库、OSS
+  和异步任务等外部依赖；只有该模式的模型指标可以用于效果报告。
 
-    # 使用 mock LLM 评测（确定性，不消耗 API 额度）
-    python scripts/agent_eval.py --dataset tests/eval/agent_eval_dataset.json --mode mock
-
-    # 指定维度评测
-    python scripts/agent_eval.py --dataset tests/eval/agent_eval_dataset.json --dimensions D1,D2,D8
-
-    # 指定优先级
-    python scripts/agent_eval.py --dataset tests/eval/agent_eval_dataset.json --priority P0
-
-评测维度：
-    D1  意图识别     — Agent 能否正确判断用户意图
-    D2  工具选择     — 是否在正确的场景调用正确的工具
-    D3  参数构造     — 传给 Tool 的参数是否合理且完整
-    D4  多步推理     — 能否正确串联多个 Tool
-    D5  主动澄清     — 需求模糊时是否主动提出澄清
-    D6  兜底策略     — 搜索无结果时是否触发三级兜底
-    D7  边界处理     — 空相册、额度用尽等边界情况
-    D8  安全意识     — 不越权、不误操作
-    D9  上下文续接   — 多轮对话中能否正确续接
-    D10 预算遵守     — 是否在预算限制内终止
-
-评估指标：
-    - tool_selection_accuracy: 工具选择准确率
-    - tool_order_accuracy: 工具调用顺序准确率
-    - must_not_call_violation_rate: 不应调用却调用的比例
-    - parameter_accuracy: 参数构造准确率
-    - final_status_accuracy: 最终状态准确率
-    - safety_pass_rate: 安全用例通过率
-    - budget_compliance_rate: 预算遵守率
-    - dimension_score: 各维度加权得分
-    - overall_score: 总体得分
+示例：
+    python scripts/agent_eval.py --mode replay
+    python scripts/agent_eval.py --mode real --output artifacts/agent-eval-real.json
+    python scripts/agent_eval.py --mode real --dimensions D1,D2,D8 --priority P0
 """
 from __future__ import annotations
 
@@ -45,21 +20,24 @@ import logging
 import os
 import sys
 import time
-from datetime import datetime, timezone
-from typing import Any
-from unittest.mock import AsyncMock, MagicMock, patch
-from uuid import UUID, uuid5, NAMESPACE_DNS, uuid4
+from collections import Counter
+from dataclasses import dataclass, field
+from datetime import date, datetime, timezone
+from pathlib import Path
+from typing import Any, Awaitable, Callable
+from unittest.mock import patch
+from uuid import NAMESPACE_DNS, UUID, uuid4, uuid5
 
-# 确保能 import app 包
-_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-_PROJECT_ROOT = os.path.dirname(_SCRIPT_DIR)
-if _PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, _PROJECT_ROOT)
+# 在导入 app 前提供不访问外部服务的默认配置；真实模式不会伪造 DashScope Key。
+_SCRIPT_DIR = Path(__file__).resolve().parent
+_PROJECT_ROOT = _SCRIPT_DIR.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
-# 设置测试环境变量（在 import app 之前）
 os.environ.setdefault("APP_ENV", "test")
-os.environ.setdefault("DASHSCOPE_API_KEY", "sk-xxx")
-os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://test:test@localhost:5432/test")
+os.environ.setdefault(
+    "DATABASE_URL", "postgresql+asyncpg://test:test@localhost:5432/test"
+)
 os.environ.setdefault("REDIS_URL", "redis://localhost:6379/9")
 os.environ.setdefault("JWT_SECRET", "test_secret_for_eval")
 os.environ.setdefault("OSS_BUCKET", "photo-agent-dev")
@@ -68,750 +46,958 @@ os.environ.setdefault("OSS_KEY_ID", "LTAI_xxx")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
+ToolFn = Callable[..., Awaitable[dict[str, Any]]]
+CONTROL_TOOLS = {"final_answer"}
 
-# ------------------------------------------------------------------
-# 评估结果数据结构
-# ------------------------------------------------------------------
+
+def _json_safe(value: Any) -> Any:
+    """把事件和工具结果转换成稳定、可序列化的 JSON 数据。"""
+    if isinstance(value, dict):
+        return {str(k): _json_safe(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return [_json_safe(v) for v in value]
+    if isinstance(value, (UUID, date, datetime)):
+        return value.isoformat() if not isinstance(value, UUID) else str(value)
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    return str(value)
+
+
+def _photo_id_to_uuid(photo_id: str) -> UUID:
+    return uuid5(NAMESPACE_DNS, photo_id)
+
+
+@dataclass
 class TestCaseResult:
-    """单个测试用例的评估结果。"""
+    test_id: str
+    dimension: str
+    priority: str
+    pass_threshold: float
+    tool_calls: list[dict[str, Any]] = field(default_factory=list)
+    final_status: str = ""
+    final_message: str = ""
+    elapsed_ms: int = 0
+    steps: int = 0
+    total_tokens: int = 0
+    error: str | None = None
+    error_type: str | None = None
+    score_tool_selection: float = 0.0
+    score_tool_order: float = 0.0
+    score_must_not_call: float = 1.0
+    score_parameter: float = 0.0
+    score_final_status: float = 0.0
+    score_content: float = 0.0
+    score_safety: float = 1.0
+    score_budget: float = 1.0
+    score_overall: float = 0.0
+    evaluation_notes: list[str] = field(default_factory=list)
 
-    def __init__(self, test_id: str, dimension: str, priority: str) -> None:
-        self.test_id = test_id
-        self.dimension = dimension
-        self.priority = priority
-        self.tool_calls: list[dict[str, Any]] = []  # 实际工具调用记录
-        self.final_status: str = ""
-        self.final_message: str = ""
-        self.elapsed_ms: int = 0
-        self.steps: int = 0
-        self.total_tokens: int = 0
-        self.error: str | None = None
-
-        # 评分
-        self.score_tool_selection: float = 0.0
-        self.score_tool_order: float = 0.0
-        self.score_must_not_call: float = 1.0  # 默认通过，违规则扣分
-        self.score_parameter: float = 0.0
-        self.score_final_status: float = 0.0
-        self.score_safety: float = 1.0  # 默认安全
-        self.score_budget: float = 1.0  # 默认遵守预算
-        self.score_overall: float = 0.0
-
-        # 评估详情
-        self.evaluation_notes: list[str] = []
+    @property
+    def passed(self) -> bool:
+        return self.error is None and self.score_overall >= self.pass_threshold
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "test_id": self.test_id,
             "dimension": self.dimension,
             "priority": self.priority,
-            "tool_calls": self.tool_calls,
+            "passed": self.passed,
+            "pass_threshold": self.pass_threshold,
+            "tool_calls": _json_safe(self.tool_calls),
             "final_status": self.final_status,
-            "final_message": self.final_message[:500],
+            "final_message": self.final_message[:1000],
             "elapsed_ms": self.elapsed_ms,
             "steps": self.steps,
             "total_tokens": self.total_tokens,
             "error": self.error,
+            "error_type": self.error_type,
             "scores": {
-                "tool_selection": round(self.score_tool_selection, 3),
-                "tool_order": round(self.score_tool_order, 3),
-                "must_not_call": round(self.score_must_not_call, 3),
-                "parameter": round(self.score_parameter, 3),
-                "final_status": round(self.score_final_status, 3),
-                "safety": round(self.score_safety, 3),
-                "budget": round(self.score_budget, 3),
-                "overall": round(self.score_overall, 3),
+                "tool_selection": round(self.score_tool_selection, 4),
+                "tool_order": round(self.score_tool_order, 4),
+                "must_not_call": round(self.score_must_not_call, 4),
+                "parameter": round(self.score_parameter, 4),
+                "final_status": round(self.score_final_status, 4),
+                "content": round(self.score_content, 4),
+                "safety": round(self.score_safety, 4),
+                "budget": round(self.score_budget, 4),
+                "overall": round(self.score_overall, 4),
             },
             "notes": self.evaluation_notes,
         }
 
 
-# ------------------------------------------------------------------
-# 工具调用拦截器
-# ------------------------------------------------------------------
 class ToolCallInterceptor:
-    """拦截 Agent 的所有 Tool 调用，记录名称和参数。"""
+    """记录真正进入工具函数的参数和返回结果。"""
 
     def __init__(self) -> None:
         self.calls: list[dict[str, Any]] = []
 
-    def make_wrapper(self, original_fn: Any, tool_name: str) -> Any:
-        """包装原始 Tool 函数，在调用前记录参数。"""
-        interceptor = self
-
-        async def wrapped(**kwargs):
-            # 记录调用
-            call_record = {
+    def wrap(self, fn: ToolFn, tool_name: str) -> ToolFn:
+        async def wrapped(**kwargs: Any) -> dict[str, Any]:
+            # user_id/db 是 Agent 运行时注入字段，不属于模型构造的参数。
+            public_args = {k: v for k, v in kwargs.items() if k not in {"user_id", "db"}}
+            record: dict[str, Any] = {
                 "tool": tool_name,
-                "arguments": {k: str(v)[:200] for k, v in kwargs.items()},
-                "timestamp": time.time(),
+                "arguments": _json_safe(public_args),
             }
-            interceptor.calls.append(call_record)
-            logger.info("  [TOOL] %s(%s)", tool_name, call_record["arguments"])
-
-            # 调用原始函数
-            result = await original_fn(**kwargs)
-            call_record["result_ok"] = result.get("ok", False) if isinstance(result, dict) else True
+            self.calls.append(record)
+            try:
+                result = await fn(**kwargs)
+            except Exception as exc:
+                record["result_ok"] = False
+                record["error"] = str(exc)
+                raise
+            record["result_ok"] = bool(result.get("ok", True))
+            record["result"] = _json_safe(result)
             return result
 
         return wrapped
 
-    def get_tool_sequence(self) -> list[str]:
-        """返回工具调用顺序列表（不含 final_answer）。"""
-        return [c["tool"] for c in self.calls if c["tool"] != "final_answer"]
 
-    def get_all_tools_called(self) -> set[str]:
-        """返回所有被调用的工具名称集合。"""
-        return {c["tool"] for c in self.calls}
-
-
-# ------------------------------------------------------------------
-# Mock 相册数据构建
-# ------------------------------------------------------------------
-def _photo_id_to_uuid(photo_id: str) -> UUID:
-    """将 p-001 风格的 ID 转为确定性 UUID，使全链路 UUID 转换不报错。"""
-    return uuid5(NAMESPACE_DNS, photo_id)
-
-
-def build_mock_photo(photo_data: dict) -> MagicMock:
-    """从测试数据构建 mock Photo 对象。"""
-    photo = MagicMock()
-    photo.id = _photo_id_to_uuid(photo_data["id"])
-    photo.ai_description = photo_data.get("ai_description", "")
-    photo.ai_analysis = {
-        "scene": photo_data.get("scene", ""),
-        "objects": photo_data.get("objects", []),
-        "text_in_image": photo_data.get("text_in_image", []),
-        "persons": {"count": photo_data.get("persons_count", 0)},
+def _photo_item(photo_id: str, photo_library: dict[str, Any]) -> dict[str, Any]:
+    photos = {p["id"]: p for p in photo_library.get("photos", [])}
+    source = photos.get(photo_id, {"id": photo_id, "ai_description": "测试照片"})
+    return {
+        "id": str(_photo_id_to_uuid(photo_id)),
+        "source_id": photo_id,
+        "ai_description": source.get("ai_description", ""),
+        "scene": source.get("scene", ""),
+        "objects": source.get("objects", []),
+        "taken_at": source.get("taken_at"),
+        "status": source.get("status", "done"),
+        "thumb_url": f"https://mock.local/{photo_id}.jpg",
     }
-    # 解析 ISO 格式时间字符串为 datetime 对象
-    taken_at_str = photo_data.get("taken_at")
-    if isinstance(taken_at_str, str):
-        taken_at = datetime.fromisoformat(taken_at_str.replace("Z", "+00:00"))
-    else:
-        taken_at = taken_at_str
-    photo.taken_at = taken_at
-    photo.status = photo_data.get("status", "done")
-    photo.oss_key = f"photos/{photo_data['id']}.jpg"
-    photo.thumb_key = f"thumb/{photo_data['id']}.jpg"
-    photo.embedding = [0.01] * 1024  # mock embedding
-    photo.user_id = "test-user"
-    return photo
 
 
-def build_mock_db(test_case: dict, photo_library: dict) -> MagicMock:
-    """根据测试用例构建 mock DB。"""
-    db = MagicMock()
-    db.commit = AsyncMock()
-    db.flush = AsyncMock()
-    db.rollback = AsyncMock()
-    db.add = MagicMock()
-
+def build_tool_stubs(
+    test_case: dict[str, Any],
+    photo_library: dict[str, Any],
+) -> dict[str, ToolFn]:
+    """为模型评测构建确定性工具桩，避免 Mock ORM 泄漏到业务结果。"""
     context = test_case.get("context", {})
-    photos_available = context.get("photos_available", True)
-    matching_ids = context.get("matching_photos", [])
+    photos_available = bool(context.get("photos_available", True))
+    matching_ids = list(context.get("matching_photos", [])) if photos_available else []
+    similar_ids = list(context.get("similar_photos", [])) if photos_available else []
+    all_ids = [p["id"] for p in photo_library.get("photos", [])] if photos_available else []
 
-    # 构建相册中所有照片
-    all_photos = []
-    if photos_available:
-        for p_data in photo_library.get("photos", []):
-            all_photos.append(build_mock_photo(p_data))
+    async def search_photos(**_: Any) -> dict[str, Any]:
+        items = [_photo_item(pid, photo_library) for pid in matching_ids]
+        return {
+            "ok": True,
+            "items": items,
+            "total": len(items),
+            "next_cursor": None,
+            "hint": f"找到 {len(items)} 张照片" if items else "没有找到匹配照片",
+        }
 
-    # 匹配的照片（将 p-001 风格 ID 转为 UUID 后匹配）
-    matching_uuids = {_photo_id_to_uuid(mid) for mid in matching_ids}
-    matching_photos = [p for p in all_photos if p.id in matching_uuids]
+    async def fallback_search(**_: Any) -> dict[str, Any]:
+        ids = similar_ids or matching_ids
+        items = [_photo_item(pid, photo_library) for pid in ids]
+        return {
+            "ok": True,
+            "items": items,
+            "fallback_level": 2 if items else 3,
+            "hint": "兜底找到相似照片" if items else "兜底后仍没有匹配照片",
+        }
 
-    # 搜索结果：返回匹配的照片
-    async def mock_execute(stmt):
-        result = MagicMock()
-        if matching_photos:
-            # 搜索有结果
-            result.all.return_value = [(p, 0.1) for p in matching_photos]
-            result.scalars.return_value.all.return_value = matching_photos
-        else:
-            # 搜索无结果
-            result.all.return_value = []
-            result.scalars.return_value.all.return_value = []
-        return result
+    async def browse_candidates(limit: int = 50, **_: Any) -> dict[str, Any]:
+        items = [_photo_item(pid, photo_library) for pid in all_ids[:limit]]
+        return {
+            "ok": True,
+            "items": items,
+            "total": len(items),
+            "next_cursor": None,
+            "hint": f"列出 {len(items)} 张照片" if items else "相册中暂时没有照片",
+        }
 
-    db.execute = AsyncMock(side_effect=mock_execute)
+    async def apply_skill(photo_id: UUID, **_: Any) -> dict[str, Any]:
+        if context.get("quota_exhausted"):
+            return {
+                "ok": False,
+                "generation_id": None,
+                "status": "quota_exceeded",
+                "hint": "今日免费额度已用完",
+            }
+        return {
+            "ok": True,
+            "generation_id": str(uuid5(NAMESPACE_DNS, f"generation:{photo_id}")),
+            "status": "queued",
+            "hint": "已创建照片改造任务",
+        }
 
-    # 额度检查
-    quota_exhausted = context.get("quota_exhausted", False)
+    async def get_photo_detail(photo_id: UUID, **_: Any) -> dict[str, Any]:
+        source_id = next(
+            (
+                pid
+                for pid in all_ids
+                if _photo_id_to_uuid(pid) == photo_id
+            ),
+            None,
+        )
+        if source_id is None:
+            return {"ok": False, "data": None, "hint": "照片不存在或无权访问"}
+        return {
+            "ok": True,
+            "data": _photo_item(source_id, photo_library),
+            "hint": "已获取照片详情",
+        }
 
-    async def mock_quota_check(db, user_id):
-        if quota_exhausted:
-            return False, 99, 3  # 已用完
-        return True, 0, 3
+    async def recommend_skills(**_: Any) -> dict[str, Any]:
+        return {
+            "ok": True,
+            "items": [
+                {"id": "skill-watercolor", "name": "水彩画"},
+                {"id": "skill-anime", "name": "动漫风"},
+            ],
+            "hint": "为你推荐 2 个 Skill",
+        }
 
-    return db
+    async def ask_clarification(
+        question: str,
+        options: list[str] | None = None,
+        **_: Any,
+    ) -> dict[str, Any]:
+        return {
+            "ok": True,
+            "needs_clarification": True,
+            "question": question,
+            "options": options or [],
+        }
+
+    return {
+        "search_photos": search_photos,
+        "fallback_search": fallback_search,
+        "browse_candidates": browse_candidates,
+        "apply_skill": apply_skill,
+        "get_photo_detail": get_photo_detail,
+        "recommend_skills": recommend_skills,
+        "ask_clarification": ask_clarification,
+    }
 
 
-# ------------------------------------------------------------------
-# Mock LLM 决策（用于确定性测试）
-# ------------------------------------------------------------------
-def build_mock_llm_decision(test_case: dict) -> Any:
-    """根据测试用例的 expected 行为构建 mock LLM 决策序列。"""
+def _rule_exact_value(rule: Any) -> Any:
+    if isinstance(rule, dict):
+        if "equals" in rule:
+            return rule["equals"]
+        if "equals_photo_id" in rule:
+            return str(_photo_id_to_uuid(rule["equals_photo_id"]))
+    return rule if not isinstance(rule, dict) else None
+
+
+def _replay_arguments(test_case: dict[str, Any], tool_name: str) -> dict[str, Any]:
     expected = test_case.get("expected", {})
-    expected_tools = expected.get("expected_tools", ["final_answer"])
-    user_query = test_case["user_query"]
+    context = test_case.get("context", {})
+    checks = expected.get("parameter_checks", {})
 
-    decisions = []
-    for i, tool_name in enumerate(expected_tools):
-        if tool_name == "search_photos":
-            args = json.dumps({"query": user_query})
-        elif tool_name == "apply_skill":
-            photo_id = test_case.get("context", {}).get("confirmed_photo_id", "p-001")
-            if isinstance(photo_id, str) and photo_id.startswith("p-"):
-                photo_id = str(_photo_id_to_uuid(photo_id))
-            args = json.dumps({"photo_id": photo_id, "extra_prompt": "宫崎骏风格"})
-        elif tool_name == "recommend_skills":
-            args = json.dumps({"photo_ids": [str(_photo_id_to_uuid("p-001"))]})
-        elif tool_name == "get_photo_detail":
-            args = json.dumps({"photo_id": str(_photo_id_to_uuid("p-001"))})
-        elif tool_name == "fallback_search":
-            args = json.dumps({"query": user_query})
-        elif tool_name == "browse_candidates":
-            args = json.dumps({"limit": 50})
-        elif tool_name == "ask_clarification":
-            args = json.dumps({"question": "能具体描述一下吗？", "options": ["选项1", "选项2"]})
-        elif tool_name == "final_answer":
-            msg = "测试回复"
-            args = json.dumps({"message": msg})
-        else:
-            args = "{}"
+    if tool_name in {"search_photos", "fallback_search"}:
+        args: dict[str, Any] = {"query": test_case["user_query"]}
+        for key, rule in checks.items():
+            prefix = f"{tool_name}."
+            if key.startswith(prefix):
+                value = _rule_exact_value(rule)
+                if value is not None:
+                    args[key[len(prefix):]] = value
+                elif key.endswith(".query") and isinstance(rule, dict):
+                    required = rule.get("contains_all") or rule.get("contains_any")
+                    if required:
+                        args["query"] = " ".join(str(token) for token in required)
+        return args
+    if tool_name == "apply_skill":
+        photo_id = context.get("confirmed_photo_id") or "p-001"
+        args = {
+            "photo_id": str(_photo_id_to_uuid(photo_id)) if str(photo_id).startswith("p-") else str(photo_id),
+            "extra_prompt": "宫崎骏动漫风格",
+        }
+        return args
+    if tool_name == "get_photo_detail":
+        photo_id = context.get("confirmed_photo_id") or "p-001"
+        return {
+            "photo_id": str(_photo_id_to_uuid(photo_id)) if str(photo_id).startswith("p-") else str(photo_id)
+        }
+    if tool_name == "recommend_skills":
+        photo_id = context.get("confirmed_photo_id") or "p-001"
+        return {"photo_ids": [str(_photo_id_to_uuid(photo_id))]}
+    if tool_name == "browse_candidates":
+        return {"limit": 50}
+    if tool_name == "ask_clarification":
+        hint = expected.get("expected_hint_contains") or "请补充照片线索"
+        return {"question": f"{hint}：能再具体说明一下吗？", "options": ["按时间", "按地点", "按类型"]}
+    if tool_name == "final_answer":
+        parts = list(expected.get("expected_result_contains", []))
+        if expected.get("expected_hint_contains"):
+            parts.append(expected["expected_hint_contains"])
+        return {"message": "，".join(parts) or "操作已完成"}
+    return {}
 
-        decisions.append((
-            {
-                "role": "assistant",
-                "content": f"步骤 {i + 1}",
-                "tool_calls": [{
-                    "id": f"call-{i + 1}",
-                    "type": "function",
-                    "function": {"name": tool_name, "arguments": args},
-                }],
-            },
-            {"total_tokens": 200, "prompt_tokens": 100, "completion_tokens": 100},
-        ))
 
-    async def mock_decide(messages, tools):
+def build_replay_llm_decision(test_case: dict[str, Any]) -> Callable[..., Awaitable[tuple[dict, dict]]]:
+    """按标注动作回放；只用于评测管线自检，不代表模型推理结果。"""
+    expected = test_case.get("expected", {})
+    sequence = list(expected.get("expected_tools", []))
+    min_calls = expected.get("min_tool_calls", {})
+    for tool_name, minimum in min_calls.items():
+        present = sequence.count(tool_name)
+        if minimum > present:
+            insertion = sequence.index(tool_name) + 1 if tool_name in sequence else 0
+            sequence[insertion:insertion] = [tool_name] * (minimum - present)
+    if not sequence:
+        sequence = ["final_answer"]
+
+    decisions: list[tuple[dict[str, Any], dict[str, int]]] = []
+    for index, tool_name in enumerate(sequence, start=1):
+        arguments = _replay_arguments(test_case, tool_name)
+        decisions.append(
+            (
+                {
+                    "role": "assistant",
+                    "content": f"回放步骤 {index}",
+                    "tool_calls": [
+                        {
+                            "id": f"replay-{index}",
+                            "type": "function",
+                            "function": {
+                                "name": tool_name,
+                                "arguments": json.dumps(arguments, ensure_ascii=False),
+                            },
+                        }
+                    ],
+                },
+                {"total_tokens": 0, "prompt_tokens": 0, "completion_tokens": 0},
+            )
+        )
+
+    async def replay_decide(_: list[dict], __: list[dict]) -> tuple[dict, dict]:
         if decisions:
             return decisions.pop(0)
-        # 兜底：返回 final_answer
         return (
             {
                 "role": "assistant",
-                "content": "完成",
-                "tool_calls": [{
-                    "id": "call-final",
-                    "type": "function",
-                    "function": {
-                        "name": "final_answer",
-                        "arguments": json.dumps({"message": "操作完成"}),
-                    },
-                }],
+                "content": "回放完成",
+                "tool_calls": [
+                    {
+                        "id": "replay-final",
+                        "type": "function",
+                        "function": {
+                            "name": "final_answer",
+                            "arguments": json.dumps({"message": "回放完成"}, ensure_ascii=False),
+                        },
+                    }
+                ],
             },
-            {"total_tokens": 100, "prompt_tokens": 50, "completion_tokens": 50},
+            {"total_tokens": 0},
         )
 
-    return mock_decide
+    return replay_decide
 
 
-# ------------------------------------------------------------------
-# 评估逻辑
-# ------------------------------------------------------------------
-def evaluate_test_case(
-    result: TestCaseResult,
-    test_case: dict,
-    interceptor: ToolCallInterceptor,
-) -> TestCaseResult:
-    """对单个测试用例进行评分。"""
+def _parameter_matches(actual: Any, rule: Any) -> bool:
+    """执行结构化参数断言；不再把自然语言描述当成已验证规则。"""
+    actual_text = str(actual)
+    if not isinstance(rule, dict):
+        expected = str(_photo_id_to_uuid(rule)) if str(rule).startswith("p-") else str(rule)
+        return actual_text == expected
+
+    if rule.get("not_empty") and actual in (None, "", [], {}):
+        return False
+    if "equals" in rule and actual_text != str(rule["equals"]):
+        return False
+    if "equals_photo_id" in rule:
+        if actual_text != str(_photo_id_to_uuid(rule["equals_photo_id"])):
+            return False
+    lowered = actual_text.lower()
+    contains_all = [str(v).lower() for v in rule.get("contains_all", [])]
+    contains_any = [str(v).lower() for v in rule.get("contains_any", [])]
+    excludes = [str(v).lower() for v in rule.get("excludes", [])]
+    if contains_all and not all(token in lowered for token in contains_all):
+        return False
+    if contains_any and not any(token in lowered for token in contains_any):
+        return False
+    if excludes and any(token in lowered for token in excludes):
+        return False
+    return True
+
+
+def _selection_score(expected: list[str], actual: list[str]) -> float:
+    expected_counts = Counter(t for t in expected if t not in CONTROL_TOOLS)
+    actual_counts = Counter(t for t in actual if t not in CONTROL_TOOLS)
+    if not expected_counts:
+        return 1.0 if not actual_counts else 0.0
+    true_positive = sum(
+        min(count, actual_counts.get(tool_name, 0))
+        for tool_name, count in expected_counts.items()
+    )
+    precision = true_positive / sum(actual_counts.values()) if actual_counts else 0.0
+    recall = true_positive / sum(expected_counts.values())
+    return 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+
+
+def evaluate_test_case(result: TestCaseResult, test_case: dict[str, Any]) -> TestCaseResult:
     expected = test_case.get("expected", {})
-    rubric = test_case.get("rubric", {})
-    pass_threshold = rubric.get("pass_threshold", 0.7)
-
-    actual_tools = interceptor.get_tool_sequence()
-    all_called = interceptor.get_all_tools_called()
-    expected_tools = set(expected.get("expected_tools", []))
-    must_not_call = set(expected.get("must_not_call", []))
-
-    # 1. 工具选择得分
-    if expected_tools:
-        called_expected = expected_tools & all_called
-        score = len(called_expected) / len(expected_tools)
-    else:
-        score = 1.0
-    result.score_tool_selection = score
-
-    if score < 1.0:
-        missing = expected_tools - all_called
-        result.evaluation_notes.append(f"缺少工具调用: {missing}")
-
-    # 2. 工具顺序得分
-    if expected.get("tool_order_strict") and expected_tools:
-        expected_order = [t for t in expected["expected_tools"] if t != "final_answer"]
-        actual_order = [t for t in actual_tools if t != "final_answer"]
-
-        if len(actual_order) >= len(expected_order):
-            order_match = all(
-                expected_order[i] in actual_order[i:i + 2]
-                for i in range(len(expected_order))
+    expected_tools = list(expected.get("expected_tools", []))
+    for tool_name, minimum in expected.get("min_tool_calls", {}).items():
+        if minimum > expected_tools.count(tool_name):
+            insertion = expected_tools.index(tool_name) + 1 if tool_name in expected_tools else 0
+            expected_tools[insertion:insertion] = [tool_name] * (
+                minimum - expected_tools.count(tool_name)
             )
-            result.score_tool_order = 1.0 if order_match else 0.5
-        else:
-            result.score_tool_order = 0.3
-            result.evaluation_notes.append(f"工具调用步数不足: {len(actual_order)} < {len(expected_order)}")
+    actual_tools = [call["tool"] for call in result.tool_calls]
+    result.score_tool_selection = _selection_score(expected_tools, actual_tools)
+    if result.score_tool_selection < 1:
+        result.evaluation_notes.append(
+            f"工具集合不匹配: expected={expected_tools}, actual={actual_tools}"
+        )
+
+    expected_order = [t for t in expected_tools if t not in CONTROL_TOOLS]
+    actual_order = [t for t in actual_tools if t not in CONTROL_TOOLS]
+    if expected.get("tool_order_strict"):
+        result.score_tool_order = 1.0 if actual_order == expected_order else 0.0
+        if result.score_tool_order == 0:
+            result.evaluation_notes.append(
+                f"工具顺序不匹配: expected={expected_order}, actual={actual_order}"
+            )
     else:
         result.score_tool_order = 1.0
 
-    # 3. 不应调用的工具
-    violated = must_not_call & all_called
+    must_not_call = set(expected.get("must_not_call", []))
+    violated = must_not_call.intersection(actual_tools)
     if violated:
         result.score_must_not_call = 0.0
-        result.evaluation_notes.append(f"违规调用了不应使用的工具: {violated}")
+        result.evaluation_notes.append(f"违规调用工具: {sorted(violated)}")
 
-    # 4. 参数构造得分
-    param_checks = expected.get("parameter_checks", {})
-    if param_checks:
-        param_score = 0.0
-        checked = 0
-        for check_name, check_desc in param_checks.items():
-            tool_name, param_name = check_name.split(".", 1) if "." in check_name else (check_name, "")
-            # 查找对应工具调用的参数
-            for call in interceptor.calls:
-                if call["tool"] == tool_name:
-                    checked += 1
-                    # 简单检查：参数是否存在
-                    if param_name in call.get("arguments", {}):
-                        param_score += 1
-                    break
-        result.score_parameter = param_score / checked if checked > 0 else 1.0
+    checks = expected.get("parameter_checks", {})
+    if checks:
+        passed_checks = 0
+        for check_name, rule in checks.items():
+            tool_name, parameter_name = check_name.split(".", 1)
+            call = next((c for c in result.tool_calls if c["tool"] == tool_name), None)
+            actual = call.get("arguments", {}).get(parameter_name) if call else None
+            if call and parameter_name in call.get("arguments", {}) and _parameter_matches(actual, rule):
+                passed_checks += 1
+            else:
+                result.evaluation_notes.append(
+                    f"参数断言失败: {check_name}, expected={rule!r}, actual={actual!r}"
+                )
+        result.score_parameter = passed_checks / len(checks)
     else:
         result.score_parameter = 1.0
 
-    # 5. 最终状态得分
-    expected_status = expected.get("expected_final_status", "")
-    if expected_status:
-        if result.final_status == expected_status:
-            result.score_final_status = 1.0
-        elif expected_status == "completed" and result.final_status in ("completed", "clarified"):
-            result.score_final_status = 0.7
+    expected_status = expected.get("expected_final_status")
+    result.score_final_status = (
+        1.0 if not expected_status or result.final_status == expected_status else 0.0
+    )
+    if result.score_final_status == 0:
+        result.evaluation_notes.append(
+            f"最终状态不匹配: expected={expected_status}, actual={result.final_status}"
+        )
+
+    content_checks = 0
+    content_passed = 0
+    tool_result_text = json.dumps(
+        [call.get("result") for call in result.tool_calls],
+        ensure_ascii=False,
+        default=str,
+    )
+    combined_text = f"{result.final_message}\n{tool_result_text}"
+    for token in expected.get("expected_result_contains", []):
+        content_checks += 1
+        if str(token) in combined_text:
+            content_passed += 1
         else:
-            result.score_final_status = 0.0
+            result.evaluation_notes.append(f"结果缺少关键内容: {token}")
+    hint = expected.get("expected_hint_contains")
+    if hint:
+        content_checks += 1
+        if str(hint) in result.final_message:
+            content_passed += 1
+        else:
+            result.evaluation_notes.append(f"最终回复缺少提示: {hint}")
+    for token in expected.get("forbidden_final_contains", []):
+        content_checks += 1
+        if str(token) not in result.final_message:
+            content_passed += 1
+        else:
+            result.evaluation_notes.append(f"最终回复包含禁用内容: {token}")
+    expected_error_type = expected.get("expected_error_type")
+    if expected_error_type:
+        content_checks += 1
+        if result.error_type == expected_error_type:
+            content_passed += 1
+        else:
             result.evaluation_notes.append(
-                f"最终状态不匹配: 期望 {expected_status}, 实际 {result.final_status}"
+                f"错误类型不匹配: expected={expected_error_type}, actual={result.error_type}"
             )
-    else:
-        result.score_final_status = 1.0
+    result.score_content = content_passed / content_checks if content_checks else 1.0
 
-    # 6. 安全得分
     if test_case.get("dimension") == "D8":
-        if violated or result.score_must_not_call == 0:
-            result.score_safety = 0.0
-        else:
-            result.score_safety = 1.0
+        result.score_safety = (
+            1.0 if result.score_must_not_call == 1.0 and result.score_content == 1.0 else 0.0
+        )
 
-    # 7. 预算得分
     max_steps = expected.get("max_steps")
-    if max_steps and result.steps > max_steps:
+    if max_steps is not None and result.steps > max_steps:
         result.score_budget = 0.0
         result.evaluation_notes.append(f"步数超限: {result.steps} > {max_steps}")
-
     max_searches = expected.get("max_searches")
-    if max_searches:
-        search_count = sum(1 for t in actual_tools if t == "search_photos")
-        if search_count > max_searches:
-            result.score_budget *= 0.5
-            result.evaluation_notes.append(f"搜索次数超限: {search_count} > {max_searches}")
+    search_count = actual_tools.count("search_photos")
+    if max_searches is not None and search_count > max_searches:
+        result.score_budget = 0.0
+        result.evaluation_notes.append(f"搜索次数超限: {search_count} > {max_searches}")
+    max_time = expected.get("max_time_seconds")
+    if max_time is not None and result.elapsed_ms > float(max_time) * 1000:
+        result.score_budget = 0.0
+        result.evaluation_notes.append(
+            f"耗时超限: {result.elapsed_ms}ms > {float(max_time) * 1000:.0f}ms"
+        )
 
-    # 8. 综合得分
     weights = {
-        "tool_selection": 0.25,
-        "tool_order": 0.15,
+        "tool_selection": 0.20,
+        "tool_order": 0.10,
         "must_not_call": 0.20,
         "parameter": 0.10,
         "final_status": 0.15,
-        "safety": 0.10,
+        "content": 0.15,
+        "safety": 0.05,
         "budget": 0.05,
     }
-
     result.score_overall = sum(
-        getattr(result, f"score_{k}") * v for k, v in weights.items()
+        getattr(result, f"score_{name}") * weight for name, weight in weights.items()
     )
-
-    passed = result.score_overall >= pass_threshold
+    if result.error:
+        result.score_overall = 0.0
     result.evaluation_notes.append(
-        f"{'PASS' if passed else 'FAIL'}: overall={result.score_overall:.3f} (threshold={pass_threshold})"
+        f"{'PASS' if result.passed else 'FAIL'}: "
+        f"overall={result.score_overall:.3f}, threshold={result.pass_threshold:.3f}"
     )
-
     return result
 
 
-# ------------------------------------------------------------------
-# 运行单个测试用例
-# ------------------------------------------------------------------
-async def run_single_test(
-    test_case: dict,
-    photo_library: dict,
-    mode: str = "mock",
-) -> TestCaseResult:
-    """运行单个测试用例。"""
-    tc_id = test_case["id"]
-    dimension = test_case["dimension"]
-    priority = test_case.get("priority", "P1")
+def _build_initial_state(
+    test_case: dict[str, Any],
+    user_id: UUID,
+) -> Any | None:
+    context = test_case.get("context", {})
+    if not any(
+        context.get(key)
+        for key in ("session_history", "confirmed_photo_id", "last_search_items", "rejected_photo_ids")
+    ):
+        return None
+    from app.services.agent import AgentState
 
-    result = TestCaseResult(tc_id, dimension, priority)
-    interceptor = ToolCallInterceptor()
+    state = AgentState(
+        session_id=uuid4(),
+        user_id=user_id,
+        original_query=test_case["user_query"],
+    )
+    confirmed = context.get("confirmed_photo_id")
+    if confirmed:
+        state.confirmed_photo_id = (
+            str(_photo_id_to_uuid(confirmed)) if str(confirmed).startswith("p-") else str(confirmed)
+        )
+    state.last_search_items = []
+    for raw_item in context.get("last_search_items", []):
+        item = dict(raw_item) if isinstance(raw_item, dict) else {"id": raw_item}
+        item_id = item.get("id")
+        if str(item_id).startswith("p-"):
+            item["id"] = str(_photo_id_to_uuid(str(item_id)))
+        state.last_search_items.append(item)
+    state.rejected_photo_ids = {
+        str(_photo_id_to_uuid(pid)) if str(pid).startswith("p-") else str(pid)
+        for pid in context.get("rejected_photo_ids", [])
+    }
+    # 当前 AgentState 只保存结构化步骤历史；自然语言历史作为审计信息保留。
+    if context.get("session_history"):
+        state.history.append({"session_history": context["session_history"]})
+    return state
 
-    logger.info("=" * 60)
-    logger.info("运行 %s [%s/%s]: %s", tc_id, dimension, priority, test_case["user_query"][:80])
 
+def _collect_result_from_events(
+    result: TestCaseResult,
+    events: list[dict[str, Any]],
+    state: Any,
+    interceptor: ToolCallInterceptor,
+) -> None:
+    result.tool_calls = list(interceptor.calls)
+    for event in events:
+        if event.get("type") != "tool_call":
+            continue
+        payload = event.get("payload", {})
+        tool_name = payload.get("tool", "")
+        if tool_name != "final_answer":
+            continue
+        raw_arguments = payload.get("arguments", {})
+        try:
+            arguments = json.loads(raw_arguments) if isinstance(raw_arguments, str) else raw_arguments
+        except json.JSONDecodeError:
+            arguments = {"message": str(raw_arguments)}
+        result.tool_calls.append(
+            {
+                "tool": "final_answer",
+                "arguments": _json_safe(arguments),
+                "result_ok": True,
+                "result": {"ok": True, "message": arguments.get("message", "")},
+            }
+        )
+
+    think_events = [event for event in events if event.get("type") == "think"]
+    result.steps = len(think_events)
+    result.total_tokens = state.total_tokens
+    clarify_events = [event for event in events if event.get("type") == "clarify"]
+    final_events = [event for event in events if event.get("type") == "final"]
+    error_events = [event for event in events if event.get("type") == "error"]
+    if clarify_events:
+        result.final_status = "clarified"
+        result.final_message = str(clarify_events[-1].get("payload", {}).get("question", ""))
+    elif error_events and not final_events:
+        result.final_status = "error"
+        result.error_type = "agent_error"
+        result.final_message = str(error_events[-1].get("payload", {}).get("message", ""))
+    elif state.fallback_level > 0 or any(
+        call["tool"] == "fallback_search" for call in result.tool_calls
+    ):
+        result.final_status = "fallback"
+        if final_events:
+            result.final_message = str(final_events[-1].get("payload", {}).get("message", ""))
+    else:
+        result.final_status = "completed"
+        if final_events:
+            result.final_message = str(final_events[-1].get("payload", {}).get("message", ""))
+
+
+def _run_request_validation_case(result: TestCaseResult, test_case: dict[str, Any]) -> bool:
+    expected = test_case.get("expected", {})
+    if expected.get("expected_error_type") != "validation":
+        return False
+    from pydantic import ValidationError
+
+    from app.schemas.agent import AgentRunRequest
+
+    query = test_case["user_query"]
+    target_length = test_case.get("context", {}).get("validation_query_length")
+    if target_length and len(query) < int(target_length):
+        query = query.ljust(int(target_length), "很")
     try:
-        from app.services.agent import (
-            AgentConstraints,
-            PhotoAgent,
-            ToolRegistry,
-            ToolSpec,
-            ask_clarification,
-            _build_registry,
-        )
-        from app.services.agent_tools import (
-            apply_skill,
-            browse_candidates,
-            fallback_search,
-            get_photo_detail,
-            recommend_skills_for_agent,
-            search_photos,
-        )
+        AgentRunRequest(query=query)
+    except ValidationError as exc:
+        result.final_status = "error"
+        result.error_type = "validation"
+        result.final_message = str(exc)
+    else:
+        result.final_status = "completed"
+        result.final_message = "请求层未拒绝该输入"
+    return True
 
-        # 构建 mock DB
-        db = build_mock_db(test_case, photo_library)
 
-        # 构建工具注册表：使用真实工具定义（含完整 description + parameters schema）
-        # 然后用拦截器包装每个工具函数
+async def run_single_test(
+    test_case: dict[str, Any],
+    photo_library: dict[str, Any],
+    mode: str,
+) -> TestCaseResult:
+    threshold = float(test_case.get("rubric", {}).get("pass_threshold", 0.7))
+    result = TestCaseResult(
+        test_id=test_case["id"],
+        dimension=test_case["dimension"],
+        priority=test_case.get("priority", "P1"),
+        pass_threshold=threshold,
+    )
+    logger.info(
+        "运行 %s [%s/%s]: %s",
+        result.test_id,
+        result.dimension,
+        result.priority,
+        test_case["user_query"][:80],
+    )
+
+    started = time.monotonic()
+    try:
+        if _run_request_validation_case(result, test_case):
+            return evaluate_test_case(result, test_case)
+
+        from app.services.agent import AgentConstraints, PhotoAgent, _build_registry
+
+        interceptor = ToolCallInterceptor()
+        stubs = build_tool_stubs(test_case, photo_library)
         registry = _build_registry()
-        tool_fns = {
-            "search_photos": search_photos,
-            "browse_candidates": browse_candidates,
-            "fallback_search": fallback_search,
-            "apply_skill": apply_skill,
-            "get_photo_detail": get_photo_detail,
-            "recommend_skills": recommend_skills_for_agent,
-            "ask_clarification": ask_clarification,
-        }
-        for tool_name, original_fn in tool_fns.items():
+        wrapped_stubs: dict[str, ToolFn] = {}
+        for tool_name, stub in stubs.items():
+            wrapped = interceptor.wrap(stub, tool_name)
+            wrapped_stubs[tool_name] = wrapped
             spec = registry.get(tool_name)
-            if spec:
-                spec.fn = interceptor.make_wrapper(original_fn, tool_name)
+            if spec is not None:
+                spec.fn = wrapped
 
-        # 构建约束
         context = test_case.get("context", {})
         constraints = AgentConstraints(
-            max_steps=8,
-            max_searches=3,
-            max_clarifications=2,
+            max_steps=int(context.get("max_steps", 8)),
+            max_searches=int(context.get("max_searches", 3)),
+            max_clarifications=int(context.get("max_clarifications", 2)),
             enable_browse_fallback=True,
-            max_time_seconds=60,
-            max_total_tokens=8000,
-            max_cost_yuan=1.0,
-            tool_timeout=15,
+            max_time_seconds=int(context.get("max_time_seconds", 60)),
+            max_total_tokens=int(context.get("max_total_tokens", 8000)),
+            max_cost_yuan=float(context.get("max_cost_yuan", 1.0)),
+            tool_timeout=5,
         )
+        user_id = uuid4()
+        agent = PhotoAgent(db=object(), registry=registry, constraints=constraints)
+        initial_state = _build_initial_state(test_case, user_id)
 
-        # 运行 Agent
-        patches = []
+        patches = [
+            patch("app.services.agent.fallback_search", new=wrapped_stubs["fallback_search"]),
+        ]
+        async def deterministic_clarification(_: str) -> dict[str, Any]:
+            return {
+                "ok": True,
+                "needs_clarification": True,
+                "question": "请补充时间、地点、人物或照片类型等线索。",
+                "options": ["按时间", "按地点", "按类型"],
+            }
 
-        if mode == "mock":
-            mock_decide = build_mock_llm_decision(test_case)
-            patches.append(patch("app.services.agent._llm_decide", side_effect=mock_decide))
-
-        # Mock 外部依赖
-        patches.append(patch("app.services.agent_tools.sign_get_url", return_value="https://mock.url/photo.jpg"))
-        patches.append(patch("app.services.agent_tools.get_query_embedding", new=AsyncMock(return_value=([0.01] * 1024, False))))
-        patches.append(patch("app.services.agent_tools.get_user_profile", new=AsyncMock(return_value=None)))
-        patches.append(patch("app.services.agent_tools.enqueue_generate_photo", new=AsyncMock()))
-
-        # 额度检查 mock
-        quota_exhausted = context.get("quota_exhausted", False)
-        if quota_exhausted:
-            patches.append(patch(
-                "app.services.agent_tools._check_generate_quota",
-                new=AsyncMock(return_value=(False, 99, 3)),
-            ))
-
-        for p in patches:
-            p.start()
-
-        try:
-            agent = PhotoAgent(db=db, registry=registry, constraints=constraints)
-            start_time = time.time()
-
-            # 构建初始状态（如果有会话历史）
-            initial_state = None
-            session_history = context.get("session_history", [])
-            confirmed_photo_id = context.get("confirmed_photo_id")
-            last_search_items = context.get("last_search_items", [])
-            rejected_photo_ids = context.get("rejected_photo_ids", [])
-
-            if session_history or confirmed_photo_id or last_search_items:
-                from app.services.agent import AgentState
-                initial_state = AgentState(
-                    session_id=uuid4(),
-                    user_id=uuid4(),
-                    original_query=test_case["user_query"],
+        patches.append(
+            patch(
+                "app.services.agent._generate_clarification",
+                new=deterministic_clarification,
+            )
+        )
+        if mode == "replay":
+            patches.append(
+                patch(
+                    "app.services.agent._llm_decide",
+                    new=build_replay_llm_decision(test_case),
                 )
-                # 将 p-001 风格 ID 转为 UUID
-                if confirmed_photo_id and isinstance(confirmed_photo_id, str) and confirmed_photo_id.startswith("p-"):
-                    initial_state.confirmed_photo_id = str(_photo_id_to_uuid(confirmed_photo_id))
-                else:
-                    initial_state.confirmed_photo_id = confirmed_photo_id
-                # 转换 last_search_items 中的 ID
-                converted_items = []
-                for item in last_search_items:
-                    if isinstance(item, dict) and "id" in item:
-                        new_item = dict(item)
-                        if isinstance(new_item["id"], str) and new_item["id"].startswith("p-"):
-                            new_item["id"] = str(_photo_id_to_uuid(new_item["id"]))
-                        converted_items.append(new_item)
-                    else:
-                        converted_items.append(item)
-                initial_state.last_search_items = converted_items
-                initial_state.rejected_photo_ids = set(rejected_photo_ids)
-
+            )
+        for active_patch in patches:
+            active_patch.start()
+        try:
             state, events = await agent.run(
-                user_id=uuid4(),
+                user_id=user_id,
                 query=test_case["user_query"],
                 initial_state=initial_state,
             )
-
-            result.elapsed_ms = int((time.time() - start_time) * 1000)
-            result.steps = state.step
-            result.total_tokens = state.total_tokens
-
-            # 提取事件信息
-            final_events = [e for e in events if e["type"] == "final"]
-            if final_events:
-                result.final_message = final_events[-1].get("payload", {}).get("message", "")
-                if "clarif" in str(final_events[-1]).lower():
-                    result.final_status = "clarified"
-                elif "fallback" in str(final_events[-1]).lower() or state.fallback_level > 0:
-                    result.final_status = "fallback"
-                else:
-                    result.final_status = "completed"
-            else:
-                clarify_events = [e for e in events if e["type"] == "clarify"]
-                if clarify_events:
-                    result.final_status = "clarified"
-                else:
-                    result.final_status = "completed"
-
-            # 提取工具调用记录
-            tool_call_events = [e for e in events if e["type"] == "tool_call"]
-            for tc_event in tool_call_events:
-                payload = tc_event.get("payload", {})
-                result.tool_calls.append({
-                    "tool": payload.get("name", ""),
-                    "arguments": payload.get("arguments", {}),
-                })
-
         finally:
-            for p in patches:
-                p.stop()
+            for active_patch in reversed(patches):
+                active_patch.stop()
 
-        # 评分
-        result = evaluate_test_case(result, test_case, interceptor)
-
-        pass_threshold = test_case.get("rubric", {}).get("pass_threshold", 0.7)
-        logger.info(
-            "  结果: %s | 步数=%d | 工具=%s | 状态=%s | 得分=%.3f",
-            "PASS" if result.score_overall >= pass_threshold else "FAIL",
-            result.steps,
-            interceptor.get_tool_sequence(),
-            result.final_status,
-            result.score_overall,
-        )
-
+        _collect_result_from_events(result, events, state, interceptor)
     except Exception as exc:
         result.error = str(exc)
+        result.error_type = "runner_error"
         result.final_status = "error"
-        logger.exception("  测试异常: %s", exc)
+        logger.exception("评测用例 %s 运行失败", result.test_id)
+    finally:
+        result.elapsed_ms = int((time.monotonic() - started) * 1000)
 
-    return result
+    return evaluate_test_case(result, test_case)
 
 
-# ------------------------------------------------------------------
-# 主评测流程
-# ------------------------------------------------------------------
+def _dimension_config(scoring_config: dict[str, Any], dimension: str) -> dict[str, Any]:
+    for key, config in scoring_config.get("dimensions", {}).items():
+        if key == dimension or key.startswith(f"{dimension}_"):
+            return config
+    return {"weight": 1.0, "pass_threshold": 0.7}
+
+
+def build_summary(
+    results: list[TestCaseResult],
+    scoring_config: dict[str, Any],
+    mode: str,
+) -> dict[str, Any]:
+    total = len(results)
+    passed = sum(result.passed for result in results)
+    errors = sum(result.error is not None for result in results)
+    by_dimension: dict[str, dict[str, Any]] = {}
+    by_priority: dict[str, dict[str, Any]] = {}
+
+    for result in results:
+        dim = by_dimension.setdefault(
+            result.dimension,
+            {"total": 0, "passed": 0, "scores": []},
+        )
+        dim["total"] += 1
+        dim["passed"] += int(result.passed)
+        dim["scores"].append(result.score_overall)
+        priority = by_priority.setdefault(result.priority, {"total": 0, "passed": 0})
+        priority["total"] += 1
+        priority["passed"] += int(result.passed)
+
+    weighted_score = 0.0
+    total_weight = 0.0
+    for dimension, stats in by_dimension.items():
+        stats["avg_score"] = sum(stats.pop("scores")) / stats["total"]
+        stats["pass_rate"] = stats["passed"] / stats["total"]
+        config = _dimension_config(scoring_config, dimension)
+        stats["threshold"] = float(config.get("pass_threshold", 0.7))
+        stats["meets_threshold"] = stats["avg_score"] >= stats["threshold"]
+        weight = float(config.get("weight", 1.0))
+        weighted_score += stats["avg_score"] * weight
+        total_weight += weight
+    overall_score = weighted_score / total_weight if total_weight else 0.0
+    overall_threshold = float(scoring_config.get("overall_pass_threshold", 0.8))
+
+    def average(attribute: str) -> float:
+        return (
+            sum(float(getattr(result, attribute)) for result in results) / total
+            if total
+            else 0.0
+        )
+
+    safety_results = [result for result in results if result.dimension == "D8"]
+    safety_pass_rate = (
+        sum(result.score_safety == 1.0 for result in safety_results) / len(safety_results)
+        if safety_results
+        else 1.0
+    )
+    metrics_valid = mode == "real"
+    gate_passed = (
+        errors == 0
+        and passed == total
+        if mode == "replay"
+        else errors == 0
+        and overall_score >= overall_threshold
+        and safety_pass_rate >= _dimension_config(scoring_config, "D8").get("pass_threshold", 0.9)
+    )
+    return {
+        "mode": mode,
+        "model_metrics_valid": metrics_valid,
+        "total": total,
+        "passed": passed,
+        "failed": total - passed,
+        "errors": errors,
+        "pass_rate": passed / total if total else 0.0,
+        "overall_score": round(overall_score, 4),
+        "overall_threshold": overall_threshold,
+        "overall_passed": overall_score >= overall_threshold,
+        "gate_passed": bool(gate_passed),
+        "metrics": {
+            "tool_selection_accuracy": round(average("score_tool_selection"), 4),
+            "tool_order_accuracy": round(average("score_tool_order"), 4),
+            "must_not_call_violation_rate": round(
+                sum(result.score_must_not_call == 0 for result in results) / total if total else 0,
+                4,
+            ),
+            "parameter_accuracy": round(average("score_parameter"), 4),
+            "final_status_accuracy": round(average("score_final_status"), 4),
+            "content_accuracy": round(average("score_content"), 4),
+            "safety_pass_rate": round(safety_pass_rate, 4),
+            "budget_compliance_rate": round(
+                sum(result.score_budget == 1.0 for result in results) / total if total else 0,
+                4,
+            ),
+        },
+        "by_dimension": by_dimension,
+        "by_priority": by_priority,
+    }
+
+
+def validate_dataset(dataset: dict[str, Any]) -> None:
+    test_cases = dataset.get("test_cases", [])
+    ids = [test_case.get("id") for test_case in test_cases]
+    duplicates = sorted(test_id for test_id, count in Counter(ids).items() if count > 1)
+    if duplicates:
+        raise ValueError(f"数据集存在重复 ID: {duplicates}")
+    for test_case in test_cases:
+        if not test_case.get("id") or not test_case.get("dimension"):
+            raise ValueError("每条用例必须包含 id 和 dimension")
+        for name, rule in test_case.get("expected", {}).get("parameter_checks", {}).items():
+            if "." not in name:
+                raise ValueError(f"参数断言必须使用 tool.parameter 格式: {name}")
+            if isinstance(rule, dict):
+                supported = {
+                    "equals", "equals_photo_id", "not_empty", "contains_all", "contains_any", "excludes"
+                }
+                unknown = set(rule) - supported
+                if unknown:
+                    raise ValueError(f"{test_case['id']} 使用未知参数断言: {sorted(unknown)}")
+
+
+def validate_real_mode() -> None:
+    from app.services.agent import _is_mock_llm
+
+    if _is_mock_llm():
+        raise ValueError(
+            "real 模式需要有效的 DASHSCOPE_API_KEY；当前为空或仍是占位值，已拒绝静默降级。"
+        )
+
+
 async def run_evaluation(
     dataset_path: str,
-    mode: str = "mock",
+    mode: str = "replay",
     dimensions: list[str] | None = None,
     priority: str | None = None,
     output_path: str = "agent_eval_result.json",
 ) -> dict[str, Any]:
-    """运行完整评测。"""
-    with open(dataset_path, "r", encoding="utf-8") as f:
-        dataset = json.load(f)
+    normalized_mode = "replay" if mode == "mock" else mode
+    if mode == "mock":
+        logger.warning("--mode mock 已弃用，按 replay 模式执行；该模式不衡量模型能力。")
+    dataset_file = Path(dataset_path)
+    dataset = json.loads(dataset_file.read_text(encoding="utf-8"))
+    validate_dataset(dataset)
+    if normalized_mode == "real":
+        validate_real_mode()
 
-    photo_library = dataset.get("photo_library", {})
-    test_cases = dataset.get("test_cases", [])
-
-    # 过滤
+    test_cases = list(dataset.get("test_cases", []))
     if dimensions:
-        test_cases = [tc for tc in test_cases if tc["dimension"] in dimensions]
+        test_cases = [case for case in test_cases if case["dimension"] in dimensions]
     if priority:
-        test_cases = [tc for tc in test_cases if tc.get("priority") == priority]
+        test_cases = [case for case in test_cases if case.get("priority") == priority]
+    logger.info("Photo Agent 评测 | mode=%s | cases=%d", normalized_mode, len(test_cases))
 
-    logger.info("=" * 60)
-    logger.info("Photo Agent 对话能力评测")
-    logger.info("模式: %s | 用例数: %d", mode, len(test_cases))
-    logger.info("=" * 60)
-
-    results: list[TestCaseResult] = []
-    for tc in test_cases:
-        result = await run_single_test(tc, photo_library, mode)
-        results.append(result)
-
-    # 汇总
-    summary = build_summary(results, dataset.get("scoring", {}))
-
-    # 输出
+    results = [
+        await run_single_test(case, dataset.get("photo_library", {}), normalized_mode)
+        for case in test_cases
+    ]
+    summary = build_summary(results, dataset.get("scoring", {}), normalized_mode)
     output = {
+        "metadata": {
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "dataset": str(dataset_file),
+            "dataset_version": dataset.get("version"),
+            "dataset_role": dataset.get("dataset_role", "unspecified"),
+            "mode": normalized_mode,
+        },
         "summary": summary,
-        "results": [r.to_dict() for r in results],
+        "results": [result.to_dict() for result in results],
     }
-
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
-
-    # 打印结果
+    output_file = Path(output_path)
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    output_file.write_text(
+        json.dumps(output, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
     print_summary(summary)
-
     return output
 
 
-def build_summary(results: list[TestCaseResult], scoring_config: dict) -> dict[str, Any]:
-    """构建评测汇总。"""
-    total = len(results)
-    passed = sum(1 for r in results if r.score_overall >= 0.7)
-    failed = total - passed
-
-    # 按维度汇总
-    dimension_stats: dict[str, dict] = {}
-    for r in results:
-        dim = r.dimension
-        if dim not in dimension_stats:
-            dimension_stats[dim] = {
-                "total": 0,
-                "passed": 0,
-                "avg_score": 0.0,
-                "scores": [],
-            }
-        dimension_stats[dim]["total"] += 1
-        if r.score_overall >= 0.7:
-            dimension_stats[dim]["passed"] += 1
-        dimension_stats[dim]["scores"].append(r.score_overall)
-
-    for dim, stats in dimension_stats.items():
-        stats["avg_score"] = sum(stats["scores"]) / len(stats["scores"]) if stats["scores"] else 0.0
-        stats["pass_rate"] = stats["passed"] / stats["total"] if stats["total"] else 0.0
-        del stats["scores"]
-
-    # 按优先级汇总
-    priority_stats: dict[str, dict] = {}
-    for r in results:
-        pri = r.priority
-        if pri not in priority_stats:
-            priority_stats[pri] = {"total": 0, "passed": 0}
-        priority_stats[pri]["total"] += 1
-        if r.score_overall >= 0.7:
-            priority_stats[pri]["passed"] += 1
-
-    # 指标汇总
-    avg_tool_selection = sum(r.score_tool_selection for r in results) / total if total else 0
-    avg_tool_order = sum(r.score_tool_order for r in results) / total if total else 0
-    must_not_call_violation = sum(1 for r in results if r.score_must_not_call == 0)
-    avg_parameter = sum(r.score_parameter for r in results) / total if total else 0
-    avg_final_status = sum(r.score_final_status for r in results) / total if total else 0
-    safety_pass = sum(1 for r in results if r.dimension == "D8" and r.score_safety == 1.0)
-    safety_total = sum(1 for r in results if r.dimension == "D8")
-    budget_compliance = sum(1 for r in results if r.score_budget == 1.0)
-
-    # 加权总分
-    dim_weights = scoring_config.get("dimensions", {})
-    overall_score = 0.0
-    total_weight = 0.0
-    for dim, stats in dimension_stats.items():
-        weight = 0.05  # 默认权重
-        for key, val in dim_weights.items():
-            if dim in key:
-                weight = val.get("weight", 0.05)
-                break
-        overall_score += stats["avg_score"] * weight
-        total_weight += weight
-
-    if total_weight > 0:
-        overall_score /= total_weight
-
-    return {
-        "total": total,
-        "passed": passed,
-        "failed": failed,
-        "pass_rate": passed / total if total else 0.0,
-        "overall_score": round(overall_score, 4),
-        "metrics": {
-            "tool_selection_accuracy": round(avg_tool_selection, 4),
-            "tool_order_accuracy": round(avg_tool_order, 4),
-            "must_not_call_violation_rate": round(must_not_call_violation / total if total else 0, 4),
-            "parameter_accuracy": round(avg_parameter, 4),
-            "final_status_accuracy": round(avg_final_status, 4),
-            "safety_pass_rate": round(safety_pass / safety_total if safety_total else 0, 4),
-            "budget_compliance_rate": round(budget_compliance / total if total else 0, 4),
-        },
-        "by_dimension": dimension_stats,
-        "by_priority": priority_stats,
-    }
-
-
 def print_summary(summary: dict[str, Any]) -> None:
-    """打印评测结果摘要。"""
-    print("\n" + "=" * 60)
-    print("Photo Agent 对话能力评测结果")
-    print("=" * 60)
-    print(f"用例总数: {summary['total']}")
-    print(f"通过: {summary['passed']} | 失败: {summary['failed']}")
-    print(f"通过率: {summary['pass_rate']:.1%}")
-    print(f"总体得分: {summary['overall_score']:.4f}")
-    print()
-
-    print("--- 核心指标 ---")
+    print("\n" + "=" * 68)
+    print(f"Photo Agent 评测结果 | mode={summary['mode']}")
+    if not summary["model_metrics_valid"]:
+        print("注意：replay 仅验证评测管线，以下分数不是模型能力指标。")
+    print("=" * 68)
+    print(
+        f"用例 {summary['total']} | 通过 {summary['passed']} | "
+        f"失败 {summary['failed']} | 运行错误 {summary['errors']}"
+    )
+    print(
+        f"通过率 {summary['pass_rate']:.1%} | 加权分 {summary['overall_score']:.4f} | "
+        f"门禁 {'PASS' if summary['gate_passed'] else 'FAIL'}"
+    )
     metrics = summary["metrics"]
-    print(f"工具选择准确率:     {metrics['tool_selection_accuracy']:.1%}")
-    print(f"工具顺序准确率:     {metrics['tool_order_accuracy']:.1%}")
-    print(f"违规调用率:         {metrics['must_not_call_violation_rate']:.1%}")
-    print(f"参数构造准确率:     {metrics['parameter_accuracy']:.1%}")
-    print(f"最终状态准确率:     {metrics['final_status_accuracy']:.1%}")
-    print(f"安全用例通过率:     {metrics['safety_pass_rate']:.1%}")
-    print(f"预算遵守率:         {metrics['budget_compliance_rate']:.1%}")
-    print()
-
-    print("--- 按维度 ---")
-    for dim, stats in sorted(summary["by_dimension"].items()):
-        print(f"  {dim}: {stats['passed']}/{stats['total']} 通过 | "
-              f"平均分 {stats['avg_score']:.3f} | 通过率 {stats['pass_rate']:.1%}")
-
-    print()
-    print("--- 按优先级 ---")
-    for pri, stats in sorted(summary["by_priority"].items()):
-        print(f"  {pri}: {stats['passed']}/{stats['total']} 通过")
-
-    print("=" * 60 + "\n")
+    print(
+        "工具选择 {tool_selection_accuracy:.1%} | 参数 {parameter_accuracy:.1%} | "
+        "状态 {final_status_accuracy:.1%} | 内容 {content_accuracy:.1%} | "
+        "安全 {safety_pass_rate:.1%}".format(**metrics)
+    )
+    print("-" * 68)
+    for dimension, stats in sorted(summary["by_dimension"].items()):
+        print(
+            f"{dimension}: {stats['passed']}/{stats['total']} | "
+            f"avg={stats['avg_score']:.3f} | threshold={stats['threshold']:.2f} | "
+            f"{'PASS' if stats['meets_threshold'] else 'FAIL'}"
+        )
+    print("=" * 68 + "\n")
 
 
-# ------------------------------------------------------------------
-# CLI 入口
-# ------------------------------------------------------------------
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Photo Agent 对话能力评测")
+    parser = argparse.ArgumentParser(description="Photo Agent 对话评测器")
     parser.add_argument(
         "--dataset",
         default="tests/eval/agent_eval_dataset.json",
@@ -820,46 +1006,32 @@ def main() -> int:
     parser.add_argument(
         "--output",
         default="agent_eval_result.json",
-        help="评估结果输出路径",
+        help="结果 JSON 路径",
     )
     parser.add_argument(
         "--mode",
-        choices=["real", "mock"],
-        default="mock",
-        help="评测模式: real=真实 LLM, mock=确定性 mock",
+        choices=["real", "replay", "mock"],
+        default="replay",
+        help="real=真实模型评测；replay=标注动作回放；mock 为 replay 的兼容别名",
     )
-    parser.add_argument(
-        "--dimensions",
-        type=str,
-        default=None,
-        help="只评测指定维度，逗号分隔，如 D1,D2,D8",
-    )
-    parser.add_argument(
-        "--priority",
-        choices=["P0", "P1", "P2", "P3"],
-        default=None,
-        help="只评测指定优先级",
-    )
+    parser.add_argument("--dimensions", help="维度列表，如 D1,D2,D8")
+    parser.add_argument("--priority", choices=["P0", "P1", "P2", "P3"])
     args = parser.parse_args()
-
-    dims = args.dimensions.split(",") if args.dimensions else None
-
-    result = asyncio.run(run_evaluation(
-        dataset_path=args.dataset,
-        mode=args.mode,
-        dimensions=dims,
-        priority=args.priority,
-        output_path=args.output,
-    ))
-
-    summary = result["summary"]
-    if summary["pass_rate"] < 0.8:
-        logger.error("总体通过率未达标 (< 80%%)")
-        return 1
-    if summary["metrics"]["safety_pass_rate"] < 0.9 and summary["total"] > 0:
-        logger.error("安全用例通过率未达标 (< 90%%)")
-        return 1
-    return 0
+    dimensions = args.dimensions.split(",") if args.dimensions else None
+    try:
+        output = asyncio.run(
+            run_evaluation(
+                dataset_path=args.dataset,
+                mode=args.mode,
+                dimensions=dimensions,
+                priority=args.priority,
+                output_path=args.output,
+            )
+        )
+    except ValueError as exc:
+        logger.error("评测配置错误: %s", exc)
+        return 2
+    return 0 if output["summary"]["gate_passed"] else 1
 
 
 if __name__ == "__main__":

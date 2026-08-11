@@ -716,7 +716,6 @@ class PhotoAgent:
                 if tool_name == "final_answer":
                     final_message = result.get("message", "")
                     emit("final", {"message": final_message})
-                    state.step = self.constraints.max_steps  # 强制退出循环
                     break
 
                 # 提前终止：需要用户澄清
@@ -729,8 +728,11 @@ class PhotoAgent:
                             "options": result.get("options", []),
                         },
                     )
-                    state.step = self.constraints.max_steps
                     break
+
+            # final_answer 或澄清已经产生终态；保留真实 step 计数并退出外层循环。
+            if final_message:
+                break
 
         if state.step >= self.constraints.max_steps and not final_message:
             final_message = "操作步骤过多，已暂停。请告诉我更具体的需求，或从候选照片中选择。"
@@ -886,27 +888,6 @@ class PhotoAgent:
         ):
             state.clarification_attempts += 1
             return await _generate_clarification(state.original_query)
-
-        # 自动兜底：普通搜索无结果且未走过兜底时，触发三级兜底
-        # start_level=1 跳过 Level 0（刚搜过且无结果，避免重复搜索）
-        if (
-            tool_name == "search_photos"
-            and result.get("ok")
-            and not result.get("items")
-            and self.constraints.enable_browse_fallback
-            and state.fallback_level == 0
-        ):
-            fallback_result = await fallback_search(
-                user_id=user_id,
-                db=self.db,
-                query=args.get("query", ""),
-                from_date=args.get("from_date"),
-                to_date=args.get("to_date"),
-                limit=args.get("limit", 30),
-                start_level=1,
-            )
-            state.fallback_level = fallback_result.get("fallback_level", 0)
-            result = fallback_result
 
         # 更新 State
         if tool_name in ("search_photos", "fallback_search") and result.get("ok"):

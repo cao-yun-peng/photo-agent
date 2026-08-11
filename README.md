@@ -50,7 +50,9 @@ open http://localhost:8000/docs
 
 | 接口                | 说明                                     |
 |---------------------|------------------------------------------|
-| `GET /health`       | 健康检查                                 |
+| `GET /live`         | 进程存活检查，不访问外部依赖             |
+| `GET /ready`        | 就绪检查，数据库或 Redis 异常时返回 503  |
+| `GET /health`       | 依赖与熔断器综合诊断                     |
 | `POST /auth/wechat` | 用 `code` 换 JWT（dev 环境用假 code 即可） |
 | `GET /auth/me`      | 需要 Bearer Token，验证 JWT 是否可用     |
 | `POST /photos/upload-url` | 拿 OSS 直传签名（dev 返回 mock URL） |
@@ -137,6 +139,26 @@ docker compose down
 # 彻底清库（连数据卷一起删）
 docker compose down -v
 ```
+
+## Agent 评测
+
+项目内置 52 条、10 个维度的 Agent 开发集，覆盖意图识别、工具选择、参数构造、
+多步编排、澄清、兜底、安全和预算。先运行不消耗额度的评测管线自检：
+
+```bash
+python scripts/agent_eval.py --mode replay
+```
+
+真实模型评测需要有效的 `DASHSCOPE_API_KEY`：
+
+```bash
+python scripts/agent_eval.py --mode real \
+  --output artifacts/agent-eval-real.json
+```
+
+`replay` 使用标注动作验证 Agent 循环和评分器，不代表模型效果；只有 `real` 模式的指标
+可以评价模型决策。数据集格式、评分权重、退出码、开发集/留出集划分和完整命令见
+[`docs/agent-evaluation.md`](docs/agent-evaluation.md)。
 
 ## D5–D7 AI 处理管道
 
