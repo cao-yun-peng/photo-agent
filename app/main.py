@@ -23,11 +23,9 @@ from app.core.errors import (
     ApiError,
     INVALID_PARAMS,
     SYSTEM_ERROR,
-    UNKNOWN_ERROR,
 )
-from app.core.logger import get_logger, set_logging_context, setup_logging
+from app.core.logger import get_logger, setup_logging
 from app.core.middleware import LogIDMiddleware
-from app.core.registry import init_registries
 from app.database import engine
 from app.services.circuit_breaker import (
     agent_llm_breaker,
@@ -213,35 +211,40 @@ async def unknown_error_handler(_: Request, exc: Exception) -> JSONResponse:
 
 
 # ---------- 健康检查 ----------
-@app.get("/health", tags=["meta"], summary="健康检查")
-async def health() -> dict:
-    checks = {
-        "status": "ok",
-        "env": settings.app_env,
-        "version": __version__,
-    }
+async def _dependency_checks() -> dict[str, str]:
+    """检查 readiness 所需的关键依赖。"""
+    from sqlalchemy import text
 
-    # Redis 连通性检查
+    checks: dict[str, str] = {}
     try:
         redis = await get_redis()
         await redis.ping()
         checks["redis"] = "ok"
     except Exception as exc:  # noqa: BLE001
         checks["redis"] = f"error: {exc}"
-        checks["status"] = "degraded"
         logger.error("redis health check failed: %s", exc)
 
-    # 数据库连通性检查（新增）
     try:
-        from sqlalchemy import text
-        from app.database import AsyncSessionLocal
         async with AsyncSessionLocal() as db:
             await db.execute(text("SELECT 1"))
         checks["database"] = "ok"
     except Exception as exc:  # noqa: BLE001
         checks["database"] = f"error: {exc}"
-        checks["status"] = "degraded"
         logger.error("database health check failed: %s", exc)
+    return checks
+
+
+@app.get("/health", tags=["meta"], summary="健康检查")
+async def health() -> dict:
+    dependencies = await _dependency_checks()
+    checks: dict = {
+        "status": "ok",
+        "env": settings.app_env,
+        "version": __version__,
+        **dependencies,
+    }
+    if any(value != "ok" for value in dependencies.values()):
+        checks["status"] = "degraded"
 
     # 熔断器状态快照
     checks["circuit_breakers"] = {
@@ -255,10 +258,21 @@ async def health() -> dict:
     return checks
 
 
-@app.get("/ready", tags=["meta"], summary="存活检查（K8s readiness）")
-async def ready() -> dict:
-    """简单存活检查，不验证依赖（用于K8s liveness/readiness探针）."""
-    return {"status": "success"}
+@app.get("/live", tags=["meta"], summary="存活检查（K8s liveness）")
+async def live() -> dict:
+    """仅证明 API 进程能响应，不访问外部依赖。"""
+    return {"status": "ok"}
+
+
+@app.get("/ready", tags=["meta"], summary="就绪检查（K8s readiness）")
+async def ready() -> JSONResponse:
+    """数据库和 Redis 均可用时才允许实例接收业务流量。"""
+    checks = await _dependency_checks()
+    is_ready = all(value == "ok" for value in checks.values())
+    return JSONResponse(
+        status_code=200 if is_ready else 503,
+        content={"status": "ok" if is_ready else "not_ready", **checks},
+    )
 
 
 # ---------- 挂载业务路由 ----------

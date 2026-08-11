@@ -25,6 +25,8 @@ class ErrorCode:
     """错误码定义."""
 
     def __init__(self, code: int, msg: str):
+        if code in _REGISTRY:
+            raise ValueError(f"duplicate error code: {code}")
         self.code = code
         self.msg = msg
         _REGISTRY[code] = self
@@ -37,9 +39,9 @@ class ErrorCode:
 SUCCESS = ErrorCode(0, "成功")
 UNKNOWN_ERROR = ErrorCode(-1, "未知错误")
 SYSTEM_ERROR = ErrorCode(-2, "系统内部错误")
-INVALID_PARAMS = ErrorCode(10001, "参数错误")
-RATE_LIMITED = ErrorCode(10002, "请求过于频繁，请稍后重试")
-SERVICE_DEGRADED = ErrorCode(10003, "服务降级中，请稍后重试")
+INVALID_PARAMS = ErrorCode(90001, "参数错误")
+RATE_LIMITED = ErrorCode(90002, "请求过于频繁，请稍后重试")
+SERVICE_DEGRADED = ErrorCode(90003, "服务降级中，请稍后重试")
 
 # ---------- 认证与用户模块 (1xxxx) ----------
 AUTH_JWT_EXPIRED = ErrorCode(10001, "登录已过期，请重新登录")

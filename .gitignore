@@ -35,8 +35,11 @@ logs/
 
 # Test
 .pytest_cache/
+.pytest-*/
 .coverage
 htmlcov/
+artifacts/
+agent_eval_result.json
 
 # Alembic
 # 保留 versions/ 目录本身

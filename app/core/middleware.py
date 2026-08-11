@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import asyncio
+import re
 import time
-import uuid
 from typing import Callable
 
 from fastapi import Request, Response
-from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
@@ -18,7 +17,8 @@ logger = get_logger(__name__)
 
 
 # 不需要记录访问日志的路径
-_SKIP_LOG_PATHS = {"/health", "/ready", "/docs", "/openapi.json", "/redoc"}
+_SKIP_LOG_PATHS = {"/live", "/health", "/ready", "/docs", "/openapi.json", "/redoc"}
+_LOG_ID_PATTERN = re.compile(r"^[A-Za-z0-9._:-]{1,64}$")
 
 
 class LogIDMiddleware(BaseHTTPMiddleware):
@@ -46,11 +46,15 @@ class LogIDMiddleware(BaseHTTPMiddleware):
         self, request: Request, call_next: Callable[[Request], asyncio.coroutine]
     ) -> Response:
         # 提取或生成 LogID
-        log_id = (
+        candidate_log_id = (
             request.headers.get("X-Log-ID")
             or request.headers.get("X-Request-ID")
             or request.cookies.get("logId")
-            or generate_log_id()
+        )
+        log_id = (
+            candidate_log_id
+            if candidate_log_id and _LOG_ID_PATTERN.fullmatch(candidate_log_id)
+            else generate_log_id()
         )
 
         # 提取用户ID（后续在认证中间件中可更新）
@@ -121,15 +125,8 @@ class LogIDMiddleware(BaseHTTPMiddleware):
                 exc,
                 exc_info=True,
             )
-            return JSONResponse(
-                status_code=500,
-                content={
-                    "errNo": -2,
-                    "errMsg": "系统内部错误",
-                    "data": None,
-                },
-                headers={"X-Log-ID": log_id},
-            )
+            # 交给 FastAPI 的统一异常处理器生成标准错误响应，避免两套 500 协议。
+            raise
 
     @staticmethod
     def _get_client_ip(request: Request) -> str:

@@ -30,7 +30,7 @@ function request({ url, method = 'GET', data, header = {}, auth = true, timeout 
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data);
         } else {
-          const detail = (res.data && (res.data.detail || res.data.message)) || res.errMsg;
+          const detail = (res.data && (res.data.errMsg || res.data.detail || res.data.message)) || res.errMsg;
           reject({ status: res.statusCode, detail });
         }
       },
