@@ -26,7 +26,7 @@ from app.core.errors import (
 )
 from app.core.logger import get_logger, setup_logging
 from app.core.middleware import LogIDMiddleware
-from app.database import AsyncSessionLocal, engine
+from app.database import engine
 from app.services.circuit_breaker import (
     agent_llm_breaker,
     embedding_breaker,
@@ -81,6 +81,13 @@ async def lifespan(_: FastAPI):
         await _seed_official_skills()
     except Exception:  # noqa: BLE001
         logger.warning("seed official skills skipped (DB not ready?)", exc_info=True)
+
+    # 初始化热更新注册表（Skill/Prompt等）
+    try:
+        await init_registries()
+        logger.info("all registries initialized")
+    except Exception:  # noqa: BLE001
+        logger.warning("init registries skipped (DB not ready?)", exc_info=True)
 
     yield
 
