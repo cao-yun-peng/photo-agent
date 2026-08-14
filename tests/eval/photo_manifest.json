@@ -1,0 +1,5058 @@
+{
+  "version": "2.0.0",
+  "name": "Photo Agent 人工复核图片评测集",
+  "generated_at": "2026-08-13T16:01:53.697390+00:00",
+  "reviewed_at": "2026-08-13",
+  "image_root": "../..",
+  "total_images": 112,
+  "annotation_policy": {
+    "scene": "命中任一 acceptable_scenes 即正确",
+    "objects": "required_objects 参与召回；额外合理物体不作为误检",
+    "persons": "必须落在 min/max 闭区间",
+    "ocr": "required_text 参与召回；optional_text 只做诊断"
+  },
+  "images": [
+    {
+      "id": "p-004",
+      "filename": "p-004_ramen.jpg",
+      "path": "test_photos/p-004_ramen.jpg",
+      "sha256": "087491d8304eaa9f4a012e1a5255962fa8a85f771b6089d8e59d2c86bb071c6f",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "美食",
+      "generation": {
+        "generator": null,
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "餐厅"
+        ],
+        "required_objects": [
+          "拉面",
+          "碗",
+          "鸡蛋"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "日式拉面店的招牌菜，热腾腾的豚骨拉面",
+        "search_terms": [
+          "美食",
+          "日本",
+          "拉面",
+          "碗",
+          "鸡蛋"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-006",
+      "filename": "p-006_cherry_blossom.jpg",
+      "path": "test_photos/p-006_cherry_blossom.jpg",
+      "sha256": "d27f0bb8489161c90d5e19d59b33b1dbd735db0f066a0a79b0545807291717de",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "风景",
+      "generation": {
+        "generator": null,
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "樱花",
+          "树"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "公园里盛开的樱花，粉白色的花瓣",
+        "search_terms": [
+          "樱花",
+          "春天",
+          "公园",
+          "树"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-007",
+      "filename": "p-007_birthday_cake.jpg",
+      "path": "test_photos/p-007_birthday_cake.jpg",
+      "sha256": "c1aaf0ee77721bffc9af81ae7edee26e10c59cd0853e131dcc589803f3998b1e",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "美食",
+      "generation": {
+        "generator": null,
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "生日蛋糕",
+          "蜡烛"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "Happy Birthday"
+        ],
+        "optional_text": [
+          "Let's Celebrate"
+        ],
+        "summary": "生日蛋糕上的蜡烛，温馨的室内聚会",
+        "search_terms": [
+          "生日",
+          "聚会",
+          "蛋糕",
+          "生日蛋糕",
+          "蜡烛"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-008",
+      "filename": "p-008_mountain_hike.jpg",
+      "path": "test_photos/p-008_mountain_hike.jpg",
+      "sha256": "a1a7b3753a36c5d1e4d83c5b3a5f2a9e6f33f89e9bafc2f13fccfed5aa8045c6",
+      "width": 1536,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "风景",
+      "generation": {
+        "generator": null,
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "雪山",
+          "草地",
+          "山路"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "山间徒步风景，远处是雪山，近处是草地",
+        "search_terms": [
+          "徒步",
+          "山",
+          "风景",
+          "雪山",
+          "草地",
+          "山路"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-010",
+      "filename": "p-010_dogs_running.jpg",
+      "path": "test_photos/p-010_dogs_running.jpg",
+      "sha256": "7e195c83d88bfd993fa15ecb04fc36f4ac18ac0cab5b271a9c1f1a51c865416d",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "宠物",
+      "generation": {
+        "generator": null,
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "狗",
+          "草地"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "两只狗在草地上奔跑玩耍",
+        "search_terms": [
+          "狗",
+          "宠物",
+          "草地"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-011",
+      "filename": "p-011_old_photo.jpg",
+      "path": "test_photos/p-011_old_photo.jpg",
+      "sha256": "2172ffbff4821da8e2a92ecdd2c4808f9e9cb855a9332d332fec3075ef868e15",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "人像",
+      "generation": {
+        "generator": null,
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "全家福"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 4,
+          "max": 4
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "老照片，画质模糊，黑白色调的全家福",
+        "search_terms": [
+          "老照片",
+          "全家福",
+          "人物"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-012",
+      "filename": "p-012_concert.jpg",
+      "path": "test_photos/p-012_concert.jpg",
+      "sha256": "c0e9c2b6679c8ada1f96cf7b0cb726d1841496677e2790b03268471ecef5f286",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "活动",
+      "generation": {
+        "generator": null,
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "舞台",
+          "乐队",
+          "人群"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 10,
+          "max": 1000
+        },
+        "required_text": [
+          "LIVE LOUD"
+        ],
+        "optional_text": [],
+        "summary": "演唱会现场，舞台灯光绚丽",
+        "search_terms": [
+          "演唱会",
+          "音乐",
+          "舞台",
+          "乐队",
+          "人群"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-013",
+      "filename": "p-013_airport.jpg",
+      "path": "test_photos/p-013_airport.jpg",
+      "sha256": "6dd5303b5114049a2750cb700e51042c1bb24786de69fc4fa346a123e7b08c5d",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "交通",
+      "generation": {
+        "generator": null,
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内",
+          "机场"
+        ],
+        "required_objects": [
+          "飞机",
+          "行李箱",
+          "窗户"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "机场候机大厅，窗外停着飞机",
+        "search_terms": [
+          "机场",
+          "旅行",
+          "飞机",
+          "行李箱",
+          "窗户"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-014",
+      "filename": "p-014_ginkgo_autumn.jpg",
+      "path": "test_photos/p-014_ginkgo_autumn.jpg",
+      "sha256": "131726f1fdde38a86740726ca8817e0a2cc0781ad229bb171d94e577c9c6df7a",
+      "width": 1536,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "风景",
+      "generation": {
+        "generator": null,
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "街道"
+        ],
+        "required_objects": [
+          "银杏树",
+          "落叶",
+          "道路"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "秋天银杏大道，金黄的落叶铺满路面",
+        "search_terms": [
+          "秋天",
+          "银杏",
+          "风景",
+          "银杏树",
+          "落叶",
+          "道路"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-015",
+      "filename": "p-015_office_desk.jpg",
+      "path": "test_photos/p-015_office_desk.jpg",
+      "sha256": "509ae36660ff938f21a39d13b086b169aef96534af81c680ee87d58dcfad2a4d",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "日常",
+      "generation": {
+        "generator": null,
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "笔记本电脑",
+          "书桌",
+          "杯子"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "办公室桌面，笔记本电脑和咖啡",
+        "search_terms": [
+          "办公",
+          "日常",
+          "电脑",
+          "笔记本电脑",
+          "书桌",
+          "杯子"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-019",
+      "filename": "p-019_flowers_garden.jpg",
+      "path": "test_photos/p-019_flowers_garden.jpg",
+      "sha256": "89bf7808744053a16882079aa2ddf3f2de8533baa0ff831eeff1c91aea5b8bc7",
+      "width": 1536,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "风景",
+      "generation": {
+        "generator": null,
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "花园",
+          "鲜花",
+          "小路"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "英式花园里盛开的各种鲜花",
+        "search_terms": [
+          "花朵",
+          "花园",
+          "夏天",
+          "鲜花",
+          "小路"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-021",
+      "filename": "p-021_puppy.jpg",
+      "path": "test_photos/p-021_puppy.jpg",
+      "sha256": "2cd479748dcf0fad144549ce7ee15574c7894b515d05aa670152863120b5a9bf",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "宠物",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Cute golden retriever puppy sitting on grass, looking at camera, adorable fluffy baby dog, sunny day, bokeh background"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "狗",
+          "草地"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "金毛小狗",
+        "search_terms": [
+          "狗",
+          "宠物",
+          "草地"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-026",
+      "filename": "p-026_sushi.jpg",
+      "path": "test_photos/p-026_sushi.jpg",
+      "sha256": "bf56dbfcebd179362b5b0e70517d3b3149449eb8ad0e94ee8377096d92a8e093",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "美食",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Assorted Japanese sushi platter on wooden board, fresh salmon tuna nigiri, maki rolls, wasabi ginger, professional food photography"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "餐厅",
+          "室内"
+        ],
+        "required_objects": [
+          "寿司",
+          "餐盘"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "寿司拼盘",
+        "search_terms": [
+          "美食",
+          "日本",
+          "寿司",
+          "餐盘"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-027",
+      "filename": "p-027_dessert.jpg",
+      "path": "test_photos/p-027_dessert.jpg",
+      "sha256": "d3e4067184e329fd2e74f606ee406349863208268444f58f4373127be976cbcd",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "美食",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Beautiful strawberry cake with cream and fresh berries on a white plate, afternoon tea setting, soft natural light"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内",
+          "餐厅"
+        ],
+        "required_objects": [
+          "草莓蛋糕",
+          "茶杯"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "草莓蛋糕",
+        "search_terms": [
+          "美食",
+          "甜点",
+          "下午茶",
+          "草莓蛋糕",
+          "茶杯"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-028",
+      "filename": "p-028_croissant.jpg",
+      "path": "test_photos/p-028_croissant.jpg",
+      "sha256": "c8a6bb642b9dca9cba0b785308078d5bfb750afbeb2ae5e1f4ef9b6b563ad477",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "美食",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Freshly baked golden croissant on a bakery counter, flaky pastry, morning sunlight, French cafe"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "餐厅",
+          "室内"
+        ],
+        "required_objects": [
+          "可颂",
+          "面包"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [
+          "Croissant"
+        ],
+        "summary": "可颂面包",
+        "search_terms": [
+          "美食",
+          "面包",
+          "早餐",
+          "可颂"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-029",
+      "filename": "p-029_burger.jpg",
+      "path": "test_photos/p-029_burger.jpg",
+      "sha256": "d2a975a3628dcd1e082dba648c616a49bc2de142a36e309b3d767a376032c48c",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "美食",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Juicy gourmet cheeseburger with lettuce tomato, melting cheese, sesame bun, wooden table, fast food"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "餐厅",
+          "室内"
+        ],
+        "required_objects": [
+          "汉堡"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "芝士汉堡",
+        "search_terms": [
+          "美食",
+          "汉堡"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-030",
+      "filename": "p-030_dumplings.jpg",
+      "path": "test_photos/p-030_dumplings.jpg",
+      "sha256": "c413c8d86b00c4fc5dbc928f631eacdeb71eae8bfe4d47754b4f657ef4d08144",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "美食",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Chinese steamed dumplings jiaozi on bamboo steamer, soy sauce dipping, traditional food"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "餐厅",
+          "室内"
+        ],
+        "required_objects": [
+          "饺子",
+          "蒸笼"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "中式饺子",
+        "search_terms": [
+          "美食",
+          "中餐",
+          "饺子",
+          "蒸笼"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-031",
+      "filename": "p-031_northern_lights.jpg",
+      "path": "test_photos/p-031_northern_lights.jpg",
+      "sha256": "d31a9c71a7e3d8f4f59dac1fcd149c19023ab500898c86212d5a881cc38bfc35",
+      "width": 1536,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "风景",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Spectacular aurora borealis northern lights over snowy mountains, green purple lights dancing in night sky, magical winter landscape"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "极光",
+          "山",
+          "湖"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "北极光",
+        "search_terms": [
+          "极光",
+          "夜景",
+          "风景",
+          "山",
+          "湖"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-032",
+      "filename": "p-032_waterfall.jpg",
+      "path": "test_photos/p-032_waterfall.jpg",
+      "sha256": "05cdc801ba2e815e23a410899aec885d62c936224ca7c34bc6d693f328f6c68b",
+      "width": 1536,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "风景",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Majestic tropical waterfall in lush green rainforest, mist rising, crystal clear water, long exposure smooth effect"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "瀑布",
+          "森林",
+          "水潭"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "瀑布",
+        "search_terms": [
+          "瀑布",
+          "森林",
+          "风景",
+          "水潭"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-033",
+      "filename": "p-033_desert.jpg",
+      "path": "test_photos/p-033_desert.jpg",
+      "sha256": "6b34d919a76ab427347e6bc3b15e0347ac5790fbb3a4265836f02ce466dfb6bf",
+      "width": 1536,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "风景",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Vast sand dunes in Sahara desert at sunset, golden sand ripples, dramatic shadows, warm orange light"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "沙漠",
+          "沙丘",
+          "日落"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "沙漠日落",
+        "search_terms": [
+          "沙漠",
+          "日落",
+          "风景",
+          "沙丘"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-034",
+      "filename": "p-034_lavender_field.jpg",
+      "path": "test_photos/p-034_lavender_field.jpg",
+      "sha256": "d9dfa491e22bd63e8acc822e8f409ce9ab4a610883daa1b5cb8a532248b35e83",
+      "width": 1536,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "风景",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Endless purple lavender field in Provence France, summer, purple flowers stretching to horizon, old farmhouse in distance"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "薰衣草",
+          "花田"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "薰衣草田",
+        "search_terms": [
+          "薰衣草",
+          "花田",
+          "风景"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-035",
+      "filename": "p-035_tulips.jpg",
+      "path": "test_photos/p-035_tulips.jpg",
+      "sha256": "09be33d14dbf3fa081161ad06a65af5ec757eb657624e5f7c7181c9a014a1247",
+      "width": 1536,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "风景",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Colorful tulip field in Netherlands spring, rows of red yellow pink tulips, windmill in background, bright sunny day"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "郁金香",
+          "风车",
+          "花田"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "郁金香花田",
+        "search_terms": [
+          "郁金香",
+          "花田",
+          "春天",
+          "风车"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-036",
+      "filename": "p-036_great_wall.jpg",
+      "path": "test_photos/p-036_great_wall.jpg",
+      "sha256": "1a7fd39a503e60e2f0d2f03edae9122ccc960b914566e7f10f747168f45fa366",
+      "width": 1536,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "风景",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Great Wall of China winding over green mountains, historic ancient architecture, sunny day, grand landscape"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "长城",
+          "山"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "长城",
+        "search_terms": [
+          "长城",
+          "古迹",
+          "风景",
+          "山"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-037",
+      "filename": "p-037_shanghai_bund.jpg",
+      "path": "test_photos/p-037_shanghai_bund.jpg",
+      "sha256": "197f1a6e71f86fa139fd3fa33f46212c9509b530100e3e200d9314012092b476",
+      "width": 1536,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "风景",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Shanghai Bund skyline at night with Pudong skyscrapers, Huangpu river, bright city lights, modern metropolis"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "东方明珠",
+          "建筑",
+          "黄浦江"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "上海外滩夜景",
+        "search_terms": [
+          "上海",
+          "夜景",
+          "城市",
+          "东方明珠",
+          "建筑",
+          "黄浦江"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-038",
+      "filename": "p-038_ancient_town.jpg",
+      "path": "test_photos/p-038_ancient_town.jpg",
+      "sha256": "a7b3c97c04c521dc9d782de98295e436e190d36b4c3f6336691384cab0cf4a2b",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "风景",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Traditional Chinese water town Jiangnan style, ancient stone bridges over canal, old buildings, boats on water, peaceful atmosphere"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "石桥",
+          "河道",
+          "古建筑"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "江南水乡古镇",
+        "search_terms": [
+          "古镇",
+          "建筑",
+          "江南",
+          "石桥",
+          "河道",
+          "古建筑"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-039",
+      "filename": "p-039_modern_architecture.jpg",
+      "path": "test_photos/p-039_modern_architecture.jpg",
+      "sha256": "c00dd84728b3a8b89d8ae5faa2d73148b65a43c993e37657ce83d3c9fcf69f68",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "建筑",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Futuristic modern architecture building with glass and steel, geometric lines, blue sky reflection, contemporary design"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "现代建筑",
+          "玻璃幕墙"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "现代建筑",
+        "search_terms": [
+          "建筑",
+          "现代",
+          "现代建筑",
+          "玻璃幕墙"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-040",
+      "filename": "p-040_photographer.jpg",
+      "path": "test_photos/p-040_photographer.jpg",
+      "sha256": "ea703db09865af3e2e403b20a8511f5e8e35c2f3181746d49ce62f4fb3b66514",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "人像",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Photographer holding camera taking photo outdoors, sunset light, creative person, casual clothing, golden hour"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "人物",
+          "相机",
+          "日落"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "摄影师拍照",
+        "search_terms": [
+          "人物",
+          "摄影",
+          "日落",
+          "相机"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-041",
+      "filename": "p-041_reading.jpg",
+      "path": "test_photos/p-041_reading.jpg",
+      "sha256": "65c83fd9440d05be9d512056bb092b669ff3f1c194ff2018938be6e1277dc2fb",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "人像",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Young woman reading a book by window, cozy indoor, soft natural light, peaceful quiet moment, warm tones"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "书",
+          "窗户"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "窗边读书",
+        "search_terms": [
+          "人物",
+          "阅读",
+          "休闲",
+          "书",
+          "窗户"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-042",
+      "filename": "p-042_cycling.jpg",
+      "path": "test_photos/p-042_cycling.jpg",
+      "sha256": "8cdc5fc0d4e614ca9167b6a1c1f157e9cc9948ae6f0232f9405b8ea8cb44f3cf",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "运动",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Person cycling on a country road through green forest, sunny day, healthy active lifestyle, motion blur on wheels"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "人物",
+          "自行车",
+          "道路"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "骑行",
+        "search_terms": [
+          "人物",
+          "运动",
+          "自行车",
+          "道路"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-043",
+      "filename": "p-043_yoga.jpg",
+      "path": "test_photos/p-043_yoga.jpg",
+      "sha256": "9a1be723995d42f789fa5a9aa02255d999d535bc9a4983572543d40062f6ca60",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "运动",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Woman doing yoga pose on a mat in bright room with plants, morning light, peaceful wellness lifestyle"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "瑜伽垫",
+          "植物"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "瑜伽",
+        "search_terms": [
+          "人物",
+          "运动",
+          "瑜伽",
+          "瑜伽垫",
+          "植物"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-044",
+      "filename": "p-044_cooking.jpg",
+      "path": "test_photos/p-044_cooking.jpg",
+      "sha256": "eecd6c00fb2b31acd7c18b64e998630a6f89aba428ee2866c9435789692f7f6a",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "日常",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Person cooking in modern kitchen, chopping vegetables, steam from pan, warm home atmosphere"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "蔬菜",
+          "厨房"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "做饭",
+        "search_terms": [
+          "人物",
+          "厨房",
+          "烹饪",
+          "蔬菜"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-045",
+      "filename": "p-045_vinyl_record.jpg",
+      "path": "test_photos/p-045_vinyl_record.jpg",
+      "sha256": "c29e91b3873c76b0e524d831a2b6e2770b6b110892ac83eadb3b7d3478a608d0",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "物品",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Vintage vinyl record player with record spinning, retro style, warm moody lighting, music nostalgia"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "唱片机",
+          "黑胶唱片"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "黑胶唱片机",
+        "search_terms": [
+          "物品",
+          "音乐",
+          "复古",
+          "唱片机",
+          "黑胶唱片"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-046",
+      "filename": "p-046_camera.jpg",
+      "path": "test_photos/p-046_camera.jpg",
+      "sha256": "716cf317499ddca782b3ab2558b500e7d292b5bf80e18a7e2f576011c589a029",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "物品",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Vintage film camera on wooden table, leather case, photography equipment, soft light, retro aesthetic"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "相机",
+          "胶卷"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [
+          "PENTAX"
+        ],
+        "summary": "老式相机",
+        "search_terms": [
+          "物品",
+          "相机",
+          "复古",
+          "胶卷"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-047",
+      "filename": "p-047_plants.jpg",
+      "path": "test_photos/p-047_plants.jpg",
+      "sha256": "559951f4e8ed58d624b7f9f9dd4d47aba98072cf94e8a0fa7a7cbe995b7dab2e",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "物品",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Collection of indoor potted plants succulents cacti on white shelf, urban jungle decor, bright natural light"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "盆栽",
+          "多肉植物",
+          "仙人掌"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "室内绿植",
+        "search_terms": [
+          "植物",
+          "家居",
+          "盆栽",
+          "多肉植物",
+          "仙人掌"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-051",
+      "filename": "p-051_autumn_leaves.jpg",
+      "path": "test_photos/p-051_autumn_leaves.jpg",
+      "sha256": "1b9151a9c75ee6b4abfac2ef504f1d4f7d0d05c9a93ddf4a4e93f0e64df775c7",
+      "width": 1536,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "风景",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Vibrant red orange maple leaves in autumn forest, close up, fall colors, soft sunlight through leaves"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "枫叶",
+          "树"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "秋天枫叶",
+        "search_terms": [
+          "秋天",
+          "枫叶",
+          "风景",
+          "树"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-053",
+      "filename": "p-053_starry_night.jpg",
+      "path": "test_photos/p-053_starry_night.jpg",
+      "sha256": "f51bae63267bd0645a187df7feda162c0fac90354d39c76c137b9dfd3a3cbd36",
+      "width": 1536,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "风景",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Starry night sky over mountain lake, milky way galaxy visible, clear dark sky, astrophotography, reflection in still water"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "银河",
+          "星空",
+          "山",
+          "湖"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "星空银河",
+        "search_terms": [
+          "星空",
+          "夜景",
+          "银河",
+          "山",
+          "湖"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-055",
+      "filename": "p-055_fireworks.jpg",
+      "path": "test_photos/p-055_fireworks.jpg",
+      "sha256": "f40f8e5025c0b3bbe14e60b3796b6b4e38e9738c972458b249605341f8644be0",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "节日",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Spectacular fireworks exploding in night sky over city, colorful bursts, celebration, light trails, New Year atmosphere"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "烟花",
+          "城市建筑"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "烟花",
+        "search_terms": [
+          "烟花",
+          "夜景",
+          "节日",
+          "城市建筑"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-056",
+      "filename": "p-056_workspace.jpg",
+      "path": "test_photos/p-056_workspace.jpg",
+      "sha256": "eacac47cc12a8d4da948bb1fa4c0c59c6dfc7103a599ba45a73224e1a4e46853",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "日常",
+      "generation": {
+        "generator": "generate_threaded.py",
+        "prompt": "Programmer developer workspace with dual monitors, code on screen, mechanical keyboard, messy desk with coffee, dark room with screen glow"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "电脑显示器",
+          "键盘",
+          "代码"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "程序员工作区",
+        "search_terms": [
+          "办公",
+          "电脑",
+          "编程",
+          "电脑显示器",
+          "键盘",
+          "代码"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-058",
+      "filename": "p-058_making_coffee.jpg",
+      "path": "test_photos/p-058_making_coffee.jpg",
+      "sha256": "849d632fdafa4d05a9ae9770e921e847a16a015c5d4da487c7db4336aedc0f63",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "日常",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Person pouring coffee from moka pot into cup in kitchen, morning routine, steam rising, home kitchen, warm light"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "咖啡壶",
+          "杯子"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "在家煮咖啡",
+        "search_terms": [
+          "咖啡",
+          "厨房",
+          "早晨",
+          "人物",
+          "咖啡壶",
+          "杯子"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-060",
+      "filename": "p-060_bus_window.jpg",
+      "path": "test_photos/p-060_bus_window.jpg",
+      "sha256": "e897677792d197db2f1deb7c4cc463d3a8dd0acd7f458765ab74c6318176ebbf",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "交通",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "View from bus window on rainy day, raindrops on glass, city street passing by, blurry urban scenery, commute mood"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "车窗",
+          "雨滴",
+          "汽车"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "公交车窗外雨景",
+        "search_terms": [
+          "公交",
+          "雨",
+          "通勤",
+          "车窗",
+          "雨滴",
+          "汽车"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-061",
+      "filename": "p-061_walking_dog.jpg",
+      "path": "test_photos/p-061_walking_dog.jpg",
+      "sha256": "c4be527ee7090afe131d4bc312aa90569efe4d5d96c5dba80eec572effafe587",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "日常",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Person walking golden retriever dog on leash in residential neighborhood, autumn sidewalk, trees with fallen leaves, evening light"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "人物",
+          "狗",
+          "道路"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "小区遛狗",
+        "search_terms": [
+          "遛狗",
+          "散步",
+          "日常",
+          "人物",
+          "狗",
+          "道路"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-064",
+      "filename": "p-064_clothes_store.jpg",
+      "path": "test_photos/p-064_clothes_store.jpg",
+      "sha256": "798db12c9a68d7cbe8e0f6961adba58cdc3f6ec1a9888791073f77c5acc2f57c",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "购物",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Person browsing clothes on rack in clothing store, shopping mall, casual shopping"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "衣服",
+          "货架"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "服装店挑衣服",
+        "search_terms": [
+          "购物",
+          "商场",
+          "人物",
+          "衣服",
+          "货架"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-066",
+      "filename": "p-066_takeout.jpg",
+      "path": "test_photos/p-066_takeout.jpg",
+      "sha256": "652da789a63ede841dca677e7de87b6f0cfabe02ea5f317f09b7885f366fce82",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "日常",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Chinese takeout food containers on coffee table at home, watching TV, lazy evening meal, disposable chopsticks, casual dinner"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "外卖盒",
+          "面条",
+          "电视"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "在家吃外卖",
+        "search_terms": [
+          "外卖",
+          "晚餐",
+          "宅家",
+          "外卖盒",
+          "面条",
+          "电视"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-067",
+      "filename": "p-067_barbecue.jpg",
+      "path": "test_photos/p-067_barbecue.jpg",
+      "sha256": "2a1257a6df8f3e671182f946badb80c0c026acb406824e3b3b234126c1633c38",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "聚会",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Backyard barbecue grill with meat skewers cooking, friends gathered around, summer evening outdoor party, smoke from grill"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "人物",
+          "烧烤架",
+          "肉串"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 5,
+          "max": 5
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "户外烧烤",
+        "search_terms": [
+          "烧烤",
+          "聚会",
+          "夏天",
+          "人物",
+          "烧烤架",
+          "肉串"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-068",
+      "filename": "p-068_tv_couch.jpg",
+      "path": "test_photos/p-068_tv_couch.jpg",
+      "sha256": "09580400cc88e5b8ea0ca78dee1b24e00a5550f321bc3cc38677d4d6b51b0f3c",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "日常",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Person lying on couch watching TV at home, blanket over legs, bowl of snacks on lap, evening relaxation, living room"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "爆米花",
+          "电视",
+          "沙发"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "沙发看电视",
+        "search_terms": [
+          "电视",
+          "沙发",
+          "休闲",
+          "爆米花"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-069",
+      "filename": "p-069_doing_laundry.jpg",
+      "path": "test_photos/p-069_doing_laundry.jpg",
+      "sha256": "ec08de1eef4c655c0ffa06f5730e7c97fd6c411c46305a34607a1f3d720473c7",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "日常",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Loading washing machine with clothes at home, laundry basket, household chores, laundry room"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "洗衣机",
+          "衣物"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "用洗衣机洗衣服",
+        "search_terms": [
+          "家务",
+          "洗衣",
+          "人物",
+          "洗衣机",
+          "衣物"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-070",
+      "filename": "p-070_balcony_plants.jpg",
+      "path": "test_photos/p-070_balcony_plants.jpg",
+      "sha256": "455aa7e054bf6078a45ef28fa3c3970eb6711404c9dd2902908a918042149e8d",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "日常",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Small balcony garden with potted plants herbs, watering can, morning sunlight, apartment balcony view"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内",
+          "阳台"
+        ],
+        "required_objects": [
+          "阳台",
+          "盆栽",
+          "浇水壶"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "阳台浇花",
+        "search_terms": [
+          "阳台",
+          "植物",
+          "早晨",
+          "盆栽",
+          "浇水壶"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-071",
+      "filename": "p-071_napping_cat.jpg",
+      "path": "test_photos/p-071_napping_cat.jpg",
+      "sha256": "34b9c7a7675adeeeb9ce5d722fda529b44b89a3e09a218f49105ddb5dc1280d0",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "宠物",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Cat sleeping curled up on laptop keyboard, home office funny moment, cute pet interrupting work"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "猫",
+          "笔记本电脑"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "猫趴在键盘上睡觉",
+        "search_terms": [
+          "猫",
+          "宠物",
+          "办公",
+          "笔记本电脑"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-072",
+      "filename": "p-072_gym_workout.jpg",
+      "path": "test_photos/p-072_gym_workout.jpg",
+      "sha256": "83e40aba22a71059666bddfdce414ba11ecfc9b08b28af3428bd2bb9ebc6f085",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "运动",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Person lifting dumbbells at gym, workout exercise, fitness training, gym equipment in background"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "哑铃",
+          "健身器材"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 2,
+          "max": 4
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "健身房举铁",
+        "search_terms": [
+          "健身",
+          "运动",
+          "健身房",
+          "人物",
+          "哑铃",
+          "健身器材"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-073",
+      "filename": "p-073_jogging_park.jpg",
+      "path": "test_photos/p-073_jogging_park.jpg",
+      "sha256": "1c5248e49aa38b5f67b45e5e100fb44840fe6b199e2cc24ac51c72b2ab2dfa87",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "运动",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Person jogging running in park, morning exercise, athletic wear, trees and path, healthy lifestyle"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "人物",
+          "公园",
+          "道路"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "公园跑步",
+        "search_terms": [
+          "跑步",
+          "运动",
+          "公园",
+          "人物",
+          "道路"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-074",
+      "filename": "p-074_studying.jpg",
+      "path": "test_photos/p-074_studying.jpg",
+      "sha256": "3766c3ed2a3d930563dce2dd782a07e6c0cf5414f41b5823262ca883f9c68879",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "学习",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Student studying at desk with open books and laptop, late night, desk lamp, coffee cup, focused learning"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "书",
+          "书桌"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "书桌前学习",
+        "search_terms": [
+          "学习",
+          "书桌",
+          "夜晚",
+          "人物",
+          "书"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-075",
+      "filename": "p-075_video_call.jpg",
+      "path": "test_photos/p-075_video_call.jpg",
+      "sha256": "88b4373169bcc39067a167daef4bde2d881b1984182dfd417de70b76d6fa4932",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "工作",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Person on video call on laptop, work from home, waving at screen, home office, remote meeting"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "笔记本电脑",
+          "视频会议"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "视频会议通话",
+        "search_terms": [
+          "工作",
+          "电脑",
+          "远程",
+          "人物",
+          "笔记本电脑",
+          "视频会议"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-076",
+      "filename": "p-076_writing_notes.jpg",
+      "path": "test_photos/p-076_writing_notes.jpg",
+      "sha256": "efe0d3f9d8a38a88dcbf8a783fc367de49ae14e6edca5fab7105cf186856f3b7",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "学习",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Hand writing notes in notebook with pen, close up of writing, study or journaling, paper notebook"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "手",
+          "笔记本",
+          "钢笔"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "手写笔记",
+        "search_terms": [
+          "笔记",
+          "学习",
+          "书写",
+          "手",
+          "笔记本",
+          "钢笔"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-077",
+      "filename": "p-077_movie_theater.jpg",
+      "path": "test_photos/p-077_movie_theater.jpg",
+      "sha256": "e32f1f72f0609edf606b5b0c2287e2d23a1a1c3fea02bec77b9a29bc654a1cf8",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "娱乐",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Inside dark movie theater cinema, bright movie screen, silhouettes of audience watching film, popcorn bucket"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "电影屏幕",
+          "爆米花",
+          "观众"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 2,
+          "max": 10
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "电影院看电影",
+        "search_terms": [
+          "电影",
+          "影院",
+          "娱乐",
+          "电影屏幕",
+          "爆米花",
+          "观众"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-078",
+      "filename": "p-078_convenience_store.jpg",
+      "path": "test_photos/p-078_convenience_store.jpg",
+      "sha256": "c0a435added1dfeee9413cdcfc11a6b6dfe66f79697267c1f468ccb84537a609",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "日常",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Inside 24-hour convenience store at night, person paying at counter, refrigerated drinks, late night snack"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内",
+          "便利店"
+        ],
+        "required_objects": [
+          "人物",
+          "便利店",
+          "货架"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 2,
+          "max": 2
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "深夜便利店",
+        "search_terms": [
+          "便利店",
+          "夜晚",
+          "购物",
+          "人物",
+          "货架"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-079",
+      "filename": "p-079_umbrella_rain.jpg",
+      "path": "test_photos/p-079_umbrella_rain.jpg",
+      "sha256": "839208d622f64347d0f4dbb15bc1a9f6899f6d83277fe8be32ea95148a21eee0",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "天气",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Person holding colorful umbrella walking in rain on city sidewalk, rainy day, wet pavement reflections, umbrella close up"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "人物",
+          "雨伞",
+          "街道"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "雨中撑伞走路",
+        "search_terms": [
+          "雨",
+          "伞",
+          "走路",
+          "人物",
+          "雨伞",
+          "街道"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-080",
+      "filename": "p-080_child_drawing.jpg",
+      "path": "test_photos/p-080_child_drawing.jpg",
+      "sha256": "26418871d276ead56519aecd4384efc5a0b2d60c96ffa174ddd45889eb132829",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "家庭",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Little child drawing with crayons on paper at table, hands close up, colorful art, creative kids activity"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "儿童",
+          "画纸",
+          "蜡笔"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "小孩画画",
+        "search_terms": [
+          "孩子",
+          "画画",
+          "家庭",
+          "儿童",
+          "画纸",
+          "蜡笔"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-081",
+      "filename": "p-081_reading_bed.jpg",
+      "path": "test_photos/p-081_reading_bed.jpg",
+      "sha256": "3c3651a47ea392714d2546544e905dc065f9a1756de5f48b7a1eb18c8131dc21",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "日常",
+      "generation": {
+        "generator": "generate_daily.py",
+        "prompt": "Person reading book in bed before sleep, warm bedside lamp light, cozy bedroom, night time reading"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "书",
+          "床"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "睡前床上看书",
+        "search_terms": [
+          "阅读",
+          "床",
+          "夜晚",
+          "人物",
+          "书"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-082",
+      "filename": "p-082_friends_selfie.jpg",
+      "path": "test_photos/p-082_friends_selfie.jpg",
+      "sha256": "ba5119973e7e35b0e6337564ea7908baac6d4eeea7a58b4c54c92a3ad8db224d",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "群像",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Group of young friends taking selfie together at restaurant table, everyone smiling making funny faces at phone camera, holding up drinks glasses, casual phone selfie high angle, warm indoor restaurant lighting, candid happy moment, realistic smartphone photo"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "餐桌",
+          "酒杯"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 6,
+          "max": 6
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "朋友餐厅自拍合影",
+        "search_terms": [
+          "朋友",
+          "聚餐",
+          "自拍",
+          "人物",
+          "餐桌",
+          "酒杯"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-083",
+      "filename": "p-083_graduation.jpg",
+      "path": "test_photos/p-083_graduation.jpg",
+      "sha256": "571d70b805e20eb5080e6cc61d72efd9beace11a26693b55d8a2ecd673e4e079",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "群像",
+      "generation": {
+        "generator": null,
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "毕业生",
+          "学士服",
+          "学士帽"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 8,
+          "max": 8
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "毕业合影扔帽子",
+        "search_terms": [
+          "毕业",
+          "同学",
+          "合影",
+          "毕业生",
+          "学士服",
+          "学士帽"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-084",
+      "filename": "p-084_wedding_group.jpg",
+      "path": "test_photos/p-084_wedding_group.jpg",
+      "sha256": "33949d98acafc88c49aa12b478f51e36c18c2bfd9b9a368bbc08ad53bd4df5d3",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "群像",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Wedding group photo outdoors in garden, bride in white dress and groom in suit surrounded by smiling family and wedding party, everyone posing together, sunny day, happy wedding celebration"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外",
+          "婚礼"
+        ],
+        "required_objects": [
+          "新娘",
+          "新郎",
+          "婚礼合影"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 15,
+          "max": 20
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "婚礼亲友合影",
+        "search_terms": [
+          "婚礼",
+          "合影",
+          "家庭",
+          "新娘",
+          "新郎",
+          "婚礼合影"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-085",
+      "filename": "p-085_team_meeting.jpg",
+      "path": "test_photos/p-085_team_meeting.jpg",
+      "sha256": "5104025de9950298f1293a1f0c1a1357292b804d4961d1cd4b077485f9bc8c3f",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "群像",
+      "generation": {
+        "generator": null,
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "会议桌",
+          "白板"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 6,
+          "max": 6
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "团队会议讨论",
+        "search_terms": [
+          "工作",
+          "会议",
+          "团队",
+          "人物",
+          "会议桌",
+          "白板"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-086",
+      "filename": "p-086_birthday_group.jpg",
+      "path": "test_photos/p-086_birthday_group.jpg",
+      "sha256": "40a7851a80db08791483bf67cd156d84a88338eacbb379d6829d76381013bb29",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "群像",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Group of friends gathered around birthday cake with lit candles, everyone singing happy birthday, warm indoor party lighting, faces glowing from candlelight, surprise celebration moment, candid photo"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "生日蛋糕",
+          "蜡烛"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 7,
+          "max": 7
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "生日惊喜聚会",
+        "search_terms": [
+          "生日",
+          "朋友",
+          "聚会",
+          "人物",
+          "生日蛋糕",
+          "蜡烛"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-087",
+      "filename": "p-087_class_photo.jpg",
+      "path": "test_photos/p-087_class_photo.jpg",
+      "sha256": "f5e3858314d0ed01d6fbc82955d3a5ecf79d7a785149fbdf1881af0644795078",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "群像",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Vintage early 2000s school class photo, students in uniforms lined up in rows in front of school building, slightly faded nostalgic film look, traditional class group photograph"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "学生",
+          "教师",
+          "校服"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 22,
+          "max": 22
+        },
+        "required_text": [
+          "CLASS VI-A",
+          "2002-2003"
+        ],
+        "optional_text": [
+          "DPS"
+        ],
+        "summary": "班级毕业合影",
+        "search_terms": [
+          "同学",
+          "老照片",
+          "合影",
+          "学生",
+          "教师",
+          "校服"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-088",
+      "filename": "p-088_hiking_group.jpg",
+      "path": "test_photos/p-088_hiking_group.jpg",
+      "sha256": "202a87512f6ddd1086faaa00d3d5ca4eba806b29064ef353f460d2d08317041b",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "群像",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Group of happy hikers at mountain summit, backpacks and trekking poles, beautiful mountain view behind them, arms around each other, smiling tired but proud, achievement celebration"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "人物",
+          "登山包",
+          "雪山"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 4,
+          "max": 4
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "登山团队山顶合影",
+        "search_terms": [
+          "徒步",
+          "团队",
+          "山",
+          "人物",
+          "登山包",
+          "雪山"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-089",
+      "filename": "p-089_concert_crowd.jpg",
+      "path": "test_photos/p-089_concert_crowd.jpg",
+      "sha256": "fa831707e68a0c994fbc46da74a55b1db15422ef9d5642e4b638e6dc7ca4fc52",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "群像",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Wide shot of crowd at outdoor music festival, thousands of people with hands up enjoying concert, stage lights in distance, summer music festival atmosphere, audience enjoying live music together"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "人群",
+          "舞台"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 50,
+          "max": 10000
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "演唱会观众群像",
+        "search_terms": [
+          "演唱会",
+          "人群",
+          "音乐",
+          "舞台"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-090",
+      "filename": "p-090_family_dinner.jpg",
+      "path": "test_photos/p-090_family_dinner.jpg",
+      "sha256": "9a81154b908833745bb94d2b18dfba24c7c62639a393e7d7349a98b77277d0f9",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "群像",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Big multi-generation Chinese family dinner around large round table, lazy susan in center with many dishes, everyone eating and talking warmly, Spring Festival reunion dinner feeling, cozy restaurant"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "餐厅",
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "圆桌",
+          "菜肴",
+          "灯笼"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 11,
+          "max": 11
+        },
+        "required_text": [],
+        "optional_text": [
+          "福",
+          "万事如意",
+          "新年快乐"
+        ],
+        "summary": "家庭团圆聚餐",
+        "search_terms": [
+          "家庭",
+          "聚餐",
+          "团圆",
+          "人物",
+          "圆桌",
+          "菜肴",
+          "灯笼"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-091",
+      "filename": "p-091_bridesmaids.jpg",
+      "path": "test_photos/p-091_bridesmaids.jpg",
+      "sha256": "5c7f685a5fb154b88d6eb1b2562f8d263fc9cd8eadb662d9087d6657135649fc",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "群像",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Bride and bridesmaids in matching robes getting ready together in hotel room before wedding, laughing while doing hair and makeup, champagne glasses, happy wedding preparation candid moment"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "新娘",
+          "香槟杯"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 6,
+          "max": 6
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "伴娘团婚礼准备",
+        "search_terms": [
+          "婚礼",
+          "闺蜜",
+          "化妆",
+          "人物",
+          "新娘",
+          "香槟杯"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-092",
+      "filename": "p-092_sports_team.jpg",
+      "path": "test_photos/p-092_sports_team.jpg",
+      "sha256": "2ada0b9821d329ec91dcfdb53f6b2df1e5e26b81edda34537316938c1a83457f",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "群像",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Happy soccer team group photo on green field after winning game, players in red and blue jerseys holding up trophy together, arms around each other, smiling victory celebration, grass field"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "足球队员",
+          "奖杯",
+          "球衣"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 11,
+          "max": 11
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "球队获胜合影",
+        "search_terms": [
+          "运动",
+          "团队",
+          "足球",
+          "足球队员",
+          "奖杯",
+          "球衣"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-093",
+      "filename": "p-093_roommates.jpg",
+      "path": "test_photos/p-093_roommates.jpg",
+      "sha256": "1159dd5edf489d7eb4a38fe86f033045d7cf4f13c6c9b6fdb76751771264a9f1",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "群像",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Group of college roommates hanging out in cozy messy dorm room, sitting on beds and floor eating snacks laughing, casual lazy Sunday afternoon together, candid student life, natural lighting"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "床",
+          "零食"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 5,
+          "max": 5
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "大学室友宿舍合照",
+        "search_terms": [
+          "室友",
+          "大学",
+          "宿舍",
+          "人物",
+          "床",
+          "零食"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-094",
+      "filename": "p-094_sneaky_cat.jpg",
+      "path": "test_photos/p-094_sneaky_cat.jpg",
+      "sha256": "3b9343acf1a6f8222d06916e2e3b2d1918f30a64061460bbd57fab4b6c478e32",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Blurry quick phone photo of orange cat knocking over a glass of water on kitchen table, mid-action paw hitting glass, water spilling, slightly out of focus because taken in a hurry, funny candid pet moment"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "猫",
+          "玻璃杯",
+          "水"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "抓拍猫打翻杯子",
+        "search_terms": [
+          "猫",
+          "抓拍",
+          "搞笑",
+          "玻璃杯",
+          "水"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-095",
+      "filename": "p-095_food_photo.jpg",
+      "path": "test_photos/p-095_food_photo.jpg",
+      "sha256": "b44f9ea678406bf57736f549b2d5ceeacb723c420276c98ed9abb96a95e8914d",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Quick casual phone photo of Chinese food dishes on restaurant table before eating, slightly tilted angle not perfectly composed, typical food photo people send to WeChat group, dishes include stir fry and rice, warm lighting"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "餐厅"
+        ],
+        "required_objects": [
+          "中餐",
+          "米饭",
+          "餐桌"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "吃饭前随手拍菜",
+        "search_terms": [
+          "美食",
+          "随手拍",
+          "中餐",
+          "米饭",
+          "餐桌"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-096",
+      "filename": "p-096_sleeping_dog.jpg",
+      "path": "test_photos/p-096_sleeping_dog.jpg",
+      "sha256": "f470cdf2ca1bbc2e662afb1230dc8f1701beca99f5f7abe558a8e7c36f5dd5bb",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Candid phone photo of golden retriever dog sleeping on back in weird funny position on couch, belly up legs in air, taken quietly to not wake it, slightly dark living room evening light, cute silly pet moment"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "狗",
+          "沙发"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "偷拍狗狗奇葩睡姿",
+        "search_terms": [
+          "狗",
+          "宠物",
+          "偷拍",
+          "沙发"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-097",
+      "filename": "p-097_rain_out_window.jpg",
+      "path": "test_photos/p-097_rain_out_window.jpg",
+      "sha256": "330f50bb34b65871fa2185d8fdc0e1d29e7f789ef6b4fd5cd6fe56437ccdd7c5",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Quick blurry snap out of office window showing heavy rain pouring down, raindrops streaking on glass, grey overcast sky, taken from desk during work day, typical photo sent to complain about weather to friends"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "窗户",
+          "雨滴",
+          "建筑"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "办公室窗外下雨随手拍",
+        "search_terms": [
+          "雨",
+          "窗户",
+          "办公",
+          "雨滴",
+          "建筑"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-098",
+      "filename": "p-098_feet_travel.jpg",
+      "path": "test_photos/p-098_feet_travel.jpg",
+      "sha256": "0de0ed5f7666416c4a776194cf3effac56767ef94f2aa7602e3a16db2a7342ed",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Typical tourist feet photo while traveling, person wearing white sneakers standing on stone path with beautiful mountain lake view in background, casual travel snapshot taken to show location"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "鞋",
+          "湖",
+          "山"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "旅行时拍脚和风景",
+        "search_terms": [
+          "旅行",
+          "脚",
+          "风景",
+          "鞋",
+          "湖",
+          "山"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-099",
+      "filename": "p-099_messy_desk.jpg",
+      "path": "test_photos/p-099_messy_desk.jpg",
+      "sha256": "955883926c38736b9d34d0050651a0fdeeebb07c9e07ca8378bf4232e87885de",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Realistic messy cluttered work desk from above, papers scattered, half empty coffee cup, keyboard, post-it notes, cables tangled, not staged at all, photo taken to show friend how busy work is"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "办公桌",
+          "键盘",
+          "文件",
+          "杯子"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "乱糟糟的办公桌",
+        "search_terms": [
+          "办公",
+          "桌面",
+          "杂乱",
+          "办公桌",
+          "键盘",
+          "文件",
+          "杯子"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-100",
+      "filename": "p-100_traffic_jam.jpg",
+      "path": "test_photos/p-100_traffic_jam.jpg",
+      "sha256": "5d8f1819f339424ec74249c1f35fb7176d6a47c352acc04c1a45e0e79dc1ed75",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Photo from car driver seat showing long line of cars in heavy traffic jam on highway, taken through windshield during evening commute, cars stopped as far as eye can see, red tail lights, frustrated commute moment"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "车内"
+        ],
+        "required_objects": [
+          "汽车",
+          "公路",
+          "车流"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "堵车时随手拍路况",
+        "search_terms": [
+          "堵车",
+          "通勤",
+          "交通",
+          "汽车",
+          "公路",
+          "车流"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-101",
+      "filename": "p-101_sunset_sky.jpg",
+      "path": "test_photos/p-101_sunset_sky.jpg",
+      "sha256": "78e0547fec242dae5796a71780f75d60530ca0fc0b4bcc75a3d036c7a4e35a5c",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Quick phone snap of beautiful pink and orange sunset sky through car window while driving home, slightly blurry through glass, amazing colorful clouds, taken because sky looked pretty after work"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "车内"
+        ],
+        "required_objects": [
+          "日落",
+          "天空",
+          "车窗"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "开车时随手拍日落",
+        "search_terms": [
+          "日落",
+          "天空",
+          "随手拍",
+          "车窗"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-102",
+      "filename": "p-102_coffee_morning.jpg",
+      "path": "test_photos/p-102_coffee_morning.jpg",
+      "sha256": "e4ce3dc9aac801bee22f18d6c21275e8b3331236b05f89b6b5f26c85e997b1b6",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "First cup of black coffee in morning on wooden kitchen counter, hand holding mug just after waking up, soft morning sunlight through window, first thing after getting up photo, lazy morning vibe"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "手",
+          "咖啡杯",
+          "植物"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "早上第一杯咖啡",
+        "search_terms": [
+          "咖啡",
+          "早晨",
+          "日常",
+          "手",
+          "咖啡杯",
+          "植物"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-103",
+      "filename": "p-103_funny_sign.jpg",
+      "path": "test_photos/p-103_funny_sign.jpg",
+      "sha256": "d5eb0be98d314ea3cb32e9f1d65b8388fd97727d4115d4dd3f7afec4eebf96d6",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Amusing funny street sign noticed while walking, photo taken crookedly to send to group chat, snapshot of weird or humorous sign seen on the street, casual walk discovery"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外",
+          "街道"
+        ],
+        "required_objects": [
+          "路牌",
+          "恐龙图案"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [
+          "PLEASE DRIVE CAREFULLY",
+          "DINOSAURS CROSSING"
+        ],
+        "optional_text": [],
+        "summary": "路边有趣的路牌随手拍",
+        "search_terms": [
+          "路牌",
+          "搞笑",
+          "街头",
+          "恐龙图案"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-104",
+      "filename": "p-104_parking_ticket.jpg",
+      "path": "test_photos/p-104_parking_ticket.jpg",
+      "sha256": "7e3a29bffb1e6c99200938ae48cbb031226679439986baafe477fe501988c971",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Yellow parking ticket tucked under car windshield wiper, photo taken to complain to friends about bad luck, slightly annoyed perspective, everyday annoying moment snapshot"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外",
+          "街道"
+        ],
+        "required_objects": [
+          "汽车",
+          "罚单",
+          "挡风玻璃"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "PARKING VIOLATION"
+        ],
+        "optional_text": [],
+        "summary": "车上被贴罚单拍下来吐槽",
+        "search_terms": [
+          "罚单",
+          "车",
+          "吐槽",
+          "汽车",
+          "挡风玻璃"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-105",
+      "filename": "p-105_new_shoes.jpg",
+      "path": "test_photos/p-105_new_shoes.jpg",
+      "sha256": "2601f8dcb7a63e006f0b58d2e9b2822e03e57c647a81e6b87a8ea484dd9e8584",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Person wearing new white sneakers standing on sidewalk, photo taken looking down at feet to show friends new shoes purchase, excited shopping photo, casual new purchase share"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "人物",
+          "运动鞋"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "新买的鞋子拍给朋友看",
+        "search_terms": [
+          "鞋子",
+          "购物",
+          "分享",
+          "人物",
+          "运动鞋"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-106",
+      "filename": "p-106_empty_fridge.jpg",
+      "path": "test_photos/p-106_empty_fridge.jpg",
+      "sha256": "33d5c2f59f7a6cfdbb48c245b70f0d6d1b45a1e3663b826941be4cc9b1226d24",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Open refrigerator door at midnight showing almost empty inside, only a few bottles of condiments and beer on shelves, light from fridge illuminating dark kitchen, late night hungry moment before ordering takeout"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "冰箱",
+          "手机"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "半夜打开冰箱空空如也",
+        "search_terms": [
+          "冰箱",
+          "深夜",
+          "外卖",
+          "人物",
+          "手机"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-107",
+      "filename": "p-107_bad_hair_day.jpg",
+      "path": "test_photos/p-107_bad_hair_day.jpg",
+      "sha256": "f233df56cc565050fdeb12e18417695e644d00789cde0fa03e65d7efb52f0b2e",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Funny selfie of messy bed head hair in mirror just after waking up in morning, no makeup, squinting at camera, silly face, selfie sent to partner or friend group to joke about bed hair"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "手机",
+          "镜子"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "刚睡醒炸毛自拍",
+        "search_terms": [
+          "自拍",
+          "早晨",
+          "搞笑",
+          "人物",
+          "手机",
+          "镜子"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-108",
+      "filename": "p-108_delivery_packages.jpg",
+      "path": "test_photos/p-108_delivery_packages.jpg",
+      "sha256": "442d7f7598ee601a86783813865cd1a1b006dd8c9cb9372bce9cbda581f73f7e",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "随手拍",
+      "generation": {
+        "generator": "generate_group_casual.py",
+        "prompt": "Pile of cardboard delivery boxes stacked at front door, many online shopping packages arrived, photo taken of all the boxes to show shopping haul, excited online shopping delivery day"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "快递箱",
+          "门"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "summary": "一堆快递到了拍一下",
+        "search_terms": [
+          "快递",
+          "购物",
+          "日常",
+          "快递箱",
+          "门"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-109",
+      "filename": "p-109_stop_sign.jpg",
+      "path": "test_photos/p-109_stop_sign.jpg",
+      "sha256": "f8654b9adff39411a5c5695d5dbc6db4bbba5010488efaed84e2a13b42cf5f60",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Red octagonal STOP traffic sign at street intersection, white capital letters 'STOP' clearly visible on red background, stop sign on metal pole, suburban street, daytime, realistic photo"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "停车标志",
+          "道路"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "STOP"
+        ],
+        "optional_text": [],
+        "summary": "STOP停车标志",
+        "search_terms": [
+          "路牌",
+          "停车标志",
+          "道路"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-110",
+      "filename": "p-110_no_smoking.jpg",
+      "path": "test_photos/p-110_no_smoking.jpg",
+      "sha256": "d0da315710ae49c773fafaec2b24eb6fe5ff631fbcd0937980e7bee6c8a4b818",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "No smoking sign on restaurant wall, red circle with diagonal line over cigarette icon, black text 'NO SMOKING' below the symbol, indoor wall, public place notice sign"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "禁止吸烟标志"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "NO SMOKING"
+        ],
+        "optional_text": [],
+        "summary": "禁止吸烟标识",
+        "search_terms": [
+          "标识牌",
+          "禁止吸烟标志"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-111",
+      "filename": "p-111_street_sign.jpg",
+      "path": "test_photos/p-111_street_sign.jpg",
+      "sha256": "89df465c0e7fb6acab1042dd4e0dc3263818d908c2290d713caefe15539857de",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Blue street sign on pole at intersection, white Chinese characters '中山路' (Zhongshan Road) on blue background, also English 'ZHONGSHAN LU', street corner daytime, traffic sign"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "街道"
+        ],
+        "required_objects": [
+          "路牌",
+          "建筑"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "中山路",
+          "ZHONGSHAN LU"
+        ],
+        "optional_text": [],
+        "summary": "中山路路牌",
+        "search_terms": [
+          "路牌",
+          "建筑"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-112",
+      "filename": "p-112_exit_sign.jpg",
+      "path": "test_photos/p-112_exit_sign.jpg",
+      "sha256": "12bb10d2e18ccf7b53a5e9d3ef14fb98fa09d366bd26118ee575c49ed25e64d3",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Green illuminated EXIT sign above door in building, white text 'EXIT' and running person pictogram, glowing green emergency exit sign, indoor public building, safety sign"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "安全出口标志",
+          "门"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "EXIT"
+        ],
+        "optional_text": [],
+        "summary": "安全出口标识",
+        "search_terms": [
+          "安全出口",
+          "标识牌",
+          "安全出口标志",
+          "门"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-113",
+      "filename": "p-113_coffee_cup.jpg",
+      "path": "test_photos/p-113_coffee_cup.jpg",
+      "sha256": "ec1eee1a9c87a772529f822584ba707c386fc7b3fd91fbae5c0fb735d1d8480b",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Disposable paper coffee cup from Starbucks on wooden table, green mermaid logo visible, side of cup showing text, coffee shop table, morning natural light"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "餐厅"
+        ],
+        "required_objects": [
+          "咖啡杯"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "Starbucks"
+        ],
+        "optional_text": [
+          "Rewards"
+        ],
+        "summary": "星巴克咖啡杯",
+        "search_terms": [
+          "咖啡杯"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-114",
+      "filename": "p-114_restaurant_menu.jpg",
+      "path": "test_photos/p-114_restaurant_menu.jpg",
+      "sha256": "fde81e9c197d9919e0ba31bd8f4f5013552e7e256778733bf915e6ffb99e1687",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Chinese restaurant menu open on table, dishes listed with prices in Chinese, visible Chinese text includes '宫保鸡丁 ¥38' '麻婆豆腐 ¥28' '米饭 ¥3', paper menu, restaurant table setting"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "餐厅"
+        ],
+        "required_objects": [
+          "菜单",
+          "菜品图片"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "宫保鸡丁",
+          "麻婆豆腐",
+          "米饭"
+        ],
+        "optional_text": [
+          "热菜",
+          "凉菜",
+          "汤类",
+          "主食"
+        ],
+        "summary": "餐厅菜单",
+        "search_terms": [
+          "菜单",
+          "菜品图片"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-115",
+      "filename": "p-115_coca_cola.jpg",
+      "path": "test_photos/p-115_coca_cola.jpg",
+      "sha256": "5cab8637ae24fa312f62fc825c3733e68e8b6104131f080c76196a3983c87325",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Classic red Coca-Cola can on table, white script logo 'Coca-Cola' clearly visible on red aluminum can, condensation droplets, cold drink"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "可乐罐"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "Coca-Cola"
+        ],
+        "optional_text": [
+          "140 CALORIES"
+        ],
+        "summary": "可口可乐罐",
+        "search_terms": [
+          "可乐罐",
+          "饮料"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-116",
+      "filename": "p-116_mcdonalds.jpg",
+      "path": "test_photos/p-116_mcdonalds.jpg",
+      "sha256": "ba21ad9cae9f9ff56bc690a22a252f855d54977db3d5dafaa73c2a3a5da6d41b",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "McDonald's golden arches M sign visible through car window or from street, restaurant exterior, yellow M logo on red background, fast food restaurant building"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外",
+          "街道"
+        ],
+        "required_objects": [
+          "麦当劳门店",
+          "招牌"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "McDonald's"
+        ],
+        "optional_text": [],
+        "summary": "麦当劳招牌",
+        "search_terms": [
+          "麦当劳",
+          "招牌",
+          "麦当劳门店"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-117",
+      "filename": "p-117_milk_carton.jpg",
+      "path": "test_photos/p-117_milk_carton.jpg",
+      "sha256": "28aec742dd96aa83435a89d5d61470a1ee15a478a0f6e14419176840e33ec34d",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Carton of Yili pure milk on kitchen table, blue and white packaging, Chinese text '伊利纯牛奶' clearly visible, milk carton packaging, breakfast table"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "牛奶盒"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "伊利",
+          "纯牛奶"
+        ],
+        "optional_text": [
+          "3.2g",
+          "1L"
+        ],
+        "summary": "伊利纯牛奶盒",
+        "search_terms": [
+          "牛奶盒"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-118",
+      "filename": "p-118_noodle_cup.jpg",
+      "path": "test_photos/p-118_noodle_cup.jpg",
+      "sha256": "5ee7d4bc0daed5cf7755a7b5786dd99aab444fd8dfb3f2db96ea27cb887cdc22",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Cup Noodles instant noodle cup on desk, red packaging with white text 'Cup Noodles', open cup with chopsticks resting on edge, office desk quick meal"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "泡面杯",
+          "筷子"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "CUP NOODLES"
+        ],
+        "optional_text": [
+          "BEEF FLAVOUR"
+        ],
+        "summary": "合味道杯面",
+        "search_terms": [
+          "泡面杯",
+          "筷子"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-119",
+      "filename": "p-119_water_bottle.jpg",
+      "path": "test_photos/p-119_water_bottle.jpg",
+      "sha256": "d0d4988984960aca9f6f6d75e88b05ea1775c8cd9a6d446194426723b84ff53b",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Plastic water bottle of Nongfu Spring on table, red cap, label with Chinese text '农夫山泉' visible, clear water bottle"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "矿泉水瓶"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "农夫山泉"
+        ],
+        "optional_text": [
+          "NONGFU SPRING"
+        ],
+        "summary": "农夫山泉矿泉水",
+        "search_terms": [
+          "矿泉水瓶"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-120",
+      "filename": "p-120_chocolate_bar.jpg",
+      "path": "test_photos/p-120_chocolate_bar.jpg",
+      "sha256": "ae7f69385afa8987d2369898fa0e24423d1ce4a28da4bc4d2f2296d4b6dd3401",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Hershey's chocolate bar partially unwrapped on table, silver wrapper with brown text 'HERSHEY'S' visible, milk chocolate bar"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "巧克力",
+          "包装纸"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "HERSHEY'S"
+        ],
+        "optional_text": [
+          "milk chocolate"
+        ],
+        "summary": "好时巧克力",
+        "search_terms": [
+          "巧克力",
+          "包装纸"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-121",
+      "filename": "p-121_phone_lock.jpg",
+      "path": "test_photos/p-121_phone_lock.jpg",
+      "sha256": "d9b76da36bcab9c4f7588114960e0ea92668b471fce1e356ffbc3a5230632db8",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Close up of iPhone lock screen showing time, digital clock displaying '9:41', date text, phone on table, screen lit up, smartphone display"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "手机",
+          "锁屏"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "9:41",
+          "Monday, June 6"
+        ],
+        "optional_text": [],
+        "summary": "手机锁屏显示时间",
+        "search_terms": [
+          "手机",
+          "锁屏"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-122",
+      "filename": "p-122_laptop_keyboard.jpg",
+      "path": "test_photos/p-122_laptop_keyboard.jpg",
+      "sha256": "d143b2df6b0e3a33d0ab9805f39c629e765cd92c59ca6636fe0a411370f7fc76",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Laptop on office desk with screen showing code or text, keyboard in foreground, screen has visible text 'Hello World' in editor, programmer workspace"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "笔记本电脑",
+          "代码编辑器"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "hello world"
+        ],
+        "optional_text": [
+          "Python"
+        ],
+        "summary": "笔记本电脑屏幕显示Hello World",
+        "search_terms": [
+          "笔记本电脑",
+          "代码编辑器"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-123",
+      "filename": "p-123_tv_remote.jpg",
+      "path": "test_photos/p-123_tv_remote.jpg",
+      "sha256": "ce0325f72669cab74f58d051776dd4b5e4f8590bfc8f48870ee51e204e4f513b",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "TV remote control on couch, buttons with text labels, visible button text includes 'POWER' 'VOL' 'CH', television remote control on sofa"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "电视遥控器"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "POWER",
+          "VOL",
+          "CH"
+        ],
+        "optional_text": [],
+        "summary": "电视遥控器",
+        "search_terms": [
+          "遥控器",
+          "电视遥控器"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-124",
+      "filename": "p-124_book_cover.jpg",
+      "path": "test_photos/p-124_book_cover.jpg",
+      "sha256": "0b53b9da503e9d42a4b12f44516fe30f477a1c1de16ef153e86c9e70241760bc",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Book on desk, cover showing Chinese title '活着' by Yu Hua, book standing upright, white and black cover design, literature book on wooden desk"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "书"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "活着",
+          "余华"
+        ],
+        "optional_text": [],
+        "summary": "《活着》书籍封面",
+        "search_terms": [
+          "书"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-125",
+      "filename": "p-125_newspaper.jpg",
+      "path": "test_photos/p-125_newspaper.jpg",
+      "sha256": "067d859b988dea2df01a4d1bfdc26119671adc575e687fbf3dd192b51921914e",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Newspaper open on table, Chinese newspaper with headlines, visible large headline text '人民日报' at top, dated newspaper, breakfast table reading"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "报纸"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "人民日报"
+        ],
+        "optional_text": [
+          "RENMIN RIBAO"
+        ],
+        "summary": "人民日报报纸",
+        "search_terms": [
+          "报纸"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-126",
+      "filename": "p-126_notebook_handwriting.jpg",
+      "path": "test_photos/p-126_notebook_handwriting.jpg",
+      "sha256": "93f554130ff7b25dd528fae9008af31b16b291e65a42fda0d8b9d960a94b830d",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Open notebook with handwritten Chinese notes on paper, handwritten text includes '会议纪要' '待办事项' at top, blue ballpoint pen writing, lined notebook page"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "笔记本",
+          "手写文字"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "会议纪要",
+          "待办事项"
+        ],
+        "optional_text": [
+          "2024年6月13日",
+          "Q2",
+          "Q3"
+        ],
+        "summary": "手写笔记本会议纪要",
+        "search_terms": [
+          "笔记本",
+          "手写文字"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-127",
+      "filename": "p-127_train_ticket.jpg",
+      "path": "test_photos/p-127_train_ticket.jpg",
+      "sha256": "de73095e376da7ebcd0a2466a74d9d860d47b1aec0170efd6d76c10ffee035a1",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Chinese high-speed rail train ticket on table, blue paper ticket, visible text includes '北京南' '上海虹桥' 'G1' departure and destination, train ticket"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "火车票"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "北京南",
+          "上海虹桥",
+          "G1"
+        ],
+        "optional_text": [
+          "2023年07月01日",
+          "08:00"
+        ],
+        "summary": "高铁票北京到上海",
+        "search_terms": [
+          "火车票"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-129",
+      "filename": "p-129_boarding_pass.jpg",
+      "path": "test_photos/p-129_boarding_pass.jpg",
+      "sha256": "1acdd6a9f8f15dd8bdb9e3ed7f71cc0edcc9155efbb0d2aff46243ae053ffe48",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Airline boarding pass on airport table, white paper ticket, visible text 'BOARDING PASS' at top, flight information, airline ticket"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "登机牌"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "BOARDING PASS",
+          "DL 1234",
+          "3A"
+        ],
+        "optional_text": [
+          "NEW YORK-JFK",
+          "LOS ANGELES-LAX"
+        ],
+        "summary": "登机牌",
+        "search_terms": [
+          "登机牌"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-132",
+      "filename": "p-132_convenience_store.jpg",
+      "path": "test_photos/p-132_convenience_store.jpg",
+      "sha256": "44745f0d568951be641d8224f3eb955cfa336161a522248a74649e83c7497bb3",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "7-Eleven convenience store illuminated sign at night, orange red and green logo with '7-ELEVEN' text, open 24 hours store front, city street night"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "街道",
+          "户外"
+        ],
+        "required_objects": [
+          "便利店",
+          "招牌"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "7-ELEVEN",
+          "OPEN 24 HOURS"
+        ],
+        "optional_text": [],
+        "summary": "711便利店招牌",
+        "search_terms": [
+          "招牌",
+          "便利店"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-133",
+      "filename": "p-133_calendar.jpg",
+      "path": "test_photos/p-133_calendar.jpg",
+      "sha256": "8da0d5b9bd5634d3fe86366725d8854077a9e0d70f270ca0205db155e971b038",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Desk calendar on office desk showing month, visible large date number '15' and month text '八月 2026' (August 2026), Chinese calendar on desk"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "台历"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "八月 2026",
+          "15",
+          "星期六"
+        ],
+        "optional_text": [],
+        "summary": "日历显示8月15日",
+        "search_terms": [
+          "日历",
+          "台历"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-134",
+      "filename": "p-134_tshirt_text.jpg",
+      "path": "test_photos/p-134_tshirt_text.jpg",
+      "sha256": "1038969fea25fc7924a9dc957318bcd181d263149c2841a675c4eac26df2a1f3",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Person wearing white t-shirt with black text 'I ❤️ NY' printed on chest, casual clothing, person visible from chest down, street photo"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "人物",
+          "T恤"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [
+          "I LOVE NY"
+        ],
+        "optional_text": [
+          "I ❤ NY"
+        ],
+        "summary": "T恤上印I love NY",
+        "search_terms": [
+          "T恤",
+          "人物"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-135",
+      "filename": "p-135_mug_text.jpg",
+      "path": "test_photos/p-135_mug_text.jpg",
+      "sha256": "61d1504b81dad303ff77b56a717d8c15019c249e0dd3b7ebbf858485c3b7af3c",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Ceramic coffee mug on office desk with text 'WORLD'S BEST BOSS' printed in black on white mug, office desk with the mug, boss gift mug"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "马克杯"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "WORLD'S BEST BOSS"
+        ],
+        "optional_text": [],
+        "summary": "马克杯写着WORLD'S BEST BOSS",
+        "search_terms": [
+          "马克杯"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-136",
+      "filename": "p-136_fridge_magnets.jpg",
+      "path": "test_photos/p-136_fridge_magnets.jpg",
+      "sha256": "86e8920ec2e19a76e2c6609c794421ddf198de60d7478d94f3cc3b5393c8e2ff",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "development",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Refrigerator door covered with magnets and notes, one white paper note stuck on with magnet saying '买牛奶' (buy milk) handwritten in Chinese, kitchen fridge"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "冰箱",
+          "冰箱贴",
+          "便签"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "买牛奶"
+        ],
+        "optional_text": [],
+        "summary": "冰箱贴便签写着买牛奶",
+        "search_terms": [
+          "冰箱贴",
+          "便签",
+          "冰箱"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-137",
+      "filename": "p-137_price_tag.jpg",
+      "path": "test_photos/p-137_price_tag.jpg",
+      "sha256": "55796a8b0005346bd395cbbb5959e6c29a3ff4bef7b9eb25f9af7d1473b42b9a",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "test",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Price tag hanging on clothing in store, white tag with black text '¥199' price, clothing retail price tag on shirt in shop"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "价格标签",
+          "衣服"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "¥199"
+        ],
+        "optional_text": [],
+        "summary": "衣服价格标签¥199",
+        "search_terms": [
+          "价格标签",
+          "衣服"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    },
+    {
+      "id": "p-138",
+      "filename": "p-138_welcome_mat.jpg",
+      "path": "test_photos/p-138_welcome_mat.jpg",
+      "sha256": "617e0af4d5d3e494935570670471d5451fabf4e0a0a90d94f13e344ce5ddeaa3",
+      "width": 1024,
+      "height": 1024,
+      "source": "synthetic",
+      "split": "validation",
+      "category": "OCR文字",
+      "generation": {
+        "generator": "generate_text_photos.py",
+        "prompt": "Welcome doormat at front door entrance, coir mat with text 'WELCOME' printed in large black letters, front door entrance mat, home entryway"
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "门垫",
+          "门"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "WELCOME"
+        ],
+        "optional_text": [],
+        "summary": "门垫写着WELCOME",
+        "search_terms": [
+          "门垫",
+          "门"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-13",
+        "notes": "人数按最终成图复核；大群像使用区间；可选文字漏识别不扣分。"
+      }
+    }
+  ]
+}

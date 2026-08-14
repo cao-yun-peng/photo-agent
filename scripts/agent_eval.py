@@ -11,6 +11,7 @@
     python scripts/agent_eval.py --mode real --output artifacts/agent-eval-real.json
     python scripts/agent_eval.py --mode real --dimensions D1,D2,D8 --priority P0
 """
+
 from __future__ import annotations
 
 import argparse
@@ -136,7 +137,9 @@ class ToolCallInterceptor:
     def wrap(self, fn: ToolFn, tool_name: str) -> ToolFn:
         async def wrapped(**kwargs: Any) -> dict[str, Any]:
             # user_id/db 是 Agent 运行时注入字段，不属于模型构造的参数。
-            public_args = {k: v for k, v in kwargs.items() if k not in {"user_id", "db"}}
+            public_args = {
+                k: v for k, v in kwargs.items() if k not in {"user_id", "db"}
+            }
             record: dict[str, Any] = {
                 "tool": tool_name,
                 "arguments": _json_safe(public_args),
@@ -179,7 +182,9 @@ def build_tool_stubs(
     photos_available = bool(context.get("photos_available", True))
     matching_ids = list(context.get("matching_photos", [])) if photos_available else []
     similar_ids = list(context.get("similar_photos", [])) if photos_available else []
-    all_ids = [p["id"] for p in photo_library.get("photos", [])] if photos_available else []
+    all_ids = (
+        [p["id"] for p in photo_library.get("photos", [])] if photos_available else []
+    )
 
     async def search_photos(**_: Any) -> dict[str, Any]:
         items = [_photo_item(pid, photo_library) for pid in matching_ids]
@@ -228,11 +233,7 @@ def build_tool_stubs(
 
     async def get_photo_detail(photo_id: UUID, **_: Any) -> dict[str, Any]:
         source_id = next(
-            (
-                pid
-                for pid in all_ids
-                if _photo_id_to_uuid(pid) == photo_id
-            ),
+            (pid for pid in all_ids if _photo_id_to_uuid(pid) == photo_id),
             None,
         )
         if source_id is None:
@@ -276,6 +277,31 @@ def build_tool_stubs(
     }
 
 
+def build_real_photo_library(manifest_path: str) -> dict[str, Any]:
+    """把人工复核图片清单转换为 Agent 工具桩需要的相册结构。
+
+    这让真实 LLM 的工具选择评测能使用本批图片的真实内容标注，同时继续隔离
+    PostgreSQL、OSS 和异步任务；它衡量的是 Agent 决策，不是向量检索质量。
+    """
+    payload = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    photos = []
+    for image in payload.get("images", []):
+        truth = image["ground_truth"]
+        photos.append(
+            {
+                "id": image["id"],
+                "ai_description": truth["summary"],
+                "scene": truth["acceptable_scenes"][0],
+                "objects": truth["required_objects"],
+                "tags": truth["search_terms"],
+                "text_in_image": truth["required_text"],
+                "persons_count": truth["persons"]["min"],
+                "status": "done",
+            }
+        )
+    return {"description": payload.get("name", "人工复核图片库"), "photos": photos}
+
+
 def _rule_exact_value(rule: Any) -> Any:
     if isinstance(rule, dict):
         if "equals" in rule:
@@ -297,7 +323,7 @@ def _replay_arguments(test_case: dict[str, Any], tool_name: str) -> dict[str, An
             if key.startswith(prefix):
                 value = _rule_exact_value(rule)
                 if value is not None:
-                    args[key[len(prefix):]] = value
+                    args[key[len(prefix) :]] = value
                 elif key.endswith(".query") and isinstance(rule, dict):
                     required = rule.get("contains_all") or rule.get("contains_any")
                     if required:
@@ -306,14 +332,18 @@ def _replay_arguments(test_case: dict[str, Any], tool_name: str) -> dict[str, An
     if tool_name == "apply_skill":
         photo_id = context.get("confirmed_photo_id") or "p-001"
         args = {
-            "photo_id": str(_photo_id_to_uuid(photo_id)) if str(photo_id).startswith("p-") else str(photo_id),
+            "photo_id": str(_photo_id_to_uuid(photo_id))
+            if str(photo_id).startswith("p-")
+            else str(photo_id),
             "extra_prompt": "宫崎骏动漫风格",
         }
         return args
     if tool_name == "get_photo_detail":
         photo_id = context.get("confirmed_photo_id") or "p-001"
         return {
-            "photo_id": str(_photo_id_to_uuid(photo_id)) if str(photo_id).startswith("p-") else str(photo_id)
+            "photo_id": str(_photo_id_to_uuid(photo_id))
+            if str(photo_id).startswith("p-")
+            else str(photo_id)
         }
     if tool_name == "recommend_skills":
         photo_id = context.get("confirmed_photo_id") or "p-001"
@@ -322,7 +352,10 @@ def _replay_arguments(test_case: dict[str, Any], tool_name: str) -> dict[str, An
         return {"limit": 50}
     if tool_name == "ask_clarification":
         hint = expected.get("expected_hint_contains") or "请补充照片线索"
-        return {"question": f"{hint}：能再具体说明一下吗？", "options": ["按时间", "按地点", "按类型"]}
+        return {
+            "question": f"{hint}：能再具体说明一下吗？",
+            "options": ["按时间", "按地点", "按类型"],
+        }
     if tool_name == "final_answer":
         parts = list(expected.get("expected_result_contains", []))
         if expected.get("expected_hint_contains"):
@@ -331,7 +364,9 @@ def _replay_arguments(test_case: dict[str, Any], tool_name: str) -> dict[str, An
     return {}
 
 
-def build_replay_llm_decision(test_case: dict[str, Any]) -> Callable[..., Awaitable[tuple[dict, dict]]]:
+def build_replay_llm_decision(
+    test_case: dict[str, Any],
+) -> Callable[..., Awaitable[tuple[dict, dict]]]:
     """按标注动作回放；只用于评测管线自检，不代表模型推理结果。"""
     expected = test_case.get("expected", {})
     sequence = list(expected.get("expected_tools", []))
@@ -380,7 +415,9 @@ def build_replay_llm_decision(test_case: dict[str, Any]) -> Callable[..., Awaita
                         "type": "function",
                         "function": {
                             "name": "final_answer",
-                            "arguments": json.dumps({"message": "回放完成"}, ensure_ascii=False),
+                            "arguments": json.dumps(
+                                {"message": "回放完成"}, ensure_ascii=False
+                            ),
                         },
                     }
                 ],
@@ -395,7 +432,9 @@ def _parameter_matches(actual: Any, rule: Any) -> bool:
     """执行结构化参数断言；不再把自然语言描述当成已验证规则。"""
     actual_text = str(actual)
     if not isinstance(rule, dict):
-        expected = str(_photo_id_to_uuid(rule)) if str(rule).startswith("p-") else str(rule)
+        expected = (
+            str(_photo_id_to_uuid(rule)) if str(rule).startswith("p-") else str(rule)
+        )
         return actual_text == expected
 
     if rule.get("not_empty") and actual in (None, "", [], {}):
@@ -432,12 +471,18 @@ def _selection_score(expected: list[str], actual: list[str]) -> float:
     return 2 * precision * recall / (precision + recall) if precision + recall else 0.0
 
 
-def evaluate_test_case(result: TestCaseResult, test_case: dict[str, Any]) -> TestCaseResult:
+def evaluate_test_case(
+    result: TestCaseResult, test_case: dict[str, Any]
+) -> TestCaseResult:
     expected = test_case.get("expected", {})
     expected_tools = list(expected.get("expected_tools", []))
     for tool_name, minimum in expected.get("min_tool_calls", {}).items():
         if minimum > expected_tools.count(tool_name):
-            insertion = expected_tools.index(tool_name) + 1 if tool_name in expected_tools else 0
+            insertion = (
+                expected_tools.index(tool_name) + 1
+                if tool_name in expected_tools
+                else 0
+            )
             expected_tools[insertion:insertion] = [tool_name] * (
                 minimum - expected_tools.count(tool_name)
             )
@@ -472,7 +517,11 @@ def evaluate_test_case(result: TestCaseResult, test_case: dict[str, Any]) -> Tes
             tool_name, parameter_name = check_name.split(".", 1)
             call = next((c for c in result.tool_calls if c["tool"] == tool_name), None)
             actual = call.get("arguments", {}).get(parameter_name) if call else None
-            if call and parameter_name in call.get("arguments", {}) and _parameter_matches(actual, rule):
+            if (
+                call
+                and parameter_name in call.get("arguments", {})
+                and _parameter_matches(actual, rule)
+            ):
                 passed_checks += 1
             else:
                 result.evaluation_notes.append(
@@ -531,7 +580,9 @@ def evaluate_test_case(result: TestCaseResult, test_case: dict[str, Any]) -> Tes
 
     if test_case.get("dimension") == "D8":
         result.score_safety = (
-            1.0 if result.score_must_not_call == 1.0 and result.score_content == 1.0 else 0.0
+            1.0
+            if result.score_must_not_call == 1.0 and result.score_content == 1.0
+            else 0.0
         )
 
     max_steps = expected.get("max_steps")
@@ -579,7 +630,12 @@ def _build_initial_state(
     context = test_case.get("context", {})
     if not any(
         context.get(key)
-        for key in ("session_history", "confirmed_photo_id", "last_search_items", "rejected_photo_ids")
+        for key in (
+            "session_history",
+            "confirmed_photo_id",
+            "last_search_items",
+            "rejected_photo_ids",
+        )
     ):
         return None
     from app.services.agent import AgentState
@@ -592,7 +648,9 @@ def _build_initial_state(
     confirmed = context.get("confirmed_photo_id")
     if confirmed:
         state.confirmed_photo_id = (
-            str(_photo_id_to_uuid(confirmed)) if str(confirmed).startswith("p-") else str(confirmed)
+            str(_photo_id_to_uuid(confirmed))
+            if str(confirmed).startswith("p-")
+            else str(confirmed)
         )
     state.last_search_items = []
     for raw_item in context.get("last_search_items", []):
@@ -627,7 +685,11 @@ def _collect_result_from_events(
             continue
         raw_arguments = payload.get("arguments", {})
         try:
-            arguments = json.loads(raw_arguments) if isinstance(raw_arguments, str) else raw_arguments
+            arguments = (
+                json.loads(raw_arguments)
+                if isinstance(raw_arguments, str)
+                else raw_arguments
+            )
         except json.JSONDecodeError:
             arguments = {"message": str(raw_arguments)}
         result.tool_calls.append(
@@ -659,7 +721,9 @@ def _collect_result_from_events(
         result.error = result.final_message or "Agent LLM circuit breaker is open"
     elif clarify_events:
         result.final_status = "clarified"
-        result.final_message = str(clarify_events[-1].get("payload", {}).get("question", ""))
+        result.final_message = str(
+            clarify_events[-1].get("payload", {}).get("question", "")
+        )
     elif error_events and not final_events:
         payload = error_events[-1].get("payload", {})
         result.final_status = "error"
@@ -672,14 +736,20 @@ def _collect_result_from_events(
     ):
         result.final_status = "fallback"
         if final_events:
-            result.final_message = str(final_events[-1].get("payload", {}).get("message", ""))
+            result.final_message = str(
+                final_events[-1].get("payload", {}).get("message", "")
+            )
     else:
         result.final_status = "completed"
         if final_events:
-            result.final_message = str(final_events[-1].get("payload", {}).get("message", ""))
+            result.final_message = str(
+                final_events[-1].get("payload", {}).get("message", "")
+            )
 
 
-def _run_request_validation_case(result: TestCaseResult, test_case: dict[str, Any]) -> bool:
+def _run_request_validation_case(
+    result: TestCaseResult, test_case: dict[str, Any]
+) -> bool:
     expected = test_case.get("expected", {})
     if expected.get("expected_error_type") != "validation":
         return False
@@ -762,9 +832,16 @@ async def run_single_test(
         initial_state = _build_initial_state(test_case, user_id)
 
         patches = [
-            patch("app.services.agent.fallback_search", new=wrapped_stubs["fallback_search"]),
-            patch("app.services.agent.browse_candidates", new=wrapped_stubs["browse_candidates"]),
+            patch(
+                "app.services.agent.fallback_search",
+                new=wrapped_stubs["fallback_search"],
+            ),
+            patch(
+                "app.services.agent.browse_candidates",
+                new=wrapped_stubs["browse_candidates"],
+            ),
         ]
+
         async def deterministic_clarification(_: str) -> dict[str, Any]:
             return {
                 "ok": True,
@@ -863,18 +940,19 @@ def build_summary(
 
     safety_results = [result for result in results if result.dimension == "D8"]
     safety_pass_rate = (
-        sum(result.score_safety == 1.0 for result in safety_results) / len(safety_results)
+        sum(result.score_safety == 1.0 for result in safety_results)
+        / len(safety_results)
         if safety_results
         else 1.0
     )
     metrics_valid = mode == "real"
     gate_passed = (
-        errors == 0
-        and passed == total
+        errors == 0 and passed == total
         if mode == "replay"
         else errors == 0
         and overall_score >= overall_threshold
-        and safety_pass_rate >= _dimension_config(scoring_config, "D8").get("pass_threshold", 0.9)
+        and safety_pass_rate
+        >= _dimension_config(scoring_config, "D8").get("pass_threshold", 0.9)
     )
     return {
         "mode": mode,
@@ -892,7 +970,9 @@ def build_summary(
             "tool_selection_accuracy": round(average("score_tool_selection"), 4),
             "tool_order_accuracy": round(average("score_tool_order"), 4),
             "must_not_call_violation_rate": round(
-                sum(result.score_must_not_call == 0 for result in results) / total if total else 0,
+                sum(result.score_must_not_call == 0 for result in results) / total
+                if total
+                else 0,
                 4,
             ),
             "parameter_accuracy": round(average("score_parameter"), 4),
@@ -900,7 +980,9 @@ def build_summary(
             "content_accuracy": round(average("score_content"), 4),
             "safety_pass_rate": round(safety_pass_rate, 4),
             "budget_compliance_rate": round(
-                sum(result.score_budget == 1.0 for result in results) / total if total else 0,
+                sum(result.score_budget == 1.0 for result in results) / total
+                if total
+                else 0,
                 4,
             ),
         },
@@ -918,16 +1000,25 @@ def validate_dataset(dataset: dict[str, Any]) -> None:
     for test_case in test_cases:
         if not test_case.get("id") or not test_case.get("dimension"):
             raise ValueError("每条用例必须包含 id 和 dimension")
-        for name, rule in test_case.get("expected", {}).get("parameter_checks", {}).items():
+        for name, rule in (
+            test_case.get("expected", {}).get("parameter_checks", {}).items()
+        ):
             if "." not in name:
                 raise ValueError(f"参数断言必须使用 tool.parameter 格式: {name}")
             if isinstance(rule, dict):
                 supported = {
-                    "equals", "equals_photo_id", "not_empty", "contains_all", "contains_any", "excludes"
+                    "equals",
+                    "equals_photo_id",
+                    "not_empty",
+                    "contains_all",
+                    "contains_any",
+                    "excludes",
                 }
                 unknown = set(rule) - supported
                 if unknown:
-                    raise ValueError(f"{test_case['id']} 使用未知参数断言: {sorted(unknown)}")
+                    raise ValueError(
+                        f"{test_case['id']} 使用未知参数断言: {sorted(unknown)}"
+                    )
 
 
 def validate_real_mode() -> None:
@@ -990,6 +1081,7 @@ async def run_evaluation(
     output_path: str = "agent_eval_result.json",
     preflight: bool = True,
     max_infra_errors: int = 3,
+    photo_manifest_path: str | None = None,
 ) -> dict[str, Any]:
     normalized_mode = "replay" if mode == "mock" else mode
     if mode == "mock":
@@ -1003,11 +1095,18 @@ async def run_evaluation(
             await validate_real_connectivity()
 
     test_cases = list(dataset.get("test_cases", []))
+    photo_library = (
+        build_real_photo_library(photo_manifest_path)
+        if photo_manifest_path
+        else dataset.get("photo_library", {})
+    )
     if dimensions:
         test_cases = [case for case in test_cases if case["dimension"] in dimensions]
     if priority:
         test_cases = [case for case in test_cases if case.get("priority") == priority]
-    logger.info("Photo Agent 评测 | mode=%s | cases=%d", normalized_mode, len(test_cases))
+    logger.info(
+        "Photo Agent 评测 | mode=%s | cases=%d", normalized_mode, len(test_cases)
+    )
 
     requested_total = len(test_cases)
     results: list[TestCaseResult] = []
@@ -1016,13 +1115,17 @@ async def run_evaluation(
     for case in test_cases:
         result = await run_single_test(
             case,
-            dataset.get("photo_library", {}),
+            photo_library,
             normalized_mode,
         )
         results.append(result)
         if result.error_type in INFRA_ERROR_TYPES:
             infra_errors += 1
-            if normalized_mode == "real" and max_infra_errors > 0 and infra_errors >= max_infra_errors:
+            if (
+                normalized_mode == "real"
+                and max_infra_errors > 0
+                and infra_errors >= max_infra_errors
+            ):
                 aborted = True
                 logger.error(
                     "连续基础设施错误达到上限（%d），提前终止真实评测",
@@ -1042,6 +1145,7 @@ async def run_evaluation(
             "dataset_version": dataset.get("version"),
             "dataset_role": dataset.get("dataset_role", "unspecified"),
             "mode": normalized_mode,
+            "photo_manifest": photo_manifest_path,
         },
         "summary": summary,
         "results": [result.to_dict() for result in results],
@@ -1104,6 +1208,10 @@ def main() -> int:
         help="结果 JSON 路径",
     )
     parser.add_argument(
+        "--photo-manifest",
+        help="可选：用人工复核 photo_manifest 替换 Agent 评测中的模拟相册内容",
+    )
+    parser.add_argument(
         "--mode",
         choices=["real", "replay", "mock"],
         default="replay",
@@ -1134,6 +1242,7 @@ def main() -> int:
                 output_path=args.output,
                 preflight=not args.skip_preflight,
                 max_infra_errors=args.max_infra_errors,
+                photo_manifest_path=args.photo_manifest,
             )
         )
     except ValueError as exc:
