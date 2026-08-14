@@ -83,3 +83,63 @@
 - 失败原因：模型把 `scene` 自由扩写为“面包店、大学宿舍、森林、足球场”等，
   破坏受控分类字段；对象与 OCR 的小幅提升不足以抵消场景退化。
 - 决策：拒绝 v2。v3 恢复受控场景枚举，自由场景描述仅写入 `scene_detail`。
+
+### v3-development（2026-08-14）
+
+- Prompt SHA256：`f78d6c8b0e6e1fe8fe51809c81332f99257655c62ff75294c2df2933752348bb`。
+- 场景家族 98.48%，场景精确 72.73%，人数 87.88%，物体 Macro Recall
+  72.98%，OCR/解析 100%，门禁 PASS。
+- 性能：66/66 请求成功；墙钟 98.1 秒；API 延迟 P50 2.75 秒；总 Token
+  112,779。
+- 结论：相比 v1，v3 提高精确场景和 OCR，但开发集人数与物体略低；进入
+  validation 与 v1 做冻结候选比较。
+
+### v1/v3-validation（2026-08-14）
+
+| 指标 | v1 | v3 |
+|---|---:|---:|
+| 场景家族 | 95.65% | 100.00% |
+| 场景精确 | 60.87% | 73.91% |
+| 人数 | 69.57% | 82.61% |
+| 物体 Macro Recall | 60.14% | 74.64% |
+| OCR | 100.00% | 100.00% |
+| JSON 解析 | 100.00% | 100.00% |
+
+- v3 在 validation 的所有指标均不低于 v1；人数距离 85% 门槛差 1 张，因此
+  v3 validation 总门禁仍为 FAIL。
+- 决策：选择并冻结 v3。此后不再根据 validation 修改 Prompt。
+
+### v3-frozen-test（2026-08-14，唯一一次测试集运行）
+
+- 场景家族 100.00%，场景精确 78.26%，人数 95.65%，物体 Macro Recall
+  60.87%，OCR/解析 100%，总门禁 FAIL。
+- 性能：23/23 请求成功；墙钟 39.6 秒；API 延迟 P50 3.01 秒；总 Token
+  39,327。
+- 结论：v3 对场景、人数、OCR 和 JSON 稳定，但细粒度物体泛化仍未达到 70%
+  门槛。测试集已冻结，不得继续据此调 Prompt；下一轮需要新增独立 holdout 后再
+  研究对象本体、两阶段检测或更强视觉模型。
+- 生产决策：v3 是 validation 明确优于 v1 的当前候选，允许用于测试用户批量
+  解析，但项目成果必须注明最终物体门禁尚未通过。
+
+### v3 测试用户批量回写（2026-08-14）
+
+- 将 v3 的 development 66、validation 23、test 23 三份冻结结果合并，写入
+  `photo-eval-manifest-v2` 测试用户；合并前校验 Prompt SHA256 一致且 112 个
+  dataset ID 无缺失、无重复。
+- 复用已保存的 VL 预测，没有重复调用 Qwen-VL；文本向量按最多 10 条一批调用
+  `text-embedding-v3`，同时生成 512px JPEG 缩略图并上传 OSS。
+- 最终数据库审计：112/112 `done`，112/112 `parse_quality=ok`，112/112 为
+  1024 维向量，112/112 有描述和缩略图，0 个降级原因。
+- 回写产物：`artifacts/vl-experiments/apply-v3.json`；运行产物不提交 Git。
+- 同步修复质量门禁：Embedding 降级时保留成功的描述和 VL 分析并标记
+  `partial_done`，不再错误地把整张照片降为 `skipped`。
+
+回写命令：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\apply_vl_experiment_results.py `
+  --experiment artifacts\vl-experiments\v3-development.json `
+  --experiment artifacts\vl-experiments\v3-validation.json `
+  --experiment artifacts\vl-experiments\v3-frozen-test.json `
+  --output artifacts\vl-experiments\apply-v3.json
+```

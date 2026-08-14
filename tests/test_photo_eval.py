@@ -9,6 +9,7 @@ from pathlib import Path
 from PIL import Image
 
 from scripts.agent_eval import build_real_photo_library
+from scripts.apply_vl_experiment_results import load_frozen_predictions
 from scripts.import_photo_eval_dataset import SourcePhoto, build_eval_oss_key, load_manifest
 from scripts.offline_eval import (
     fuzzy_contains,
@@ -18,6 +19,9 @@ from scripts.offline_eval import (
 )
 from scripts.retrieval_eval import evaluate, validate_queries
 from scripts.vl_prompt_experiment import classify_failures, extract_text
+from app.services.ai import _VL_ANALYSIS_PROMPT, VL_ANALYSIS_PROMPT_VERSION
+from app.schemas.analysis import ImageAnalysis
+from app.services.quality import decide_storage, quality_gate
 
 
 def test_fuzzy_contains_ignores_case_spacing_and_symbols() -> None:
@@ -239,3 +243,44 @@ def test_vl_experiment_extract_and_failure_classification() -> None:
     assert classified["failure_ids"]["scene"] == ["p-1"]
     assert classified["failure_ids"]["objects"] == ["p-1"]
     assert classified["failure_ids"]["ocr"] == ["p-1"]
+
+
+def test_production_prompt_matches_frozen_v3() -> None:
+    root = Path(__file__).parents[1]
+    frozen = (root / "tests/eval/prompts/vl-analysis-v3.txt").read_text(
+        encoding="utf-8"
+    )
+    assert VL_ANALYSIS_PROMPT_VERSION == "v3"
+    assert _VL_ANALYSIS_PROMPT.strip() == frozen.strip()
+
+
+def test_missing_embedding_preserves_successful_vl_analysis() -> None:
+    analysis = ImageAnalysis(scene="室内", summary="这是一张清晰完整的室内环境照片")
+    decision = decide_storage(
+        quality_gate(description=analysis.summary, embedding=None, analysis=analysis)
+    )
+    assert decision.status == "partial_done"
+    assert decision.store_description
+    assert decision.store_analysis
+    assert not decision.store_embedding
+
+
+def test_frozen_prediction_loader_requires_same_prompt(tmp_path: Path) -> None:
+    paths = []
+    for index, prompt_hash in enumerate(("a", "b")):
+        path = tmp_path / f"exp-{index}.json"
+        path.write_text(
+            json.dumps(
+                {
+                    "summary": {"errors": 0},
+                    "prompt": {"sha256": prompt_hash},
+                    "predictions": {f"p-{index}": {"summary": "ok"}},
+                }
+            ),
+            encoding="utf-8",
+        )
+        paths.append(path)
+    import pytest
+
+    with pytest.raises(ValueError, match="Prompt 不一致"):
+        load_frozen_predictions(paths)

@@ -176,7 +176,9 @@ def quality_gate(
             issues.append(f"analysis_parse_quality:{analysis.parse_quality}")
 
     # 决策：有严重问题则降级存储
-    critical_reasons = {"embedding_missing", "embedding_dim_mismatch"}
+    # Embedding 服务降级时仍保留已经成功的描述和 VL 分析，状态为 partial_done。
+    # 只有维度错误代表不可安全索引，才进入 skip。
+    critical_reasons = {"embedding_dim_mismatch"}
     if any(issue.split(":")[0] in critical_reasons for issue in issues):
         return QualityGateResult(
             ok=False,
@@ -253,11 +255,12 @@ def decide_storage(gate: QualityGateResult) -> StorageDecision:
         )
 
     if gate.storage_tier == "partial":
+        issue_codes = {issue.split(":")[0] for issue in gate.issues}
         return StorageDecision(
             status="partial_done",
             partial_reason=summarize_quality_reason(gate.issues),
             store_description=True,
-            store_embedding=True,
+            store_embedding="embedding_missing" not in issue_codes,
             store_analysis=True,
         )
 
