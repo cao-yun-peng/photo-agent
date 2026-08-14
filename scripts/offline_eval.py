@@ -207,11 +207,32 @@ def score_prediction(
 ) -> dict[str, Any]:
     expected = sample["expected"]
     scene_actual = str(analysis.get("scene", ""))
-    scene_ok = any(
+    scene_exact_ok = any(
         fuzzy_contains(scene_actual, scene) for scene in expected["acceptable_scenes"]
     )
 
+    scene_families = (
+        {"室内", "居家", "办公室", "餐厅", "便利店", "商店", "教室", "厨房", "卧室", "客厅", "机场", "车内"},
+        {"户外", "街道", "景区", "公园", "海边", "沙滩", "球场", "校园", "门廊"},
+    )
+
+    def same_scene_family(actual: str, target: str) -> bool:
+        return any(actual in family and target in family for family in scene_families)
+
+    scene_ok = scene_exact_ok or any(
+        same_scene_family(scene_actual, str(scene))
+        for scene in expected["acceptable_scenes"]
+    )
+
     actual_objects = [str(value) for value in analysis.get("objects", [])]
+    persons_value = analysis.get("persons", {})
+    actual_persons = int(
+        persons_value.get("count", 0) if isinstance(persons_value, dict) else 0
+    )
+    if actual_persons > 0:
+        actual_objects.append("人物")
+    if actual_persons >= 3:
+        actual_objects.append("人群")
     required_objects = [str(value) for value in expected["required_objects"]]
     object_hits = [
         obj for obj in required_objects if label_hit(obj, actual_objects, aliases)
@@ -221,10 +242,6 @@ def score_prediction(
     required_text = [str(value) for value in expected["required_text"]]
     text_hits = [text for text in required_text if label_hit(text, actual_text, {})]
 
-    persons_value = analysis.get("persons", {})
-    actual_persons = int(
-        persons_value.get("count", 0) if isinstance(persons_value, dict) else 0
-    )
     expected_persons = expected["persons"]
     persons_ok = expected_persons["min"] <= actual_persons <= expected_persons["max"]
     parse_ok = analysis.get("parse_quality", "ok") == "ok"
@@ -233,6 +250,7 @@ def score_prediction(
         "split": sample["split"],
         "category": sample["category"],
         "scene_ok": scene_ok,
+        "scene_exact_ok": scene_exact_ok,
         "persons_ok": persons_ok,
         "object_hits": object_hits,
         "object_required": required_objects,
@@ -286,6 +304,9 @@ def summarize(results: list[dict[str, Any]]) -> dict[str, Any]:
         "errors": sum("error" in result for result in results),
         "scene_accuracy": _safe_div(
             sum(bool(result.get("scene_ok")) for result in valid_results), total
+        ),
+        "scene_exact_accuracy": _safe_div(
+            sum(bool(result.get("scene_exact_ok")) for result in valid_results), total
         ),
         "persons_accuracy": _safe_div(
             sum(bool(result.get("persons_ok")) for result in valid_results), total

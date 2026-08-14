@@ -17,6 +17,7 @@ from scripts.offline_eval import (
     validate_manifest,
 )
 from scripts.retrieval_eval import evaluate, validate_queries
+from scripts.vl_prompt_experiment import classify_failures, extract_text
 
 
 def test_fuzzy_contains_ignores_case_spacing_and_symbols() -> None:
@@ -53,6 +54,36 @@ def test_vl_scoring_supports_person_range_and_required_ocr() -> None:
     assert result["persons_ok"]
     assert result["object_recall"] == 1.0
     assert result["ocr_recall"] == 1.0
+
+
+def test_vl_scoring_supports_scene_hierarchy_and_person_object() -> None:
+    sample = {
+        "id": "p-scene",
+        "split": "development",
+        "category": "日常",
+        "expected": {
+            "acceptable_scenes": ["室内"],
+            "required_objects": ["人物", "书桌"],
+            "optional_objects": [],
+            "persons": {"min": 1, "max": 1},
+            "required_text": [],
+            "optional_text": [],
+        },
+    }
+    result = score_prediction(
+        sample,
+        {
+            "scene": "办公室",
+            "persons": {"count": 1},
+            "objects": ["桌子"],
+            "text_in_image": [],
+            "parse_quality": "ok",
+        },
+        {"书桌": ["桌子"]},
+    )
+    assert result["scene_ok"]
+    assert not result["scene_exact_ok"]
+    assert result["object_recall"] == 1.0
 
 
 def test_vl_runtime_error_cannot_pass_gate() -> None:
@@ -184,3 +215,27 @@ def test_eval_oss_key_uses_content_mime_not_misleading_suffix(tmp_path: Path) ->
         split="test",
     )
     assert build_eval_oss_key("user-1", source).endswith(".png")
+
+
+def test_vl_experiment_extract_and_failure_classification() -> None:
+    assert extract_text(
+        {"output": {"choices": [{"message": {"content": [{"text": "{}"}]}}]}}
+    ) == "{}"
+    classified = classify_failures(
+        [
+            {
+                "id": "p-1",
+                "category": "OCR文字",
+                "parse_ok": True,
+                "scene_ok": False,
+                "persons_ok": True,
+                "object_recall": 0.5,
+                "text_required": ["A"],
+                "ocr_recall": 0.0,
+            }
+        ],
+        {"p-1": {"id": "p-1"}},
+    )
+    assert classified["failure_ids"]["scene"] == ["p-1"]
+    assert classified["failure_ids"]["objects"] == ["p-1"]
+    assert classified["failure_ids"]["ocr"] == ["p-1"]
