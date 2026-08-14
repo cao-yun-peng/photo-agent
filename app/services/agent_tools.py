@@ -22,7 +22,7 @@ from app.models.skill import Skill
 from app.models.tag import PhotoTag, Tag
 from app.schemas.photo import ParsedQuery
 from app.services.oss import sign_get_url
-from app.services.query_parser import parse_query
+from app.services.query_parser import parse_query, resolve_auto_parsed_query
 from app.services.recommend import recommend_skills
 from app.services.search import (
     combine,
@@ -189,13 +189,12 @@ async def search_photos(
         parsed_obj: ParsedQuery | None = None
         if auto_parse:
             parsed_obj = await parse_query(query)
-            effective_q = parsed_obj.semantic
-            if from_date is None:
-                from_date = parsed_obj.from_date
-            if to_date is None:
-                to_date = parsed_obj.to_date
-            if not tags and parsed_obj.tags:
-                tags = parsed_obj.tags
+            effective_q, from_date, to_date = resolve_auto_parsed_query(
+                query,
+                parsed_obj,
+                from_date=from_date,
+                to_date=to_date,
+            )
 
         query_vec, _ = await get_query_embedding(effective_q)
         profile = await get_user_profile(db, user_id)

@@ -106,7 +106,7 @@ DashScope 必须能通过 HTTP(S) 获取图片。先把 `test_photos` 上传到�
 
 `tests/eval/retrieval_queries.json` 包含 50 条人工查询，包括语义、场景、群像、OCR、
 相似干扰项和无结果查询。先将 112 张图片通过真实上传和处理链路写入 OSS、
-PostgreSQL/pgvector，再调用 `/api/search`，按查询保存排序后的稳定 `p-xxx` ID：
+PostgreSQL/pgvector，再调用 `/search`，按查询保存排序后的稳定 `p-xxx` ID：
 
 ```json
 {
@@ -128,13 +128,14 @@ PostgreSQL/pgvector，再调用 `/api/search`，按查询保存排序后的稳�
 ```powershell
 .\.venv\Scripts\python.exe scripts\collect_retrieval_results.py `
   --base-url http://127.0.0.1:8000 `
-  --token $env:PHOTO_EVAL_JWT `
-  --uuid-map artifacts\photo-id-map.json `
+  --uuid-map artifacts\photo-eval\import-map.json `
   --split test
 ```
 
-`photo-id-map.json` 的格式为 `{"数据库 UUID": "p-004"}`。JWT 只通过环境变量传入，
-不要写进脚本、结果文件或 Git。
+采集器可直接读取导入脚本生成的 `import-map.json`，也兼容
+`{"数据库 UUID": "p-004"}` 形式的平面映射。JWT 默认从 `PHOTO_EVAL_JWT` 读取，
+不要写进脚本、结果文件或 Git。本地 `127.0.0.1` 默认不继承系统代理；只有确实要走代理时
+才传 `--trust-env`。结果除了稳定 ID，还会保留查询解析与各候选分数，供拒识阈值分析。
 
 计算指标：
 
@@ -148,6 +149,56 @@ PostgreSQL/pgvector，再调用 `/api/search`，按查询保存排序后的稳�
 指标为 Recall@5、Precision@5、MRR、无结果准确率和禁返图片命中率。注意数据库中
 的 UUID 与数据集 `p-xxx` 不是同一个标识；导入测试图片时必须把 `p-xxx` 保存在
 独立的 source_id 或导出映射中。
+
+在调用真实服务前，先生成结构审计报告和人工对照表：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\audit_retrieval_queries.py `
+  --output artifacts\retrieval-query-audit.json
+
+.\.venv\Scripts\python.exe scripts\render_retrieval_query_audit.py `
+  --queries tests\eval\retrieval_queries.json `
+  --manifest tests\eval\photo_manifest.json `
+  --source-root . `
+  --output-dir artifacts\retrieval-query-audit-sheets
+```
+
+如果 FastAPI 应用壳无法启动，可用
+`scripts/collect_retrieval_results_direct.py` 调用同一个 `semantic_search` 处理函数。
+该诊断路径保留查询解析、真实 Embedding、pgvector 和混合排序，只绕过 HTTP/JWT；
+报告中必须明确标注，修复应用壳后仍需用 HTTP 采集器复验。
+
+原 50 条只有 2 条无结果查询，不足以校准拒识。开发期使用经过人工核对的 30 条负样本：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\audit_retrieval_queries.py `
+  --queries tests\eval\retrieval_negative_development.json `
+  --manifest tests\eval\photo_manifest.json `
+  --output artifacts\retrieval-negative-development-audit.json
+
+.\.venv\Scripts\python.exe scripts\collect_retrieval_results.py `
+  --queries tests\eval\retrieval_negative_development.json `
+  --uuid-map artifacts\photo-eval\import-map.json `
+  --output artifacts\retrieval-negative-development-http.json
+```
+
+阈值只能在 development 上选择。下面的脚本要求正样本接受率至少 95%，并将原
+validation/test 作为冻结检查：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\calibrate_retrieval_threshold.py `
+  --positive-queries tests\eval\retrieval_queries.json `
+  --positive-results artifacts\retrieval-real-50-no-auto-parse.json `
+  --negative-queries tests\eval\retrieval_negative_development.json `
+  --negative-results artifacts\retrieval-negative-development-http.json `
+  --output artifacts\retrieval-threshold-calibration.json
+```
+
+若报告中的 `single_threshold_suitable` 为 `false`，不要把阈值直接加入生产搜索；
+应先增加 OCR/品牌/数值等结构化矛盾校验或 Top-K 判同重排。
+
+2026-08-14 的 50 条真实运行、标签审计、两种解析模式对照和失败归因见
+`docs/retrieval-evaluation-results-2026-08-14.md`。
 
 ## 4. 第三层：Agent 决策
 

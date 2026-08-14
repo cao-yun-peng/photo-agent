@@ -74,13 +74,11 @@ def evaluate(
                 "query": query["query"],
                 "returned": returned,
                 "relevant": sorted(relevant),
-                "recall_at_k": len(set(hits)) / len(relevant) if relevant else 1.0,
+                "recall_at_k": len(set(hits)) / len(relevant) if relevant else None,
                 "precision_at_k": len(hits) / len(returned)
-                if returned
-                else (1.0 if empty_query else 0.0),
-                "reciprocal_rank": 1 / rank
-                if rank
-                else (1.0 if empty_query and not returned else 0.0),
+                if relevant and returned
+                else (0.0 if relevant else None),
+                "reciprocal_rank": 1 / rank if rank else (0.0 if relevant else None),
                 "forbidden_hits": sorted(forbidden.intersection(returned)),
                 "empty_ok": not returned if empty_query else None,
                 "missing_result": query_id not in result_map,
@@ -96,18 +94,18 @@ def evaluate(
         "missing_results": sum(detail["missing_result"] for detail in details),
         "recall_at_k": sum(detail["recall_at_k"] for detail in positive) / len(positive)
         if positive
-        else 1.0,
+        else None,
         "precision_at_k": sum(detail["precision_at_k"] for detail in positive)
         / len(positive)
         if positive
-        else 1.0,
+        else None,
         "mrr": sum(detail["reciprocal_rank"] for detail in positive) / len(positive)
         if positive
-        else 1.0,
+        else None,
         "empty_query_accuracy": sum(bool(detail["empty_ok"]) for detail in negative)
         / len(negative)
         if negative
-        else 1.0,
+        else None,
         "forbidden_hit_rate": sum(bool(detail["forbidden_hits"]) for detail in details)
         / total
         if total
@@ -115,9 +113,12 @@ def evaluate(
     }
     summary["gate_passed"] = (
         summary["missing_results"] == 0
-        and summary["recall_at_k"] >= 0.85
-        and summary["mrr"] >= 0.80
-        and summary["empty_query_accuracy"] >= 0.90
+        and (summary["recall_at_k"] is None or summary["recall_at_k"] >= 0.85)
+        and (summary["mrr"] is None or summary["mrr"] >= 0.80)
+        and (
+            summary["empty_query_accuracy"] is None
+            or summary["empty_query_accuracy"] >= 0.90
+        )
         and summary["forbidden_hit_rate"] <= 0.05
     )
     return {"summary": summary, "results": details}
@@ -126,10 +127,20 @@ def evaluate(
 def print_summary(summary: dict[str, Any], k: int) -> None:
     print("\n========== 图片检索评测 ==========")
     print(f"查询: {summary['total']} | 缺失结果: {summary['missing_results']}")
-    print(f"Recall@{k}: {summary['recall_at_k']:.2%}")
-    print(f"Precision@{k}: {summary['precision_at_k']:.2%}")
-    print(f"MRR: {summary['mrr']:.4f}")
-    print(f"无结果准确率: {summary['empty_query_accuracy']:.2%}")
+    recall = summary["recall_at_k"]
+    precision = summary["precision_at_k"]
+    mrr = summary["mrr"]
+    print(f"Recall@{k}: " + (f"{recall:.2%}" if recall is not None else "N/A（该切分无正样本）"))
+    print(
+        f"Precision@{k}: "
+        + (f"{precision:.2%}" if precision is not None else "N/A（该切分无正样本）")
+    )
+    print("MRR: " + (f"{mrr:.4f}" if mrr is not None else "N/A（该切分无正样本）"))
+    empty_accuracy = summary["empty_query_accuracy"]
+    print(
+        "无结果准确率: "
+        + (f"{empty_accuracy:.2%}" if empty_accuracy is not None else "N/A（该切分无负样本）")
+    )
     print(f"禁返图片命中率: {summary['forbidden_hit_rate']:.2%}")
     print(f"门禁: {'PASS' if summary['gate_passed'] else 'FAIL'}")
     print("==================================\n")

@@ -26,7 +26,8 @@ from app.core.errors import (
 )
 from app.core.logger import get_logger, setup_logging
 from app.core.middleware import LogIDMiddleware
-from app.database import engine
+from app.core.registry import init_registries
+from app.database import AsyncSessionLocal, engine
 from app.services.circuit_breaker import (
     agent_llm_breaker,
     embedding_breaker,

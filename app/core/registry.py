@@ -17,7 +17,6 @@ from sqlalchemy import select
 
 from app.core.logger import get_logger
 from app.database import AsyncSessionLocal
-from app.models.skill import Skill
 
 logger = get_logger(__name__)
 
@@ -126,9 +125,7 @@ class SkillRegistry(RefreshableRegistry[Dict[str, Any]]):
         from app.models.skill import Skill as SkillModel
 
         async with AsyncSessionLocal() as db:
-            result = await db.execute(
-                select(SkillModel).where(SkillModel.is_deleted == False)  # noqa: E712
-            )
+            result = await db.execute(select(SkillModel))
             skills = result.scalars().all()
 
         skills_by_id = {}

@@ -20,7 +20,7 @@ from app.schemas.photo import (
 )
 from app.services.events import log_event
 from app.services.oss import sign_get_url
-from app.services.query_parser import parse_query
+from app.services.query_parser import parse_query, resolve_auto_parsed_query
 from app.services.search import (
     combine,
     decode_cursor,
@@ -50,15 +50,12 @@ async def semantic_search(
     parsed = None
     if payload.auto_parse:
         parsed = await parse_query(payload.q)
-        # 用户没显式传时间/tag 时，用解析结果覆盖
-        if payload.from_date is None:
-            payload.from_date = parsed.from_date
-        if payload.to_date is None:
-            payload.to_date = parsed.to_date
-        if not payload.tags and parsed.tags:
-            payload.tags = parsed.tags
-        # 语义查询用去掉时间地点后的部分（若解析器给了）
-        effective_q = parsed.semantic
+        effective_q, payload.from_date, payload.to_date = resolve_auto_parsed_query(
+            payload.q,
+            parsed,
+            from_date=payload.from_date,
+            to_date=payload.to_date,
+        )
     else:
         effective_q = payload.q
 

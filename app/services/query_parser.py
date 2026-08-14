@@ -33,9 +33,47 @@ _SYSTEM_PROMPT = (
     "from_date（起始日期 YYYY-MM-DD），"
     "to_date（结束日期 YYYY-MM-DD），"
     "place（地点名，如西湖/北京），"
-    "tags（用户提到的具体标签或人物名，数组）。"
+    "tags（用户明确提到的相册标签或人物名，数组；普通物体、OCR文字不要当标签）。"
+    "from_date/to_date 只表示照片的拍摄时间；台历、车票、登机牌、锁屏、"
+    "菜单、标签、便签等画面内容中的日期必须保留在 semantic 中，日期字段设为 null。"
     "无法确定的字段设为 null。今天是 {today}。"
     "只输出 JSON，不要有任何解释文字。"
+)
+
+
+_CAPTURE_TIME_CUES = (
+    "拍摄",
+    "拍的",
+    "拍于",
+    "照的",
+    "相册",
+    "去年",
+    "前年",
+    "上周",
+    "上个月",
+    "昨天",
+    "前天",
+    "最近",
+    "那天",
+    "当天",
+    "小时候",
+)
+
+_VISUAL_DATE_CUES = (
+    "台历",
+    "日历",
+    "车票",
+    "机票",
+    "票据",
+    "登机牌",
+    "锁屏",
+    "屏幕",
+    "海报",
+    "菜单",
+    "标签",
+    "便签",
+    "写着",
+    "显示",
 )
 
 
@@ -166,6 +204,52 @@ def _maybe_date(v) -> date | None:
         return date.fromisoformat(v)
     except (ValueError, TypeError):
         return None
+
+
+def should_apply_parsed_date_filters(text: str) -> bool:
+    """仅在查询明确描述照片拍摄时间时接受 LLM 解析出的日期过滤。"""
+    normalized = re.sub(r"\s+", "", text)
+    if any(cue in normalized for cue in _VISUAL_DATE_CUES):
+        return False
+    return any(cue in normalized for cue in _CAPTURE_TIME_CUES)
+
+
+def resolve_auto_parsed_query(
+    text: str,
+    parsed: ParsedQuery,
+    *,
+    from_date: date | None,
+    to_date: date | None,
+) -> tuple[str, date | None, date | None]:
+    """把解析结果安全地合并到搜索参数。
+
+    自动解析的普通 tags 不会在这里变成数据库硬过滤。日期只有在查询明确表达
+    拍摄时间时才会补入；否则保留完整原句做向量查询，避免台历/OCR 日期丢失。
+    """
+    use_parsed_dates = should_apply_parsed_date_filters(text)
+    resolved_from = from_date
+    resolved_to = to_date
+    if use_parsed_dates:
+        if resolved_from is None:
+            resolved_from = parsed.from_date
+        if resolved_to is None:
+            resolved_to = parsed.to_date
+
+    has_accepted_parsed_date = use_parsed_dates and (
+        parsed.from_date is not None or parsed.to_date is not None
+    )
+    if not has_accepted_parsed_date:
+        return text.strip(), resolved_from, resolved_to
+
+    parts = [parsed.semantic.strip()]
+    if parsed.place and parsed.place not in parts[0]:
+        parts.append(parsed.place)
+    for tag in parsed.tags:
+        clean_tag = str(tag).strip()
+        if clean_tag and not any(clean_tag in part for part in parts):
+            parts.append(clean_tag)
+    effective_query = " ".join(part for part in parts if part).strip()
+    return effective_query or text.strip(), resolved_from, resolved_to
 
 
 # ------------------------------------------------------------------

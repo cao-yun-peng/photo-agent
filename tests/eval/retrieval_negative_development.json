@@ -1,0 +1,41 @@
+{
+  "version": "1.0.0",
+  "description": "Photo Agent 检索拒识阈值开发集；只用于 development 校准，不并入冻结 validation/test。",
+  "annotation_policy": {
+    "attribute_mismatch": "相册中存在近似图片，但查询的品牌、文字、数值或属性与最终成图明确不一致。",
+    "absent_concept": "112 张最终成图中不存在该主体或场景。",
+    "confuser_photo_ids": "最可能被召回的近邻，仅作错误分析，不是相关图片。"
+  },
+  "queries": [
+    {"id": "DNQ-001", "split": "development", "negative_type": "attribute_mismatch", "query": "写着蒙牛纯牛奶的盒子", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-117"]},
+    {"id": "DNQ-002", "split": "development", "negative_type": "attribute_mismatch", "query": "座位是9F的登机牌", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-129"]},
+    {"id": "DNQ-003", "split": "development", "negative_type": "attribute_mismatch", "query": "写着南京路的蓝色路牌", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-111"]},
+    {"id": "DNQ-004", "split": "development", "negative_type": "attribute_mismatch", "query": "价格是299元的衣服标签", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-137"]},
+    {"id": "DNQ-005", "split": "development", "negative_type": "attribute_mismatch", "query": "写着WORLD'S BEST MOM的杯子", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-135"]},
+    {"id": "DNQ-006", "split": "development", "negative_type": "attribute_mismatch", "query": "手机锁屏时间八点三十分", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-121"]},
+    {"id": "DNQ-007", "split": "development", "negative_type": "attribute_mismatch", "query": "2026年八月十六日的台历", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-133"]},
+    {"id": "DNQ-008", "split": "development", "negative_type": "attribute_mismatch", "query": "上海虹桥到北京南的高铁票", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-127"]},
+    {"id": "DNQ-009", "split": "development", "negative_type": "attribute_mismatch", "query": "冰箱上写着买鸡蛋的便签", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-136"]},
+    {"id": "DNQ-010", "split": "development", "negative_type": "attribute_mismatch", "query": "写着HELLO的门垫", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-138"]},
+    {"id": "DNQ-011", "split": "development", "negative_type": "attribute_mismatch", "query": "写着CLASS VI-B的班级合影", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-087"]},
+    {"id": "DNQ-012", "split": "development", "negative_type": "attribute_mismatch", "query": "写着NO PARKING的交通标志", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-104", "p-109", "p-110"]},
+    {"id": "DNQ-013", "split": "development", "negative_type": "attribute_mismatch", "query": "百事可乐罐", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-115"]},
+    {"id": "DNQ-014", "split": "development", "negative_type": "attribute_mismatch", "query": "依云矿泉水瓶", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-119"]},
+    {"id": "DNQ-015", "split": "development", "negative_type": "attribute_mismatch", "query": "汉堡王门店招牌", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-116"]},
+    {"id": "DNQ-016", "split": "development", "negative_type": "attribute_mismatch", "query": "印着NIKE标志的T恤", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-134"]},
+    {"id": "DNQ-017", "split": "development", "negative_type": "attribute_mismatch", "query": "三星电视遥控器", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-123"]},
+    {"id": "DNQ-018", "split": "development", "negative_type": "attribute_mismatch", "query": "《围城》的书籍封面", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-124"]},
+    {"id": "DNQ-019", "split": "development", "negative_type": "attribute_mismatch", "query": "纽约时报的报纸", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-125"]},
+    {"id": "DNQ-020", "split": "development", "negative_type": "attribute_mismatch", "query": "全家便利店的招牌", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-132"]},
+    {"id": "DNQ-021", "split": "development", "negative_type": "absent_concept", "query": "白色波斯猫戴着红色蝴蝶结", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-071", "p-094"]},
+    {"id": "DNQ-022", "split": "development", "negative_type": "absent_concept", "query": "两只哈士奇在雪地奔跑", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-010"]},
+    {"id": "DNQ-023", "split": "development", "negative_type": "absent_concept", "query": "金毛在海边接飞盘", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-021", "p-061", "p-096"]},
+    {"id": "DNQ-024", "split": "development", "negative_type": "absent_concept", "query": "熊猫坐着吃竹子", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": []},
+    {"id": "DNQ-025", "split": "development", "negative_type": "absent_concept", "query": "埃菲尔铁塔夜景", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-037"]},
+    {"id": "DNQ-026", "split": "development", "negative_type": "absent_concept", "query": "宇航员在月球表面自拍", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-107"]},
+    {"id": "DNQ-027", "split": "development", "negative_type": "absent_concept", "query": "企鹅站在冰面上", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-031"]},
+    {"id": "DNQ-028", "split": "development", "negative_type": "absent_concept", "query": "婚礼亲友在雪地里合影", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-084"]},
+    {"id": "DNQ-029", "split": "development", "negative_type": "absent_concept", "query": "芝士披萨放在木桌上", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-029", "p-030"]},
+    {"id": "DNQ-030", "split": "development", "negative_type": "absent_concept", "query": "交响乐团在音乐厅演奏小提琴", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-012"]}
+  ]
+}

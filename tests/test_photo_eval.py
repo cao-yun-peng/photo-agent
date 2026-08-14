@@ -112,6 +112,29 @@ def test_retrieval_metrics_and_negative_query() -> None:
     assert output["summary"]["empty_query_accuracy"] == 1.0
 
 
+def test_retrieval_empty_accuracy_is_not_fabricated_without_negatives() -> None:
+    queries = [{"id": "q1", "query": "猫", "relevant_photo_ids": ["p-1"]}]
+    output = evaluate(queries, {"q1": ["p-1"]}, k=5)
+    assert output["summary"]["negative_queries"] == 0
+    assert output["summary"]["empty_query_accuracy"] is None
+
+
+def test_retrieval_positive_metrics_are_not_fabricated_without_positives() -> None:
+    queries = [
+        {
+            "id": "q1",
+            "query": "北极熊",
+            "relevant_photo_ids": [],
+            "must_return_empty": True,
+        }
+    ]
+    output = evaluate(queries, {"q1": ["p-1"]}, k=5)
+    assert output["summary"]["positive_queries"] == 0
+    assert output["summary"]["recall_at_k"] is None
+    assert output["summary"]["precision_at_k"] is None
+    assert output["summary"]["mrr"] is None
+
+
 def test_checked_in_datasets_are_consistent() -> None:
     root = Path(__file__).parents[1]
     manifest_path = root / "tests/eval/photo_manifest.json"
