@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 
+from PIL import Image
+
 from scripts.agent_eval import build_real_photo_library
+from scripts.import_photo_eval_dataset import SourcePhoto, build_eval_oss_key, load_manifest
 from scripts.offline_eval import (
     fuzzy_contains,
     score_prediction,
@@ -130,3 +134,53 @@ def test_manifest_validation_detects_changed_image(tmp_path: Path) -> None:
     assert not result["ok"]
     assert any("哈希变化" in error for error in result["errors"])
     assert any("无法解码" in error for error in result["errors"])
+
+
+def test_import_loader_and_eval_oss_key(tmp_path: Path) -> None:
+    image_path = tmp_path / "test_photos/p-1.jpg"
+    image_path.parent.mkdir()
+    Image.new("RGB", (8, 6), "red").save(image_path)
+    digest = hashlib.sha256(image_path.read_bytes()).hexdigest()
+    manifest_path = tmp_path / "tests/eval/photo_manifest.json"
+    manifest_path.parent.mkdir(parents=True)
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "total_images": 1,
+                "image_root": "../..",
+                "images": [
+                    {
+                        "id": "p-1",
+                        "path": "test_photos/p-1.jpg",
+                        "sha256": digest,
+                        "width": 8,
+                        "height": 6,
+                        "split": "test",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    _, photos = load_manifest(manifest_path)
+    assert len(photos) == 1
+    assert photos[0].mime_type == "image/jpeg"
+    assert build_eval_oss_key("user-1", photos[0]) == (
+        f"photos/user-1/eval/photo-manifest-v2/{digest}.jpg"
+    )
+
+
+def test_eval_oss_key_uses_content_mime_not_misleading_suffix(tmp_path: Path) -> None:
+    misleading_path = tmp_path / "looks-like-jpeg.jpg"
+    Image.new("RGB", (2, 2), "blue").save(misleading_path, format="PNG")
+    source = SourcePhoto(
+        dataset_id="p-mime",
+        path=misleading_path,
+        sha256="a" * 64,
+        size_bytes=misleading_path.stat().st_size,
+        mime_type="image/png",
+        width=2,
+        height=2,
+        split="test",
+    )
+    assert build_eval_oss_key("user-1", source).endswith(".png")

@@ -14,6 +14,45 @@
 - OCR 分为必识别文字和可选文字，可选文字漏识别不扣分；
 - 所有路径均为仓库相对路径，不再使用生成机器的绝对路径。
 
+### 导入隔离测试用户
+
+`scripts/import_photo_eval_dataset.py` 会创建或复用固定测试用户
+`photo-eval-manifest-v2`，把清单图片上传到该用户独立的 OSS 前缀，再写入
+`photos` 表。脚本按用户和 SHA256 去重，中断后可直接重跑。人工标准答案只保留
+在清单中，不写入业务表，避免检索评测的数据泄漏。
+
+图片 MIME 和宽高以解码后的真实文件内容为准，而不是依赖扩展名；重跑时会幂等
+修正已有记录的 `size_bytes`、`mime_type`、`width` 和 `height`。
+
+先检查数据库、Redis 和 OSS（输出不会包含密钥）：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\import_photo_eval_dataset.py --check
+```
+
+只验证 112 张图片的路径、哈希、尺寸和 MIME，不访问外部服务：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\import_photo_eval_dataset.py --dry-run
+```
+
+导入并将 pending 照片送入现有 Worker：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\import_photo_eval_dataset.py
+```
+
+如果 Worker 暂时未启动，可先只上传和写库，之后再次执行不带
+`--no-enqueue` 的命令即可复用照片并补入队：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\import_photo_eval_dataset.py --no-enqueue
+```
+
+导入映射保存在 `artifacts/photo-eval/import-map.json`，记录每个 `p-xxx` 对应的
+数据库 Photo UUID、OSS key、处理状态和是否成功入队。该文件属于运行产物，不应
+提交到 Git。
+
 重新构建清单：
 
 ```powershell
