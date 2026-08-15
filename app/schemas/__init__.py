@@ -1,4 +1,5 @@
 """Pydantic 请求/响应体."""
+
 from app.schemas.auth import LoginRequest, TokenResponse
 from app.schemas.user import UserOut
 from app.schemas.photo import (
@@ -8,6 +9,8 @@ from app.schemas.photo import (
     PhotoOut,
     PhotoListItem,
     SearchQuery,
+    SearchConstraintCheck,
+    SearchRerankCheck,
     SearchResult,
 )
 from app.schemas.skill import (
@@ -29,6 +32,8 @@ __all__ = [
     "PhotoOut",
     "PhotoListItem",
     "SearchQuery",
+    "SearchConstraintCheck",
+    "SearchRerankCheck",
     "SearchResult",
     "SkillCreate",
     "SkillUpdate",

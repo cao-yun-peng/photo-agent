@@ -125,7 +125,10 @@ async def describe_image(image_url: str) -> str:
             "Content-Type": "application/json",
         }
 
-        async with httpx.AsyncClient(timeout=_VL_TIMEOUT) as client:
+        # DashScope is directly reachable in the supported runtime.  Ignoring the
+        # host's desktop proxy prevents stale system proxy settings from turning
+        # otherwise healthy model calls into connect timeouts.
+        async with httpx.AsyncClient(timeout=_VL_TIMEOUT, trust_env=False) as client:
             resp = await client.post(_VL_URL, json=payload, headers=headers)
 
         if resp.status_code != 200:
@@ -196,7 +199,7 @@ async def analyze_image(image_url: str) -> ImageAnalysis:
             "Content-Type": "application/json",
         }
 
-        async with httpx.AsyncClient(timeout=_VL_TIMEOUT) as client:
+        async with httpx.AsyncClient(timeout=_VL_TIMEOUT, trust_env=False) as client:
             resp = await client.post(_VL_URL, json=payload, headers=headers)
 
         if resp.status_code != 200:
@@ -322,7 +325,7 @@ async def embed_text(text: str) -> list[float]:
             "Content-Type": "application/json",
         }
 
-        async with httpx.AsyncClient(timeout=_EMB_TIMEOUT) as client:
+        async with httpx.AsyncClient(timeout=_EMB_TIMEOUT, trust_env=False) as client:
             resp = await client.post(_EMB_URL, json=payload, headers=headers)
 
         if resp.status_code != 200:
@@ -363,7 +366,7 @@ async def embed_query(text: str) -> list[float]:
             "Authorization": f"Bearer {settings.dashscope_api_key}",
             "Content-Type": "application/json",
         }
-        async with httpx.AsyncClient(timeout=_EMB_TIMEOUT) as client:
+        async with httpx.AsyncClient(timeout=_EMB_TIMEOUT, trust_env=False) as client:
             resp = await client.post(_EMB_URL, json=payload, headers=headers)
         if resp.status_code != 200:
             raise RuntimeError(

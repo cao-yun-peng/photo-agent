@@ -3,7 +3,7 @@
   "description": "Photo Agent 检索拒识阈值开发集；只用于 development 校准，不并入冻结 validation/test。",
   "annotation_policy": {
     "attribute_mismatch": "相册中存在近似图片，但查询的品牌、文字、数值或属性与最终成图明确不一致。",
-    "absent_concept": "112 张最终成图中不存在该主体或场景。",
+    "absent_concept": "137 张最终成图中不存在该主体或场景；2026-08-15 加入拟真合成困难集后已复核。",
     "confuser_photo_ids": "最可能被召回的近邻，仅作错误分析，不是相关图片。"
   },
   "queries": [
@@ -23,7 +23,7 @@
     {"id": "DNQ-014", "split": "development", "negative_type": "attribute_mismatch", "query": "依云矿泉水瓶", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-119"]},
     {"id": "DNQ-015", "split": "development", "negative_type": "attribute_mismatch", "query": "汉堡王门店招牌", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-116"]},
     {"id": "DNQ-016", "split": "development", "negative_type": "attribute_mismatch", "query": "印着NIKE标志的T恤", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-134"]},
-    {"id": "DNQ-017", "split": "development", "negative_type": "attribute_mismatch", "query": "三星电视遥控器", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-123"]},
+    {"id": "DNQ-017", "split": "development", "negative_type": "attribute_mismatch", "query": "印着SONY标志的电视遥控器", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-123"]},
     {"id": "DNQ-018", "split": "development", "negative_type": "attribute_mismatch", "query": "《围城》的书籍封面", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-124"]},
     {"id": "DNQ-019", "split": "development", "negative_type": "attribute_mismatch", "query": "纽约时报的报纸", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-125"]},
     {"id": "DNQ-020", "split": "development", "negative_type": "attribute_mismatch", "query": "全家便利店的招牌", "relevant_photo_ids": [], "must_return_empty": true, "confuser_photo_ids": ["p-132"]},

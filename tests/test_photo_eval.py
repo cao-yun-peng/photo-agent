@@ -10,7 +10,11 @@ from PIL import Image
 
 from scripts.agent_eval import build_real_photo_library
 from scripts.apply_vl_experiment_results import load_frozen_predictions
-from scripts.import_photo_eval_dataset import SourcePhoto, build_eval_oss_key, load_manifest
+from scripts.import_photo_eval_dataset import (
+    SourcePhoto,
+    build_eval_oss_key,
+    load_manifest,
+)
 from scripts.offline_eval import (
     fuzzy_contains,
     score_prediction,
@@ -139,8 +143,8 @@ def test_checked_in_datasets_are_consistent() -> None:
     root = Path(__file__).parents[1]
     manifest_path = root / "tests/eval/photo_manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    assert manifest["total_images"] == 112
-    assert len(manifest["images"]) == 112
+    assert manifest["total_images"] == 137
+    assert len(manifest["images"]) == 137
     assert all(
         image["review"]["status"] == "human_reviewed" for image in manifest["images"]
     )
@@ -150,7 +154,18 @@ def test_checked_in_datasets_are_consistent() -> None:
     )
     assert not validate_queries(query_payload["queries"], str(manifest_path))
     library = build_real_photo_library(str(manifest_path))
-    assert len(library["photos"]) == 112
+    assert len(library["photos"]) == 137
+
+    rerank_payload = json.loads(
+        (root / "tests/eval/retrieval_rerank_queries.json").read_text(encoding="utf-8")
+    )
+    assert not validate_queries(rerank_payload["queries"], str(manifest_path))
+    grouped = {
+        image.get("group_id"): image["split"]
+        for image in manifest["images"]
+        if image.get("group_id")
+    }
+    assert grouped == {"cat_window": "development"}
 
 
 def test_manifest_validation_detects_changed_image(tmp_path: Path) -> None:
@@ -245,9 +260,12 @@ def test_eval_oss_key_uses_content_mime_not_misleading_suffix(tmp_path: Path) ->
 
 
 def test_vl_experiment_extract_and_failure_classification() -> None:
-    assert extract_text(
-        {"output": {"choices": [{"message": {"content": [{"text": "{}"}]}}]}}
-    ) == "{}"
+    assert (
+        extract_text(
+            {"output": {"choices": [{"message": {"content": [{"text": "{}"}]}}]}}
+        )
+        == "{}"
+    )
     classified = classify_failures(
         [
             {

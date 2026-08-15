@@ -3,8 +3,9 @@
 ## 1. 数据集状态
 
 `tests/eval/photo_manifest.json` 是当前唯一可用于自动评分的图片标准答案。它由
-`test_photos` 中实际存在的 112 张最终成图逐张复核得到，而不是从生成 Prompt
-直接复制标签。
+`test_photos` 的 112 张基础成图与 `test_photos_realistic` 的 25 张拟真合成困难图
+逐张复核得到，共 137 张，而不是从生成 Prompt 直接复制标签。后 25 张全部带
+“AI生成”水印，只能单独报告为 synthetic robustness slice，不能表述为真实手机照片效果。
 
 人工标注策略：
 
@@ -13,6 +14,8 @@
 - 小规模清晰人物使用精确人数，大群像和遮挡场景使用人数区间；
 - OCR 分为必识别文字和可选文字，可选文字漏识别不扣分；
 - 所有路径均为仓库相对路径，不再使用生成机器的绝对路径。
+- `p-162/p-163` 同属 `cat_window` 近似连拍组，固定在 development，禁止跨切分；
+- 拟真合成困难集按 15/5/5 加入 development/validation/test，合并后为 81/28/28。
 
 ### 导入隔离测试用户
 
@@ -30,7 +33,7 @@
 .\.venv\Scripts\python.exe scripts\import_photo_eval_dataset.py --check
 ```
 
-只验证 112 张图片的路径、哈希、尺寸和 MIME，不访问外部服务：
+只验证 137 张图片的路径、哈希、尺寸和 MIME，不访问外部服务：
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\import_photo_eval_dataset.py --dry-run
@@ -39,17 +42,20 @@
 导入并将 pending 照片送入现有 Worker：
 
 ```powershell
-.\.venv\Scripts\python.exe scripts\import_photo_eval_dataset.py
+.\.venv\Scripts\python.exe scripts\import_photo_eval_dataset.py `
+  --output artifacts\photo-eval\import-map-137.json
 ```
 
 如果 Worker 暂时未启动，可先只上传和写库，之后再次执行不带
 `--no-enqueue` 的命令即可复用照片并补入队：
 
 ```powershell
-.\.venv\Scripts\python.exe scripts\import_photo_eval_dataset.py --no-enqueue
+.\.venv\Scripts\python.exe scripts\import_photo_eval_dataset.py `
+  --no-enqueue `
+  --output artifacts\photo-eval\import-map-137.json
 ```
 
-导入映射保存在 `artifacts/photo-eval/import-map.json`，记录每个 `p-xxx` 对应的
+本评测使用的导入映射保存在 `artifacts/photo-eval/import-map-137.json`，记录每个 `p-xxx` 对应的
 数据库 Photo UUID、OSS key、处理状态和是否成功入队。该文件属于运行产物，不应
 提交到 Git。
 
@@ -105,7 +111,8 @@ DashScope 必须能通过 HTTP(S) 获取图片。先把 `test_photos` 上传到�
 ## 3. 第二层：真实检索排名
 
 `tests/eval/retrieval_queries.json` 包含 50 条人工查询，包括语义、场景、群像、OCR、
-相似干扰项和无结果查询。先将 112 张图片通过真实上传和处理链路写入 OSS、
+相似干扰项和无结果查询。Top-K 判同另使用 35 条人工查询与候选标签
+`tests/eval/retrieval_rerank_queries.json`。先将 137 张图片通过真实上传和处理链路写入 OSS、
 PostgreSQL/pgvector，再调用 `/search`，按查询保存排序后的稳定 `p-xxx` ID：
 
 ```json
@@ -128,11 +135,11 @@ PostgreSQL/pgvector，再调用 `/search`，按查询保存排序后的稳定 `p
 ```powershell
 .\.venv\Scripts\python.exe scripts\collect_retrieval_results.py `
   --base-url http://127.0.0.1:8000 `
-  --uuid-map artifacts\photo-eval\import-map.json `
+  --uuid-map artifacts\photo-eval\import-map-137.json `
   --split test
 ```
 
-采集器可直接读取导入脚本生成的 `import-map.json`，也兼容
+采集器可直接读取导入脚本生成的 `import-map-137.json`，也兼容
 `{"数据库 UUID": "p-004"}` 形式的平面映射。JWT 默认从 `PHOTO_EVAL_JWT` 读取，
 不要写进脚本、结果文件或 Git。本地 `127.0.0.1` 默认不继承系统代理；只有确实要走代理时
 才传 `--trust-env`。结果除了稳定 ID，还会保留查询解析与各候选分数，供拒识阈值分析。
@@ -178,7 +185,7 @@ PostgreSQL/pgvector，再调用 `/search`，按查询保存排序后的稳定 `p
 
 .\.venv\Scripts\python.exe scripts\collect_retrieval_results.py `
   --queries tests\eval\retrieval_negative_development.json `
-  --uuid-map artifacts\photo-eval\import-map.json `
+  --uuid-map artifacts\photo-eval\import-map-137.json `
   --output artifacts\retrieval-negative-development-http.json
 ```
 
@@ -199,6 +206,51 @@ validation/test 作为冻结检查：
 
 2026-08-14 的 50 条真实运行、标签审计、两种解析模式对照和失败归因见
 `docs/retrieval-evaluation-results-2026-08-14.md`。
+
+### 结构化矛盾校验
+
+搜索默认启用 `verify_constraints=true`。当查询明确指定图片中的文字、品牌、价格、
+座位、锁屏时间、台历日期或路线时，服务会扩大候选池并要求 `ai_analysis` 提供匹配证据。
+普通语义查询不受影响。响应的 `constraint_check` 只返回约束和计数，不返回被过滤图片内容。
+
+需要做未校验对照时显式传 `verify_constraints=false`。Agent 搜索也默认开启；强约束全部失败时
+不会继续全相册兜底。实现、API 示例、标签修订、真实 HTTP 指标和限制见
+`docs/structured-constraint-validation.md`。
+
+### Top-K 判同重排
+
+搜索可通过 `verify_semantic=true/false` 开关 Top-K 判同。它在结构化约束校验和游标
+过滤后，对当前页前 5 个候选的冻结 `ai_analysis` 与 `ai_description` 做一次批量判断，
+输出 `match / contradiction / uncertain`。高置信度 contradiction 删除，match 排在
+uncertain 前；严格模式在零 match 时返回空结果，且不会用未经判定的候选回填。模型、缓存、
+熔断或 JSON 解析失败时仍 fail-open，原排名继续返回。
+
+离线人工上界回放：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\evaluate_search_reranker.py `
+  --queries tests\eval\retrieval_rerank_queries.json `
+  --output artifacts\reranker-offline-replay.json
+```
+
+真实 HTTP 基线与重排对照：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\collect_retrieval_results.py `
+  --queries tests\eval\retrieval_rerank_queries.json `
+  --uuid-map artifacts\photo-eval\import-map-137.json `
+  --no-verify-semantic `
+  --output artifacts\reranker-http-baseline.json
+
+.\.venv\Scripts\python.exe scripts\collect_retrieval_results.py `
+  --queries tests\eval\retrieval_rerank_queries.json `
+  --uuid-map artifacts\photo-eval\import-map-137.json `
+  --verify-semantic `
+  --output artifacts\reranker-http-enabled.json
+```
+
+Prompt、缓存键、熔断、分页和门禁细节见 `docs/search-reranker.md`；2026-08-15 的真实
+结果见 `docs/search-reranker-results-2026-08-15.md`。
 
 ## 4. 第三层：Agent 决策
 

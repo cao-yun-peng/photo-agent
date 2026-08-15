@@ -1,4 +1,5 @@
 """照片相关 schema."""
+
 from datetime import date, datetime
 from uuid import UUID
 
@@ -70,15 +71,15 @@ class SearchQuery(BaseModel):
     # 过滤维度
     from_date: date | None = None
     to_date: date | None = None
-    tags: list[str] | None = None                 # 命中任一即可（OR）
-    status: str | None = Field(default="done")    # 一般只搜处理完的
+    tags: list[str] | None = None  # 命中任一即可（OR）
+    status: str | None = Field(default="done")  # 一般只搜处理完的
 
     # 结构化分析 JSONB 过滤（OR 语义）
-    scene: str | None = None                      # 场景大类
-    objects: list[str] | None = None              # 物体标签
-    text_in_image: list[str] | None = None        # 图中文字
-    mood: str | None = None                       # 氛围
-    colors: list[str] | None = None               # 主色调
+    scene: str | None = None  # 场景大类
+    objects: list[str] | None = None  # 物体标签
+    text_in_image: list[str] | None = None  # 图中文字
+    mood: str | None = None  # 氛围
+    colors: list[str] | None = None  # 主色调
 
     # 排序权重（0–1），加起来不必等于 1，程序会归一
     w_semantic: float = Field(default=0.7, ge=0, le=1)
@@ -90,6 +91,12 @@ class SearchQuery(BaseModel):
 
     # 是否让服务器帮我把自然语言解析成结构化条件
     auto_parse: bool = False
+
+    # 对可见文字/品牌/数值/日期/路线等强约束做候选证据校验
+    verify_constraints: bool = True
+
+    # 对当前页前 K 个候选执行查询-候选判同；可显式关闭以运行基线对照
+    verify_semantic: bool = True
 
 
 class SearchResultItem(BaseModel):
@@ -117,12 +124,44 @@ class ParsedQuery(BaseModel):
     tags: list[str] = Field(default_factory=list)
 
 
+class SearchConstraintCheck(BaseModel):
+    """强约束候选校验摘要；不暴露被过滤照片的内容。"""
+
+    applied: bool = True
+    constraints: list[dict[str, str]] = Field(default_factory=list)
+    candidates_checked: int = 0
+    matched_count: int = 0
+    rejected_count: int = 0
+    rejected_by_kind: dict[str, int] = Field(default_factory=dict)
+
+
+class SearchRerankCheck(BaseModel):
+    """Top-K 判同摘要；不返回被过滤候选的 ID 或图片内容。"""
+
+    applied: bool = True
+    degraded: bool = False
+    degraded_reason: str | None = None
+    prompt_version: str
+    model: str | None = None
+    candidates_checked: int = 0
+    match_count: int = 0
+    uncertain_count: int = 0
+    contradiction_count: int = 0
+    rejected_count: int = 0
+    zero_match_filtered: bool = False
+    unjudged_filtered_count: int = 0
+    cache_hit: bool = False
+    latency_ms: float = 0.0
+
+
 class SearchResult(BaseModel):
     items: list[SearchResultItem]
     total: int
     next_cursor: str | None = None
-    parsed: ParsedQuery | None = None    # 若 auto_parse=True，返回解析结果给前端展示
-    cache_hit: bool = False              # embedding 是否命中缓存
+    parsed: ParsedQuery | None = None  # 若 auto_parse=True，返回解析结果给前端展示
+    cache_hit: bool = False  # embedding 是否命中缓存
+    constraint_check: SearchConstraintCheck | None = None
+    rerank_check: SearchRerankCheck | None = None
 
 
 class AlbumFallbackQuery(BaseModel):

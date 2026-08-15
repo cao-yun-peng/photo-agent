@@ -297,7 +297,7 @@ class WorkerSettings:
         count_events_by_age,
     ]
     redis_settings = RedisSettings.from_dsn(settings.redis_url)
-    max_jobs = 10
+    max_jobs = settings.worker_max_jobs
     job_timeout = 180         # 生图较慢，给 3 分钟
     keep_result = 600
     max_tries = 2

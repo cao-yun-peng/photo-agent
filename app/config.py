@@ -1,4 +1,5 @@
 """全局配置：从 .env 读取，Pydantic 校验."""
+
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -44,6 +45,19 @@ class Settings(BaseSettings):
     # Agent 决策用的文本模型（支持 function calling）
     qwen_chat_model: str = "qwen-plus"
 
+    # Worker concurrency. Image understanding performs multiple outbound model
+    # calls per job, so a conservative default avoids connection bursts.
+    worker_max_jobs: int = 4
+
+    # Top-K 查询-候选判同重排。模型为空时复用 qwen_chat_model。
+    search_rerank_enabled: bool = True
+    search_rerank_model: str = ""
+    search_rerank_top_k: int = 5
+    search_rerank_reject_confidence: float = 0.8
+    search_rerank_require_match: bool = True
+    search_rerank_timeout_seconds: float = 12.0
+    search_rerank_cache_ttl_seconds: int = 7 * 24 * 3600
+
     # OpenAI (可选，用于 gpt-image-2 / Agent function calling)
     openai_api_key: str = ""
     openai_base_url: str = "https://api.openai.com/v1"
@@ -66,6 +80,7 @@ class Settings(BaseSettings):
     cb_vl_recovery_interval: int = 300
     cb_embedding_recovery_interval: int = 300
     cb_chat_recovery_interval: int = 120
+    cb_search_rerank_recovery_interval: int = 120
     cb_image_gen_recovery_interval: int = 300
     cb_oss_recovery_interval: int = 300
 

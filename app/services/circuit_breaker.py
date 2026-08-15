@@ -10,6 +10,7 @@ open → half_open：距上次失败超过 recovery_interval 秒
 half_open → closed：探测成功
 half_open → open：探测失败（立即重置计时器）
 """
+
 from __future__ import annotations
 
 import logging
@@ -54,9 +55,7 @@ class CircuitBreaker:
             elapsed = time.monotonic() - self.last_failure_time
             if elapsed > self.recovery_interval:
                 self.state = "half_open"
-                logger.info(
-                    "circuit_breaker %s: open → half_open (probe)", self.name
-                )
+                logger.info("circuit_breaker %s: open → half_open (probe)", self.name)
             else:
                 raise ServiceDegradedError(
                     self.name,
@@ -75,9 +74,7 @@ class CircuitBreaker:
     def _on_success(self) -> None:
         """调用成功：重置一切。half_open 探测成功 → 恢复 closed。"""
         if self.state == "half_open":
-            logger.info(
-                "circuit_breaker %s: half_open → closed (recovered)", self.name
-            )
+            logger.info("circuit_breaker %s: half_open → closed (recovered)", self.name)
         self.failure_count = 0
         self.state = "closed"
 
@@ -132,6 +129,11 @@ agent_llm_breaker = CircuitBreaker(
     "dashscope_chat",
     failure_threshold=settings.cb_failure_threshold,
     recovery_interval=settings.cb_chat_recovery_interval,
+)
+search_rerank_breaker = CircuitBreaker(
+    "dashscope_search_rerank",
+    failure_threshold=settings.cb_failure_threshold,
+    recovery_interval=settings.cb_search_rerank_recovery_interval,
 )
 image_gen_breaker = CircuitBreaker(
     "dashscope_image_gen",

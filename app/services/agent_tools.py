@@ -5,6 +5,7 @@
 - Tool 内部处理权限、异常和兜底，不让 Agent 核心关心业务细节；
 - Tool 返回统一 dict，包含 ok / data / error / hint 字段，方便 Agent 做下一步决策。
 """
+
 from __future__ import annotations
 
 import logging
@@ -23,6 +24,11 @@ from app.models.tag import PhotoTag, Tag
 from app.schemas.photo import ParsedQuery
 from app.services.oss import sign_get_url
 from app.services.query_parser import parse_query, resolve_auto_parsed_query
+from app.services.search_constraints import (
+    extract_structured_constraints,
+    validate_scored_candidates,
+)
+from app.services.search_reranker import rerank_scored_candidates
 from app.services.recommend import recommend_skills
 from app.services.search import (
     combine,
@@ -133,7 +139,9 @@ def _photo_to_search_item(
     }
 
 
-async def _check_generate_quota(db: AsyncSession, user_id: UUID) -> tuple[bool, int, int]:
+async def _check_generate_quota(
+    db: AsyncSession, user_id: UUID
+) -> tuple[bool, int, int]:
     """检查用户今日生成额度。返回 (是否可用, 已用, 总额)."""
     today = datetime.now(tz=timezone.utc).date()
     rl = (
@@ -168,6 +176,8 @@ async def search_photos(
     limit: int = 10,
     cursor: str | None = None,
     auto_parse: bool = True,
+    verify_constraints: bool = True,
+    verify_semantic: bool = True,
     w_semantic: float = 0.7,
     w_recency: float = 0.2,
     w_interaction: float = 0.1,
@@ -195,6 +205,10 @@ async def search_photos(
                 from_date=from_date,
                 to_date=to_date,
             )
+
+        constraints = (
+            extract_structured_constraints(query) if verify_constraints else []
+        )
 
         query_vec, _ = await get_query_embedding(effective_q)
         profile = await get_user_profile(db, user_id)
@@ -232,20 +246,16 @@ async def search_photos(
             )
         if text_in_image:
             jsonb_conds.append(
-                Photo.ai_analysis["text_in_image"].op("?|")(
-                    func.array(text_in_image)
-                )
+                Photo.ai_analysis["text_in_image"].op("?|")(func.array(text_in_image))
             )
         if mood:
             jsonb_conds.append(Photo.ai_analysis["mood"].astext == mood)
         if colors:
-            jsonb_conds.append(
-                Photo.ai_analysis["colors"].op("?|")(func.array(colors))
-            )
+            jsonb_conds.append(Photo.ai_analysis["colors"].op("?|")(func.array(colors)))
         if jsonb_conds:
             conds.append(or_(*jsonb_conds))
 
-        fetch_n = limit * 3
+        fetch_n = max(limit * 5, 30) if constraints else limit * 3
         dist_col = Photo.embedding.cosine_distance(query_vec).label("dist")
         stmt = (
             select(Photo, dist_col)
@@ -266,6 +276,8 @@ async def search_photos(
 
         scored.sort(key=lambda x: x[4], reverse=True)
 
+        scored, constraint_summary = validate_scored_candidates(scored, constraints)
+
         if cursor:
             parsed_cursor = decode_cursor(cursor)
             if parsed_cursor is not None:
@@ -277,6 +289,13 @@ async def search_photos(
                     or (abs(fin - cur_score) < 1e-9 and str(p.id) > cur_id)
                 ]
 
+        scored, rerank_summary = await rerank_scored_candidates(
+            scored,
+            query,
+            enabled=verify_semantic,
+            page_limit=limit,
+        )
+
         page = scored[:limit]
         items = [
             _photo_to_search_item(p, sem, rec, inter, fin)
@@ -284,7 +303,9 @@ async def search_photos(
         ]
         next_cursor = None
         if len(page) == limit and len(scored) > limit:
-            last_p, _, _, _, last_score = page[-1]
+            last_p, _, _, _, last_score = sorted(
+                page, key=lambda row: (-row[4], str(row[0].id))
+            )[-1]
             next_cursor = encode_cursor(last_score, last_p.id)
 
         parsed_dict = parsed_obj.model_dump() if parsed_obj else None
@@ -300,6 +321,8 @@ async def search_photos(
             "parsed": parsed_dict,
             "next_cursor": next_cursor,
             "total": len(items),
+            "constraint_check": constraint_summary,
+            "rerank_check": rerank_summary,
             "hint": hint,
         }
 
@@ -448,9 +471,7 @@ async def apply_skill(
                     "status": "skill_not_found",
                     "hint": "未找到指定的 Skill",
                 }
-            if not (
-                skill.is_official or skill.is_public or skill.owner_id == user_id
-            ):
+            if not (skill.is_official or skill.is_public or skill.owner_id == user_id):
                 return {
                     "ok": False,
                     "generation_id": None,
@@ -467,8 +488,7 @@ async def apply_skill(
                 "generation_id": None,
                 "status": "quota_exceeded",
                 "hint": (
-                    f"今日免费额度已用完（{used}/{quota}），"
-                    "明天再来或订阅解锁。"
+                    f"今日免费额度已用完（{used}/{quota}），" "明天再来或订阅解锁。"
                 ),
             }
 
@@ -540,8 +560,15 @@ async def get_photo_detail(
             "hint": "已获取照片详情",
         }
     except Exception as exc:
-        logger.exception("get_photo_detail failed | user=%s photo=%s", user_id, photo_id)
-        return {"ok": False, "error_type": _classify_exception(exc), "data": None, "hint": f"获取照片详情失败：{exc}"}
+        logger.exception(
+            "get_photo_detail failed | user=%s photo=%s", user_id, photo_id
+        )
+        return {
+            "ok": False,
+            "error_type": _classify_exception(exc),
+            "data": None,
+            "hint": f"获取照片详情失败：{exc}",
+        }
 
 
 # ------------------------------------------------------------------
@@ -610,6 +637,15 @@ async def fallback_search(
             "hint": f"【线索相册】{res['hint']}",
         }
 
+    if res.get("ok") and res.get("constraint_check", {}).get("applied"):
+        return {
+            "ok": True,
+            "items": [],
+            "fallback_level": 1,
+            "constraint_check": res["constraint_check"],
+            "hint": "相册中没有找到满足文字、品牌、数值或路线等强约束的照片",
+        }
+
     # Level 2: timeline 兜底 — 按时间范围列出照片
     if from_date or to_date:
         res = await browse_candidates(
@@ -637,7 +673,9 @@ async def fallback_search(
         "ok": res.get("ok", False),
         "items": res.get("items", []),
         "fallback_level": 3,
-        "hint": f"【全相册兜底】{res['hint']}" if res.get("ok") else res.get("hint", "无兜底结果"),
+        "hint": f"【全相册兜底】{res['hint']}"
+        if res.get("ok")
+        else res.get("hint", "无兜底结果"),
     }
 
 

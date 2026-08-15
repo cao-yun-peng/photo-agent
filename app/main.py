@@ -6,6 +6,7 @@
 - 优雅关闭与资源清理
 - 预留Skill热更新入口
 """
+
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
@@ -33,6 +34,7 @@ from app.services.circuit_breaker import (
     embedding_breaker,
     image_gen_breaker,
     oss_breaker,
+    search_rerank_breaker,
     vl_breaker,
 )
 from app.services.lock import get_redis
@@ -55,6 +57,7 @@ async def _get_http_client():
     global _http_client
     if _http_client is None or _http_client.is_closed:
         import httpx
+
         _http_client = httpx.AsyncClient(
             timeout=30.0,
             limits=httpx.Limits(
@@ -71,7 +74,8 @@ async def lifespan(_: FastAPI):
     """应用生命周期管理."""
     logger.info(
         "photo-agent api starting up | env=%s version=%s",
-        settings.app_env, __version__,
+        settings.app_env,
+        __version__,
     )
 
     # 初始化HTTP连接池
@@ -151,12 +155,14 @@ app.add_middleware(
 
 # ---------- 全局异常处理 ----------
 
+
 @app.exception_handler(ApiError)
 async def api_error_handler(_: Request, exc: ApiError) -> JSONResponse:
     """业务异常统一处理."""
     logger.warning(
         "ApiError: code=%d msg=%s",
-        exc.error_code.code, exc.message,
+        exc.error_code.code,
+        exc.message,
     )
     return JSONResponse(
         status_code=exc.http_status,
@@ -166,7 +172,9 @@ async def api_error_handler(_: Request, exc: ApiError) -> JSONResponse:
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_error_handler(_: Request, exc: RequestValidationError) -> JSONResponse:
+async def validation_error_handler(
+    _: Request, exc: RequestValidationError
+) -> JSONResponse:
     """请求参数校验失败."""
     errors = exc.errors()
     logger.warning("request validation failed: %s", errors)
@@ -182,7 +190,9 @@ async def validation_error_handler(_: Request, exc: RequestValidationError) -> J
 
 
 @app.exception_handler(ValidationError)
-async def pydantic_validation_error_handler(_: Request, exc: ValidationError) -> JSONResponse:
+async def pydantic_validation_error_handler(
+    _: Request, exc: ValidationError
+) -> JSONResponse:
     """Pydantic数据校验失败."""
     logger.warning("data validation failed: %s", exc.errors())
     return JSONResponse(
@@ -252,6 +262,7 @@ async def health() -> dict:
         "vl": vl_breaker.to_dict(),
         "embedding": embedding_breaker.to_dict(),
         "agent_llm": agent_llm_breaker.to_dict(),
+        "search_rerank": search_rerank_breaker.to_dict(),
         "image_gen": image_gen_breaker.to_dict(),
         "oss": oss_breaker.to_dict(),
     }
@@ -298,7 +309,9 @@ async def _seed_official_skills() -> None:
 
     skills_file = Path(__file__).resolve().parent / "data" / "official_skills.json"
     if not skills_file.is_file():
-        logger.warning("official_skills.json not found at %s, skipping seed", skills_file)
+        logger.warning(
+            "official_skills.json not found at %s, skipping seed", skills_file
+        )
         return
 
     with skills_file.open(encoding="utf-8") as f:
@@ -316,19 +329,21 @@ async def _seed_official_skills() -> None:
 
             if existing is None:
                 # 新增
-                db.add(Skill(
-                    owner_id=None,
-                    name=spec["name"],
-                    description=spec.get("description", ""),
-                    prompt_template=spec["prompt_template"],
-                    reference_keys=spec.get("reference_keys", []),
-                    cover_key=spec.get("cover_key"),
-                    model=spec.get("model", "wanx2.1-imageedit"),
-                    function=spec.get("function", "description_edit"),
-                    strength=spec.get("strength", 0.7),
-                    is_public=True,
-                    is_official=True,
-                ))
+                db.add(
+                    Skill(
+                        owner_id=None,
+                        name=spec["name"],
+                        description=spec.get("description", ""),
+                        prompt_template=spec["prompt_template"],
+                        reference_keys=spec.get("reference_keys", []),
+                        cover_key=spec.get("cover_key"),
+                        model=spec.get("model", "wanx2.1-imageedit"),
+                        function=spec.get("function", "description_edit"),
+                        strength=spec.get("strength", 0.7),
+                        is_public=True,
+                        is_official=True,
+                    )
+                )
                 inserted += 1
             elif existing.is_official:
                 # 更新官方 Skill 内容（保留 use_count / 权限标志）
@@ -349,14 +364,20 @@ async def _seed_official_skills() -> None:
 
     logger.info(
         "official skills sync: inserted=%d updated=%d skipped=%d total=%d",
-        inserted, updated, skipped, len(official_skills),
+        inserted,
+        updated,
+        skipped,
+        len(official_skills),
     )
-    logger.notice("official_skills_sync", {
-        "inserted": inserted,
-        "updated": updated,
-        "skipped": skipped,
-        "total": len(official_skills),
-    })
+    logger.notice(
+        "official_skills_sync",
+        {
+            "inserted": inserted,
+            "updated": updated,
+            "skipped": skipped,
+            "total": len(official_skills),
+        },
+    )
 
 
 # ---------- 导出全局HTTP客户端供各服务使用 ----------

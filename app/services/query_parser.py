@@ -174,7 +174,8 @@ async def _llm_parse(text: str) -> ParsedQuery:
         "Content-Type": "application/json",
     }
 
-    async with httpx.AsyncClient(timeout=15.0) as client:
+    # Keep DashScope traffic independent from stale desktop/system proxies.
+    async with httpx.AsyncClient(timeout=15.0, trust_env=False) as client:
         resp = await client.post(_QWEN_TEXT_URL, json=payload, headers=headers)
     if resp.status_code != 200:
         raise RuntimeError(f"qwen-plus HTTP {resp.status_code}: {resp.text[:200]}")

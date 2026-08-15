@@ -30,7 +30,9 @@ def _load_uuid_map(path: str | None) -> dict[str, str]:
             str(record["photo_id"]): str(record["dataset_id"])
             for record in payload["records"]
         }
-    return {str(photo_uuid): str(dataset_id) for photo_uuid, dataset_id in payload.items()}
+    return {
+        str(photo_uuid): str(dataset_id) for photo_uuid, dataset_id in payload.items()
+    }
 
 
 async def collect(
@@ -42,6 +44,7 @@ async def collect(
     limit: int,
     uuid_map_path: str | None,
     trust_env: bool,
+    verify_semantic: bool,
 ) -> dict[str, Any]:
     payload = json.loads(Path(queries_path).read_text(encoding="utf-8"))
     queries = [
@@ -62,7 +65,12 @@ async def collect(
             try:
                 response = await client.post(
                     "/search",
-                    json={"q": query["query"], "limit": limit, "auto_parse": True},
+                    json={
+                        "q": query["query"],
+                        "limit": limit,
+                        "auto_parse": True,
+                        "verify_semantic": verify_semantic,
+                    },
                 )
                 response.raise_for_status()
                 body = response.json()
@@ -81,6 +89,8 @@ async def collect(
                 diagnostics[query["id"]] = {
                     "parsed": body.get("parsed"),
                     "cache_hit": body.get("cache_hit"),
+                    "constraint_check": body.get("constraint_check"),
+                    "rerank_check": body.get("rerank_check"),
                     "items": [
                         {
                             "photo_id": photo_id,
@@ -108,6 +118,7 @@ async def collect(
             "limit": limit,
             "split": split,
             "trust_env": trust_env,
+            "verify_semantic": verify_semantic,
             "no_retry": True,
         },
         "results": results,
@@ -128,6 +139,12 @@ def main() -> int:
     parser.add_argument("--split", choices=["development", "validation", "test"])
     parser.add_argument("--limit", type=int, default=5)
     parser.add_argument(
+        "--verify-semantic",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="启用 Top-K 判同；基线对照使用 --no-verify-semantic",
+    )
+    parser.add_argument(
         "--trust-env",
         action="store_true",
         help="继承 HTTP(S)_PROXY 等环境变量；本地 127.0.0.1 评测默认关闭",
@@ -146,6 +163,7 @@ def main() -> int:
             limit=args.limit,
             uuid_map_path=args.uuid_map,
             trust_env=args.trust_env,
+            verify_semantic=args.verify_semantic,
         )
     )
     path = Path(args.output)

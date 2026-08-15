@@ -1,15 +1,17 @@
 {
-  "version": "2.0.0",
-  "name": "Photo Agent 人工复核图片评测集",
-  "generated_at": "2026-08-14T01:06:55.168884+00:00",
-  "reviewed_at": "2026-08-14",
+  "version": "2.1.0",
+  "name": "Photo Agent 人工复核图片评测集（含拟真合成困难集）",
+  "generated_at": "2026-08-15T08:07:06.726764+00:00",
+  "reviewed_at": "2026-08-15",
   "image_root": "../..",
-  "total_images": 112,
+  "total_images": 137,
   "annotation_policy": {
     "scene": "同时报告精确命中与室内/户外层级兼容命中",
     "objects": "required_objects 参与召回；额外合理物体不作为误检",
     "persons": "必须落在 min/max 闭区间；只统计主体场景中清晰可辨的人，排除屏幕/海报/照片、孤立肢体和很小的模糊背景人物",
-    "ocr": "required_text 参与召回；optional_text 只做诊断"
+    "ocr": "required_text 参与召回；optional_text 只做诊断",
+    "synthetic_robustness": "p-139 至 p-163 均为带水印的拟真合成图；水印属于 ignored_text，该切片必须单独报告，不能作为真实手机照片结论",
+    "group_split": "同一 group_id 的近似重复图片必须位于同一切分"
   },
   "images": [
     {
@@ -5056,6 +5058,1336 @@
         "reviewed_at": "2026-08-13",
         "notes": "人数按最终成图复核；只统计主体场景中清晰可辨的人，排除屏幕/海报/照片、孤立肢体和很小的模糊背景人物；大群像使用区间；可选文字漏识别不扣分。"
       }
+    },
+    {
+      "id": "p-139",
+      "filename": "p-139_dark_restaurant_food.jpg",
+      "path": "test_photos_realistic/p-139_dark_restaurant_food.jpg",
+      "sha256": "78297dbc70994be99752ee48e61809908b2e386f23ce10fb951c685c0f65e16b",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "低光",
+      "challenge_type": "低光噪点",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "餐厅",
+          "室内"
+        ],
+        "required_objects": [
+          "食物",
+          "盘子"
+        ],
+        "optional_objects": [
+          "蜡烛",
+          "餐桌"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "暗光餐厅中，桌上放着一盘食物，旁边有蜡烛照明",
+        "search_terms": [
+          "美食",
+          "暗光",
+          "模糊",
+          "食物",
+          "盘子"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-140",
+      "filename": "p-140_dark_bar_counter.jpg",
+      "path": "test_photos_realistic/p-140_dark_bar_counter.jpg",
+      "sha256": "ff64149410f29d1e9b00eba4153da6876998dab255257c949cab7340d4268b8c",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "validation",
+      "category": "低光",
+      "challenge_type": "低光模糊",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内",
+          "餐厅"
+        ],
+        "required_objects": [
+          "酒瓶",
+          "吧台"
+        ],
+        "optional_objects": [
+          "玻璃窗",
+          "人物剪影"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 3
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "昏暗酒吧吧台后方陈列着一排酒瓶，玻璃上有反光",
+        "search_terms": [
+          "酒吧",
+          "夜景",
+          "暗光",
+          "酒瓶",
+          "吧台"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-141",
+      "filename": "p-141_night_stand_phone_glow.jpg",
+      "path": "test_photos_realistic/p-141_night_stand_phone_glow.jpg",
+      "sha256": "ae2700648df52e084a0731f1447dd70ec4ba9e8358d068a72ccd28f2c56c45a7",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "低光",
+      "challenge_type": "极端低光",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "卧室",
+          "室内"
+        ],
+        "required_objects": [
+          "手机",
+          "闹钟"
+        ],
+        "optional_objects": [
+          "水杯",
+          "床头柜"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "深夜床头柜上亮着手机屏幕，旁边有闹钟和水杯",
+        "search_terms": [
+          "卧室",
+          "深夜",
+          "暗光",
+          "手机",
+          "闹钟"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-142",
+      "filename": "p-142_dim_parking_garage.jpg",
+      "path": "test_photos_realistic/p-142_dim_parking_garage.jpg",
+      "sha256": "490cae73df5164b3504dc29787e4b88b2510b0565ec7901c9a81ebbbb923f454",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "test",
+      "category": "低光",
+      "challenge_type": "低光噪点",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "停车场",
+          "汽车"
+        ],
+        "optional_objects": [
+          "车位",
+          "顶灯"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "昏暗地下停车场通道两侧停放着多辆汽车",
+        "search_terms": [
+          "停车场",
+          "暗光",
+          "日常",
+          "汽车"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-143",
+      "filename": "p-143_blurry_dog_running.jpg",
+      "path": "test_photos_realistic/p-143_blurry_dog_running.jpg",
+      "sha256": "084f2266047b0d51d7b729acb10007c5460504a27d9ae6ef41b5a359e50f622b",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "模糊",
+      "challenge_type": "运动模糊",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "狗",
+          "草地"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "一只狗在绿色草地上快速奔跑，主体有明显运动模糊",
+        "search_terms": [
+          "狗",
+          "运动模糊",
+          "失败",
+          "草地"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-144",
+      "filename": "p-144_bus_window_blur.jpg",
+      "path": "test_photos_realistic/p-144_bus_window_blur.jpg",
+      "sha256": "7eb6fe8495397a433d3a0949a0984f0b31292c80f5177f20f03576710eceb597",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "validation",
+      "category": "模糊",
+      "challenge_type": "运动模糊",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "车内",
+          "街道"
+        ],
+        "required_objects": [
+          "车窗",
+          "汽车"
+        ],
+        "optional_objects": [
+          "建筑",
+          "街道"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "从公交车窗拍摄城市道路，窗外车辆和建筑明显模糊",
+        "search_terms": [
+          "公交",
+          "运动模糊",
+          "通勤",
+          "车窗",
+          "汽车"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-145",
+      "filename": "p-145_toddler_running_blur.jpg",
+      "path": "test_photos_realistic/p-145_toddler_running_blur.jpg",
+      "sha256": "1bf6cab37080c0fa6b0ef1b9787519b9fc3de3476422f36da20c39f569c3fde8",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "test",
+      "category": "模糊",
+      "challenge_type": "运动模糊",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "客厅",
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "沙发"
+        ],
+        "optional_objects": [
+          "儿童",
+          "电视"
+        ],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "客厅里一名儿童从沙发前跑过，人物因运动而模糊",
+        "search_terms": [
+          "儿童",
+          "运动模糊",
+          "室内",
+          "人物",
+          "沙发"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-146",
+      "filename": "p-146_messy_laundry_pile.jpg",
+      "path": "test_photos_realistic/p-146_messy_laundry_pile.jpg",
+      "sha256": "37050be7b0334d9d8fb88c0adbe51c8141fb53fd4c5b267b05a939ccb2c6b48b",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "杂乱",
+      "challenge_type": "主体不明",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "卧室",
+          "室内"
+        ],
+        "required_objects": [
+          "衣服",
+          "床"
+        ],
+        "optional_objects": [
+          "枕头"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "床上杂乱堆放着大量未整理的衣服",
+        "search_terms": [
+          "洗衣",
+          "杂乱",
+          "日常",
+          "衣服",
+          "床"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-147",
+      "filename": "p-147_tangled_cables.jpg",
+      "path": "test_photos_realistic/p-147_tangled_cables.jpg",
+      "sha256": "f398599071089e71be24384dc3d5a19486c884a6aab2119b58d05cd3f09d77d3",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "杂乱",
+      "challenge_type": "主体不明",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "数据线",
+          "插头"
+        ],
+        "optional_objects": [
+          "充电器"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "地面上堆着相互缠绕的数据线、插头和充电器",
+        "search_terms": [
+          "数据线",
+          "杂乱",
+          "物品",
+          "插头"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-148",
+      "filename": "p-148_supermarket_aisle.jpg",
+      "path": "test_photos_realistic/p-148_supermarket_aisle.jpg",
+      "sha256": "5db98c71e6f747562607404a582584d80435d89a5d2bb8098d8ee91b64bca8e8",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "杂乱",
+      "challenge_type": "主体不明",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "商店",
+          "室内"
+        ],
+        "required_objects": [
+          "货架",
+          "商品"
+        ],
+        "optional_objects": [
+          "超市通道"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "超市通道两侧是摆满商品的高大货架",
+        "search_terms": [
+          "超市",
+          "购物",
+          "杂乱",
+          "货架",
+          "商品"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-149",
+      "filename": "p-149_messy_dinner_table.jpg",
+      "path": "test_photos_realistic/p-149_messy_dinner_table.jpg",
+      "sha256": "def91bab66abe23cdd36c96a266c4b56c160c3e5edbac283e3dacaa2c96dd4df",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "test",
+      "category": "杂乱",
+      "challenge_type": "主体不明",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "餐厅",
+          "室内"
+        ],
+        "required_objects": [
+          "餐桌",
+          "盘子"
+        ],
+        "optional_objects": [
+          "餐具",
+          "纸巾",
+          "剩菜"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "饭后餐桌上散放着空盘、餐具、纸巾和剩菜",
+        "search_terms": [
+          "饭后",
+          "杂乱",
+          "桌面",
+          "餐桌",
+          "盘子"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-150",
+      "filename": "p-150_overexposed_snow.jpg",
+      "path": "test_photos_realistic/p-150_overexposed_snow.jpg",
+      "sha256": "8cf14497f094b32a3877d6d2427410a8d7f5e86df71a08aa9d77742114b445d4",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "过曝",
+      "challenge_type": "过曝",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "户外"
+        ],
+        "required_objects": [
+          "雪地",
+          "树"
+        ],
+        "optional_objects": [
+          "雪景"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "严重过曝的雪地景色，只能隐约看到远处树木",
+        "search_terms": [
+          "雪",
+          "过曝",
+          "失败",
+          "雪地",
+          "树"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-151",
+      "filename": "p-151_backlit_silhouette.jpg",
+      "path": "test_photos_realistic/p-151_backlit_silhouette.jpg",
+      "sha256": "71c15aab723a069cc91e5761a33f323db20ca947147f48b785ba1ffe1668a9f0",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "test",
+      "category": "过曝",
+      "challenge_type": "过曝逆光",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "人物",
+          "窗户"
+        ],
+        "optional_objects": [
+          "剪影"
+        ],
+        "persons": {
+          "min": 1,
+          "max": 1
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "一名人物背对镜头站在明亮窗前，逆光形成黑色剪影",
+        "search_terms": [
+          "逆光",
+          "过曝",
+          "人像",
+          "人物",
+          "窗户"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-152",
+      "filename": "p-152_flash_shadow_wall.jpg",
+      "path": "test_photos_realistic/p-152_flash_shadow_wall.jpg",
+      "sha256": "0ea4948c75ad1cc03bfd20b050edd31d1e0d6b9eb30e17ded7939082c65a8863",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "过曝",
+      "challenge_type": "闪光过曝",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "玩具熊",
+          "桌子"
+        ],
+        "optional_objects": [
+          "影子"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "闪光灯照亮桌上的玩具熊，并在墙上投下明显硬阴影",
+        "search_terms": [
+          "闪光灯",
+          "过曝",
+          "室内",
+          "玩具熊",
+          "桌子"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-153",
+      "filename": "p-153_crooked_street_sign.jpg",
+      "path": "test_photos_realistic/p-153_crooked_street_sign.jpg",
+      "sha256": "10b08ed1c47b7890f2096e058dc75bf430a453a518fae95e1eb5ceab06637a4e",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "构图差",
+      "challenge_type": "倾斜构图",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "街道",
+          "户外"
+        ],
+        "required_objects": [
+          "路牌"
+        ],
+        "optional_objects": [
+          "天空"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "西四环南大街"
+        ],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "倾斜构图拍摄写有“西四环南大街”的蓝色路牌",
+        "search_terms": [
+          "路牌",
+          "倾斜",
+          "街头"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-154",
+      "filename": "p-154_floor_ceilings_wrong.jpg",
+      "path": "test_photos_realistic/p-154_floor_ceilings_wrong.jpg",
+      "sha256": "34f74353f0702b4fb070dad60167bd83c969d1f1977010b2be257e019cff7e13",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "validation",
+      "category": "构图差",
+      "challenge_type": "误拍",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "天花板",
+          "日光灯"
+        ],
+        "optional_objects": [],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "误拍的室内天花板和成排日光灯，画面明显倾斜",
+        "search_terms": [
+          "天花板",
+          "倾斜",
+          "误拍",
+          "日光灯"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-155",
+      "filename": "p-155_window_reflection_subject.jpg",
+      "path": "test_photos_realistic/p-155_window_reflection_subject.jpg",
+      "sha256": "5b6286c39cb2096a8f792dda17d25b71c41648bcbfcb7f42b738e692cf8962f6",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "反光",
+      "challenge_type": "反光遮挡",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内",
+          "户外"
+        ],
+        "required_objects": [
+          "窗户",
+          "建筑"
+        ],
+        "optional_objects": [
+          "反光",
+          "树"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "隔着窗户拍摄住宅楼和树木，玻璃反光覆盖部分画面",
+        "search_terms": [
+          "反光",
+          "窗户",
+          "失败",
+          "建筑"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-156",
+      "filename": "p-156_aquarium_glass_glare.jpg",
+      "path": "test_photos_realistic/p-156_aquarium_glass_glare.jpg",
+      "sha256": "38b617ff5d7c5a29f5d409ea70e5e18a9f9a5521a1f058a6460b89d169ab71ce",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "validation",
+      "category": "反光",
+      "challenge_type": "反光遮挡",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "鱼",
+          "水族箱"
+        ],
+        "optional_objects": [
+          "玻璃",
+          "水草"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "隔着反光且带污渍的水族箱玻璃拍摄多条鱼",
+        "search_terms": [
+          "水族馆",
+          "反光",
+          "失败",
+          "鱼",
+          "水族箱"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-157",
+      "filename": "p-157_rain_windshield_streaks.jpg",
+      "path": "test_photos_realistic/p-157_rain_windshield_streaks.jpg",
+      "sha256": "53dcbfb82b99e7ebac9dbcecdae19cbae6da24e5b469d369698772bf5dac1cd2",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "test",
+      "category": "反光",
+      "challenge_type": "反光遮挡",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "车内",
+          "街道"
+        ],
+        "required_objects": [
+          "挡风玻璃",
+          "汽车"
+        ],
+        "optional_objects": [
+          "雨滴",
+          "雨刷",
+          "公路"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "雨天从车内透过有雨水的挡风玻璃拍摄前方公路和汽车",
+        "search_terms": [
+          "雨",
+          "车窗",
+          "反光",
+          "挡风玻璃",
+          "汽车"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-158",
+      "filename": "p-158_foggy_lens_camera.jpg",
+      "path": "test_photos_realistic/p-158_foggy_lens_camera.jpg",
+      "sha256": "9a8f29e6fbdc28269e475f43f37bc443d6c092076e04866684232ac96801e0ab",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "脏镜头",
+      "challenge_type": "镜头起雾",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "街道",
+          "户外"
+        ],
+        "required_objects": [
+          "街道",
+          "汽车"
+        ],
+        "optional_objects": [
+          "路灯",
+          "树"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "镜头起雾后拍摄的街道，车辆、路灯和树木都很朦胧",
+        "search_terms": [
+          "起雾",
+          "镜头",
+          "失败",
+          "街道",
+          "汽车"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-159",
+      "filename": "p-159_smudged_lens_food.jpg",
+      "path": "test_photos_realistic/p-159_smudged_lens_food.jpg",
+      "sha256": "6df842ee981c46de5bdc2689c1ddbf7464a46a7c8c865dc02937299749277cf7",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "脏镜头",
+      "challenge_type": "脏镜头污渍",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "餐厅",
+          "室内"
+        ],
+        "required_objects": [
+          "食物",
+          "盘子"
+        ],
+        "optional_objects": [
+          "餐桌",
+          "油污"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "透过带油污的镜头拍摄盘中食物，画面有明显彩色眩光",
+        "search_terms": [
+          "食物",
+          "脏镜头",
+          "失败",
+          "盘子"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-160",
+      "filename": "p-160_weather_app_screenshot.jpg",
+      "path": "test_photos_realistic/p-160_weather_app_screenshot.jpg",
+      "sha256": "1f9e24546a8acd1b3a186cd153f9850b139bfb9950f8f518a015847b1aa4602e",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "截屏",
+      "challenge_type": "非相机拍摄",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "其他"
+        ],
+        "required_objects": [
+          "天气应用",
+          "天气图标"
+        ],
+        "optional_objects": [
+          "手机界面"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "WEATHER"
+        ],
+        "optional_text": [
+          "Today",
+          "Tomorrow"
+        ],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "天气应用截图，列出一周天气、温度和天气图标",
+        "search_terms": [
+          "截屏",
+          "天气",
+          "App",
+          "天气应用",
+          "天气图标"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-161",
+      "filename": "p-161_map_navigation_screenshot.jpg",
+      "path": "test_photos_realistic/p-161_map_navigation_screenshot.jpg",
+      "sha256": "34a6d452ca95f1756a71e2a1c19f887c8251d5192e3679c501a3d788e9b64bdc",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "validation",
+      "category": "截屏",
+      "challenge_type": "非相机拍摄",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "其他"
+        ],
+        "required_objects": [
+          "地图",
+          "导航路线"
+        ],
+        "optional_objects": [
+          "手机界面",
+          "定位标记"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [
+          "MAPS"
+        ],
+        "optional_text": [
+          "MAIN ST",
+          "DISTANCE: 2.4 mi",
+          "ETA: 8 MINUTES"
+        ],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "地图导航应用截图，蓝色路线从当前位置通向主街",
+        "search_terms": [
+          "截屏",
+          "地图",
+          "导航",
+          "导航路线"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      }
+    },
+    {
+      "id": "p-162",
+      "filename": "p-162_burst_cat_similar_1.jpg",
+      "path": "test_photos_realistic/p-162_burst_cat_similar_1.jpg",
+      "sha256": "c7f5cea749a5eae2439de70e84c6b1fbf3431bbfa7150c27159eafd1386813b0",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "连拍",
+      "challenge_type": "近似重复",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "猫",
+          "窗户"
+        ],
+        "optional_objects": [
+          "盆栽",
+          "窗台"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "橘猫坐在窗台上面向窗外，旁边放着盆栽",
+        "search_terms": [
+          "猫",
+          "连拍",
+          "近似",
+          "窗户"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      },
+      "group_id": "cat_window",
+      "group_index": 1
+    },
+    {
+      "id": "p-163",
+      "filename": "p-163_burst_cat_similar_2.jpg",
+      "path": "test_photos_realistic/p-163_burst_cat_similar_2.jpg",
+      "sha256": "9be8a80b8d2f28875b853e872f8dabc7723e718b562011be0f7ab58d9d116740",
+      "width": 1920,
+      "height": 1920,
+      "source": "synthetic",
+      "dataset_role": "synthetic_robustness",
+      "simulates_phone_photo": true,
+      "split": "development",
+      "category": "连拍",
+      "challenge_type": "近似重复",
+      "generation": {
+        "generator": "test_photos_realistic/metadata.json",
+        "prompt": null
+      },
+      "ground_truth": {
+        "acceptable_scenes": [
+          "室内"
+        ],
+        "required_objects": [
+          "猫",
+          "窗户"
+        ],
+        "optional_objects": [
+          "窗台"
+        ],
+        "persons": {
+          "min": 0,
+          "max": 0
+        },
+        "required_text": [],
+        "optional_text": [],
+        "ignored_text": [
+          "AI生成"
+        ],
+        "summary": "橘猫坐在窗台上侧身望向窗外",
+        "search_terms": [
+          "猫",
+          "连拍",
+          "近似",
+          "窗户"
+        ]
+      },
+      "review": {
+        "status": "human_reviewed",
+        "reviewed_at": "2026-08-15",
+        "notes": "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+      },
+      "group_id": "cat_window",
+      "group_index": 2
     }
   ]
 }

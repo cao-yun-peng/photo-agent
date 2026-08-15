@@ -261,6 +261,266 @@ CATEGORY_OVERRIDES = {
 }
 
 
+# 2026-08-15 对 test_photos_realistic 的 25 张成图逐张目视复核。
+# 这批图均带“AI生成”水印，只能作为“拟真合成困难集”，不能代表真实手机照片。
+# p-162/p-163 来自同一近似连拍组，必须固定在同一切分，避免信息泄漏。
+REALISTIC_SPLITS = {
+    **{
+        photo_id: "development"
+        for photo_id in (
+            "p-139",
+            "p-141",
+            "p-143",
+            "p-146",
+            "p-147",
+            "p-148",
+            "p-150",
+            "p-152",
+            "p-153",
+            "p-155",
+            "p-158",
+            "p-159",
+            "p-160",
+            "p-162",
+            "p-163",
+        )
+    },
+    **{
+        photo_id: "validation"
+        for photo_id in ("p-140", "p-144", "p-154", "p-156", "p-161")
+    },
+    **{photo_id: "test" for photo_id in ("p-142", "p-145", "p-149", "p-151", "p-157")},
+}
+
+REALISTIC_GROUND_TRUTH: dict[str, dict[str, Any]] = {
+    "p-139": {
+        "scenes": ["餐厅", "室内"],
+        "required": ["食物", "盘子"],
+        "optional": ["蜡烛", "餐桌"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "暗光餐厅中，桌上放着一盘食物，旁边有蜡烛照明",
+    },
+    "p-140": {
+        "scenes": ["室内", "餐厅"],
+        "required": ["酒瓶", "吧台"],
+        "optional": ["玻璃窗", "人物剪影"],
+        "persons": (0, 3),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "昏暗酒吧吧台后方陈列着一排酒瓶，玻璃上有反光",
+    },
+    "p-141": {
+        "scenes": ["卧室", "室内"],
+        "required": ["手机", "闹钟"],
+        "optional": ["水杯", "床头柜"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "深夜床头柜上亮着手机屏幕，旁边有闹钟和水杯",
+    },
+    "p-142": {
+        "scenes": ["室内"],
+        "required": ["停车场", "汽车"],
+        "optional": ["车位", "顶灯"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "昏暗地下停车场通道两侧停放着多辆汽车",
+    },
+    "p-143": {
+        "scenes": ["户外"],
+        "required": ["狗", "草地"],
+        "optional": [],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "一只狗在绿色草地上快速奔跑，主体有明显运动模糊",
+    },
+    "p-144": {
+        "scenes": ["车内", "街道"],
+        "required": ["车窗", "汽车"],
+        "optional": ["建筑", "街道"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "从公交车窗拍摄城市道路，窗外车辆和建筑明显模糊",
+    },
+    "p-145": {
+        "scenes": ["客厅", "室内"],
+        "required": ["人物", "沙发"],
+        "optional": ["儿童", "电视"],
+        "persons": (1, 1),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "客厅里一名儿童从沙发前跑过，人物因运动而模糊",
+    },
+    "p-146": {
+        "scenes": ["卧室", "室内"],
+        "required": ["衣服", "床"],
+        "optional": ["枕头"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "床上杂乱堆放着大量未整理的衣服",
+    },
+    "p-147": {
+        "scenes": ["室内"],
+        "required": ["数据线", "插头"],
+        "optional": ["充电器"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "地面上堆着相互缠绕的数据线、插头和充电器",
+    },
+    "p-148": {
+        "scenes": ["商店", "室内"],
+        "required": ["货架", "商品"],
+        "optional": ["超市通道"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "超市通道两侧是摆满商品的高大货架",
+    },
+    "p-149": {
+        "scenes": ["餐厅", "室内"],
+        "required": ["餐桌", "盘子"],
+        "optional": ["餐具", "纸巾", "剩菜"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "饭后餐桌上散放着空盘、餐具、纸巾和剩菜",
+    },
+    "p-150": {
+        "scenes": ["户外"],
+        "required": ["雪地", "树"],
+        "optional": ["雪景"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "严重过曝的雪地景色，只能隐约看到远处树木",
+    },
+    "p-151": {
+        "scenes": ["室内"],
+        "required": ["人物", "窗户"],
+        "optional": ["剪影"],
+        "persons": (1, 1),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "一名人物背对镜头站在明亮窗前，逆光形成黑色剪影",
+    },
+    "p-152": {
+        "scenes": ["室内"],
+        "required": ["玩具熊", "桌子"],
+        "optional": ["影子"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "闪光灯照亮桌上的玩具熊，并在墙上投下明显硬阴影",
+    },
+    "p-153": {
+        "scenes": ["街道", "户外"],
+        "required": ["路牌"],
+        "optional": ["天空"],
+        "persons": (0, 0),
+        "required_text": ["西四环南大街"],
+        "optional_text": [],
+        "summary": "倾斜构图拍摄写有“西四环南大街”的蓝色路牌",
+    },
+    "p-154": {
+        "scenes": ["室内"],
+        "required": ["天花板", "日光灯"],
+        "optional": [],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "误拍的室内天花板和成排日光灯，画面明显倾斜",
+    },
+    "p-155": {
+        "scenes": ["室内", "户外"],
+        "required": ["窗户", "建筑"],
+        "optional": ["反光", "树"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "隔着窗户拍摄住宅楼和树木，玻璃反光覆盖部分画面",
+    },
+    "p-156": {
+        "scenes": ["室内"],
+        "required": ["鱼", "水族箱"],
+        "optional": ["玻璃", "水草"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "隔着反光且带污渍的水族箱玻璃拍摄多条鱼",
+    },
+    "p-157": {
+        "scenes": ["车内", "街道"],
+        "required": ["挡风玻璃", "汽车"],
+        "optional": ["雨滴", "雨刷", "公路"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "雨天从车内透过有雨水的挡风玻璃拍摄前方公路和汽车",
+    },
+    "p-158": {
+        "scenes": ["街道", "户外"],
+        "required": ["街道", "汽车"],
+        "optional": ["路灯", "树"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "镜头起雾后拍摄的街道，车辆、路灯和树木都很朦胧",
+    },
+    "p-159": {
+        "scenes": ["餐厅", "室内"],
+        "required": ["食物", "盘子"],
+        "optional": ["餐桌", "油污"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "透过带油污的镜头拍摄盘中食物，画面有明显彩色眩光",
+    },
+    "p-160": {
+        "scenes": ["其他"],
+        "required": ["天气应用", "天气图标"],
+        "optional": ["手机界面"],
+        "persons": (0, 0),
+        "required_text": ["WEATHER"],
+        "optional_text": ["Today", "Tomorrow"],
+        "summary": "天气应用截图，列出一周天气、温度和天气图标",
+    },
+    "p-161": {
+        "scenes": ["其他"],
+        "required": ["地图", "导航路线"],
+        "optional": ["手机界面", "定位标记"],
+        "persons": (0, 0),
+        "required_text": ["MAPS"],
+        "optional_text": ["MAIN ST", "DISTANCE: 2.4 mi", "ETA: 8 MINUTES"],
+        "summary": "地图导航应用截图，蓝色路线从当前位置通向主街",
+    },
+    "p-162": {
+        "scenes": ["室内"],
+        "required": ["猫", "窗户"],
+        "optional": ["盆栽", "窗台"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "橘猫坐在窗台上面向窗外，旁边放着盆栽",
+    },
+    "p-163": {
+        "scenes": ["室内"],
+        "required": ["猫", "窗户"],
+        "optional": ["窗台"],
+        "persons": (0, 0),
+        "required_text": [],
+        "optional_text": [],
+        "summary": "橘猫坐在窗台上侧身望向窗外",
+    },
+}
+
+
 def _read_legacy(path: Path) -> dict[str, dict[str, Any]]:
     if not path.exists():
         return {}
@@ -319,8 +579,86 @@ def _split(index: int) -> str:
     )
 
 
+def _realistic_records(
+    images_dir: Path,
+    metadata_path: Path,
+) -> list[dict[str, Any]]:
+    metadata = _read_legacy(metadata_path)
+    images = sorted(images_dir.glob("p-*.jpg"))
+    records: list[dict[str, Any]] = []
+    if not images:
+        raise ValueError(f"拟真合成困难集为空: {images_dir}")
+    for image_path in images:
+        photo_id = image_path.name.split("_", 1)[0]
+        if photo_id not in REALISTIC_GROUND_TRUTH:
+            raise ValueError(f"拟真合成图片尚未人工复核: {photo_id}")
+        if photo_id not in REALISTIC_SPLITS:
+            raise ValueError(f"拟真合成图片未冻结切分: {photo_id}")
+        label = REALISTIC_GROUND_TRUTH[photo_id]
+        base = metadata.get(photo_id, {})
+        with Image.open(image_path) as image:
+            width, height = image.size
+        record: dict[str, Any] = {
+            "id": photo_id,
+            "filename": image_path.name,
+            "path": f"test_photos_realistic/{image_path.name}",
+            "sha256": hashlib.sha256(image_path.read_bytes()).hexdigest(),
+            "width": width,
+            "height": height,
+            "source": "synthetic",
+            "dataset_role": "synthetic_robustness",
+            "simulates_phone_photo": True,
+            "split": REALISTIC_SPLITS[photo_id],
+            "category": str(base.get("category") or "拟真困难样本"),
+            "challenge_type": str(base.get("challenge_type") or "unknown"),
+            "generation": {
+                "generator": "test_photos_realistic/metadata.json",
+                "prompt": None,
+            },
+            "ground_truth": {
+                "acceptable_scenes": label["scenes"],
+                "required_objects": label["required"],
+                "optional_objects": label["optional"],
+                "persons": {
+                    "min": label["persons"][0],
+                    "max": label["persons"][1],
+                },
+                "required_text": label["required_text"],
+                "optional_text": label["optional_text"],
+                "ignored_text": ["AI生成"],
+                "summary": label["summary"],
+                "search_terms": list(
+                    dict.fromkeys([*base.get("tags", []), *label["required"]])
+                ),
+            },
+            "review": {
+                "status": "human_reviewed",
+                "reviewed_at": "2026-08-15",
+                "notes": (
+                    "逐图目视复核；图片均为带‘AI生成’水印的拟真合成图，"
+                    "只用于低光、模糊、反光、过曝、杂乱、截屏和近似重复等鲁棒性评测；"
+                    "水印不参与 OCR 评分，也不得将本批结果表述为真实手机照片效果。"
+                ),
+            },
+        }
+        if base.get("burst_group"):
+            record["group_id"] = str(base["burst_group"])
+            record["group_index"] = int(base.get("burst_index") or 0)
+        records.append(record)
+    if set(REALISTIC_GROUND_TRUTH) != {record["id"] for record in records}:
+        missing = sorted(
+            set(REALISTIC_GROUND_TRUTH) - {record["id"] for record in records}
+        )
+        raise ValueError(f"拟真合成标注缺少对应图片: {missing}")
+    return records
+
+
 def build_manifest(
-    images_dir: Path, legacy_path: Path, scripts_dir: Path
+    images_dir: Path,
+    legacy_path: Path,
+    scripts_dir: Path,
+    realistic_images_dir: Path = Path("test_photos_realistic"),
+    realistic_metadata_path: Path = Path("test_photos_realistic/metadata.json"),
 ) -> dict[str, Any]:
     legacy = _read_legacy(legacy_path)
     scripted = _script_records(scripts_dir)
@@ -381,13 +719,14 @@ def build_manifest(
                 },
             }
         )
-    if len(records) != 112:
-        raise ValueError(f"期望 112 张图片，实际 {len(records)} 张")
+    records.extend(_realistic_records(realistic_images_dir, realistic_metadata_path))
+    if len(records) != 137:
+        raise ValueError(f"期望 137 张图片，实际 {len(records)} 张")
     return {
-        "version": "2.0.0",
-        "name": "Photo Agent 人工复核图片评测集",
+        "version": "2.1.0",
+        "name": "Photo Agent 人工复核图片评测集（含拟真合成困难集）",
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "reviewed_at": "2026-08-14",
+        "reviewed_at": "2026-08-15",
         "image_root": "../..",
         "total_images": len(records),
         "annotation_policy": {
@@ -398,6 +737,11 @@ def build_manifest(
                 "排除屏幕/海报/照片、孤立肢体和很小的模糊背景人物"
             ),
             "ocr": "required_text 参与召回；optional_text 只做诊断",
+            "synthetic_robustness": (
+                "p-139 至 p-163 均为带水印的拟真合成图；水印属于 ignored_text，"
+                "该切片必须单独报告，不能作为真实手机照片结论"
+            ),
+            "group_split": "同一 group_id 的近似重复图片必须位于同一切分",
         },
         "images": records,
     }
@@ -408,10 +752,19 @@ def main() -> int:
     parser.add_argument("--images-dir", default="test_photos")
     parser.add_argument("--legacy-metadata", default="test_photos/metadata.json")
     parser.add_argument("--scripts-dir", default="gen_photo")
+    parser.add_argument("--realistic-images-dir", default="test_photos_realistic")
+    parser.add_argument(
+        "--realistic-metadata",
+        default="test_photos_realistic/metadata.json",
+    )
     parser.add_argument("--output", default="tests/eval/photo_manifest.json")
     args = parser.parse_args()
     manifest = build_manifest(
-        Path(args.images_dir), Path(args.legacy_metadata), Path(args.scripts_dir)
+        Path(args.images_dir),
+        Path(args.legacy_metadata),
+        Path(args.scripts_dir),
+        Path(args.realistic_images_dir),
+        Path(args.realistic_metadata),
     )
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)

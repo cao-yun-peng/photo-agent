@@ -1,4 +1,5 @@
 """Search 路由：pgvector 语义 + 多维过滤 + 混合排序 + 游标分页."""
+
 from datetime import datetime, time, timezone
 from typing import Annotated
 
@@ -14,13 +15,20 @@ from app.models.user import User
 from app.schemas.photo import (
     AlbumFallbackQuery,
     SearchClick,
+    SearchConstraintCheck,
     SearchQuery,
+    SearchRerankCheck,
     SearchResult,
     SearchResultItem,
 )
 from app.services.events import log_event
 from app.services.oss import sign_get_url
 from app.services.query_parser import parse_query, resolve_auto_parsed_query
+from app.services.search_constraints import (
+    extract_structured_constraints,
+    validate_scored_candidates,
+)
+from app.services.search_reranker import rerank_scored_candidates
 from app.services.search import (
     combine,
     decode_cursor,
@@ -59,6 +67,10 @@ async def semantic_search(
     else:
         effective_q = payload.q
 
+    constraints = (
+        extract_structured_constraints(payload.q) if payload.verify_constraints else []
+    )
+
     # ---------- 2. 查询向量 (带缓存) ----------
     query_vec, cache_hit = await get_query_embedding(effective_q)
 
@@ -72,15 +84,13 @@ async def semantic_search(
 
     if payload.from_date:
         conds.append(
-            Photo.taken_at >= datetime.combine(
-                payload.from_date, time.min, tzinfo=timezone.utc
-            )
+            Photo.taken_at
+            >= datetime.combine(payload.from_date, time.min, tzinfo=timezone.utc)
         )
     if payload.to_date:
         conds.append(
-            Photo.taken_at <= datetime.combine(
-                payload.to_date, time.max, tzinfo=timezone.utc
-            )
+            Photo.taken_at
+            <= datetime.combine(payload.to_date, time.max, tzinfo=timezone.utc)
         )
 
     # tags：命中任一即可（OR 语义）
@@ -115,15 +125,10 @@ async def semantic_search(
     if jsonb_conds:
         conds.append(or_(*jsonb_conds))
 
-    # ---------- 4. 向量召回（拿 limit*3 条给后续加权） ----------
-    fetch_n = payload.limit * 3
+    # ---------- 4. 向量召回（强约束查询扩大候选池后再做证据校验） ----------
+    fetch_n = max(payload.limit * 5, 30) if constraints else payload.limit * 3
     dist_col = Photo.embedding.cosine_distance(query_vec).label("dist")
-    stmt = (
-        select(Photo, dist_col)
-        .where(and_(*conds))
-        .order_by(dist_col)
-        .limit(fetch_n)
-    )
+    stmt = select(Photo, dist_col).where(and_(*conds)).order_by(dist_col).limit(fetch_n)
     result = await db.execute(stmt)
     rows = result.all()  # [(Photo, dist), ...]
 
@@ -134,12 +139,18 @@ async def semantic_search(
         s_rec = recency_score(photo.taken_at)
         s_int = personalized_interaction_score(profile, photo)
         final = combine(
-            s_sem, s_rec, s_int,
-            payload.w_semantic, payload.w_recency, payload.w_interaction,
+            s_sem,
+            s_rec,
+            s_int,
+            payload.w_semantic,
+            payload.w_recency,
+            payload.w_interaction,
         )
         scored.append((photo, s_sem, s_rec, s_int, final))
 
     scored.sort(key=lambda x: x[4], reverse=True)
+
+    scored, constraint_summary = validate_scored_candidates(scored, constraints)
 
     # ---------- 6. 游标分页 ----------
     if payload.cursor:
@@ -150,8 +161,16 @@ async def semantic_search(
             scored = [
                 (p, sem, rec, inter, fin)
                 for (p, sem, rec, inter, fin) in scored
-                if fin < cur_score or (abs(fin - cur_score) < 1e-9 and str(p.id) > cur_id)
+                if fin < cur_score
+                or (abs(fin - cur_score) < 1e-9 and str(p.id) > cur_id)
             ]
+
+    scored, rerank_summary = await rerank_scored_candidates(
+        scored,
+        payload.q,
+        enabled=payload.verify_semantic,
+        page_limit=payload.limit,
+    )
 
     page = scored[: payload.limit]
 
@@ -173,7 +192,9 @@ async def semantic_search(
 
     next_cursor = None
     if len(page) == payload.limit and len(scored) > payload.limit:
-        last_p, _, _, _, last_score = page[-1]
+        last_p, _, _, _, last_score = sorted(
+            page, key=lambda row: (-row[4], str(row[0].id))
+        )[-1]
         next_cursor = encode_cursor(last_score, last_p.id)
 
     return SearchResult(
@@ -182,6 +203,14 @@ async def semantic_search(
         next_cursor=next_cursor,
         parsed=parsed,
         cache_hit=cache_hit,
+        constraint_check=(
+            SearchConstraintCheck(**constraint_summary)
+            if constraint_summary is not None
+            else None
+        ),
+        rerank_check=(
+            SearchRerankCheck(**rerank_summary) if rerank_summary is not None else None
+        ),
     )
 
 
