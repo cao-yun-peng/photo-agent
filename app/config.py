@@ -49,6 +49,11 @@ class Settings(BaseSettings):
     # calls per job, so a conservative default avoids connection bursts.
     worker_max_jobs: int = 4
 
+    # 照片搜索索引补算：总共 5 次实际 embedding 调用（首次 + 4 次重试）。
+    # 每个延迟都从“上一次实际调用失败结束”后开始计算。
+    embedding_max_attempts: int = 5
+    embedding_retry_delays_seconds: list[int] = [2, 8, 25, 60]
+
     # Top-K 查询-候选判同重排。模型为空时复用 qwen_chat_model。
     search_rerank_enabled: bool = True
     search_rerank_model: str = ""
@@ -57,6 +62,14 @@ class Settings(BaseSettings):
     search_rerank_require_match: bool = True
     search_rerank_timeout_seconds: float = 12.0
     search_rerank_cache_ttl_seconds: int = 7 * 24 * 3600
+
+    # 二次视觉判定默认关闭；仅在完成 development/validation 对照后显式开启。
+    search_visual_verify_enabled: bool = False
+    search_visual_verify_top_k: int = 3
+    search_visual_verify_score_gap: float = 0.05
+    search_visual_verify_timeout_seconds: float = 45.0
+    search_visual_verify_cache_ttl_seconds: int = 7 * 24 * 3600
+    search_visual_verify_image_url_ttl_seconds: int = 300
 
     # OpenAI (可选，用于 gpt-image-2 / Agent function calling)
     openai_api_key: str = ""
@@ -78,9 +91,10 @@ class Settings(BaseSettings):
     # 熔断器配置（秒）
     cb_failure_threshold: int = 3
     cb_vl_recovery_interval: int = 300
-    cb_embedding_recovery_interval: int = 300
+    cb_embedding_recovery_interval: int = 30
     cb_chat_recovery_interval: int = 120
     cb_search_rerank_recovery_interval: int = 120
+    cb_search_visual_verify_recovery_interval: int = 180
     cb_image_gen_recovery_interval: int = 300
     cb_oss_recovery_interval: int = 300
 

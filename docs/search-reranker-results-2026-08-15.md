@@ -130,9 +130,9 @@ test 已查看，后续调参不能继续把它当作未见测试集。
 
 - 变更文件 Ruff：PASS；
 - Top-K/manifest 定向测试：22/22 PASS；
-- 完整 pytest：134 PASS、1 FAIL；
-- 唯一失败为既有 `test_quality_gate_skip_missing_embedding`：当前实现返回 `partial`，测试期望
-  `skip`，与本次重排、代理和 worker 并发修改无关；
+- 后续完成单张照片质量门禁语义统一后，完整 pytest：143 PASS；
+- `embedding_missing` 统一为可重试的 `partial_done`；畸形、非有限值或异常范数向量进入
+  `skip`，避免污染索引；
 - Docker Desktop、PostgreSQL 和 Redis 正常；Docker Hub 鉴权端点不可达，API/worker 因此
   使用项目 `.venv` 在宿主机后台运行，数据库与 Redis 仍使用隔离容器；
 - 未修改或输出项目 `.env` 中的 OSS、DashScope、数据库和 JWT 密钥。

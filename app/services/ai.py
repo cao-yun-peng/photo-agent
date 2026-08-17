@@ -51,12 +51,13 @@ _EMB_TIMEOUT = httpx.Timeout(15.0, connect=5.0)
 
 # 生成描述的 Prompt。改这里就等于改产品口吻。
 _VL_PROMPT = (
-    "请用一段简洁自然的中文描述这张图片，覆盖：主要物体或人物、场景/地点、氛围或情绪、"
-    "可能的时间线索（如白天/夜晚、季节）。控制在 60 字以内，不要使用列表或标题格式。"
+    "请用一段简洁、可检索的中文描述这张图片。除主要人物/物体、场景和氛围外，"
+    "优先写出画面中可见的具体动作、可辨认年龄段、模糊类型、拍摄载体/视角，以及"
+    "主体在画面中的位置和朝向；看不清就省略，不要猜测。控制在 100 字以内，不要使用列表或标题。"
 )
 
-# 结构化分析 Prompt：v3 经 development/validation 对照后冻结。
-VL_ANALYSIS_PROMPT_VERSION = "v3"
+# 结构化分析 Prompt：v4 增加细粒度检索判别字段。
+VL_ANALYSIS_PROMPT_VERSION = "v4"
 _VL_ANALYSIS_PROMPT = """请分析这张图片，并且只返回一个合法 JSON 对象，不要输出解释或 Markdown：
 {
   "scene": "受控场景标签",
@@ -66,11 +67,17 @@ _VL_ANALYSIS_PROMPT = """请分析这张图片，并且只返回一个合法 JSO
     "age_estimate": "可选",
     "expression": "可选"
   },
+  "actions": ["主体正在进行的、画面可见的具体动作"],
+  "age_groups": ["儿童/青年/中年/老年"],
+  "blur_type": "无明显模糊/运动模糊/失焦/相机抖动/镜头雾化/隔窗模糊/混合模糊/无法判断",
+  "capture_context": ["拍摄载体、视角或介质"],
+  "spatial_layout": ["主体位置、朝向和相对关系"],
+  "distinctive_details": ["用于区分近似照片的可见细节"],
   "objects": ["清晰可见、适合搜索的具体实体标签"],
   "text_in_image": ["逐条抄录清晰可辨的文字"],
   "mood": "氛围词，可选",
   "colors": ["主要颜色"],
-  "summary": "60 字以内的中文内容摘要"
+  "summary": "80–120 字以内的中文内容摘要"
 }
 
 严格规则：
@@ -79,7 +86,13 @@ _VL_ANALYSIS_PROMPT = """请分析这张图片，并且只返回一个合法 JSO
 3. objects 列出清晰可见且有检索价值的具体实体，通常 5–12 个；优先使用具体名称，避免只写宠物、食物、建筑、交通工具等泛词，但不要猜测看不清的物体。
 4. persons.count 大于 0 时，objects 中加入“人物”；能判断身份时再加入学生、教师、新娘、运动员等角色标签。
 5. text_in_image 检查招牌、屏幕、包装、衣服、票据和手写文字，按可见内容逐条抄录，保留中英文和数字，不要翻译或编造。
-6. 所有描述字段使用中文；objects 与 text_in_image 必须是 JSON 字符串数组；persons.count 必须是整数。"""
+6. actions 只写肉眼可见的动作，例如跑动、拥抱、挥手、端杯、看向左侧；不要把身份、情绪或推测目的写成动作。
+7. age_groups 只能使用儿童、青年、中年、老年；无法可靠判断时返回空数组，不得根据场景或衣着臆测。
+8. blur_type 必须从给定值中选一个。区分主体运动拖影、整体失焦、相机抖动、镜头雾化与隔着玻璃造成的模糊。
+9. capture_context 可使用汽车内、公交车内、火车内、隔窗拍摄、屏幕截图、自拍、俯拍、仰拍、特写、远景、正面拍摄等可见标签；无依据时返回空数组。
+10. spatial_layout 写 1–6 条短语，覆盖左/中/右、前景/背景、面向/侧身/背影以及主体间相对位置；distinctive_details 写可区分相似图的服饰、姿态、局部物体或光线细节。
+11. summary 必须优先综合可见的动作、年龄、模糊、拍摄载体和空间位置；未知信息直接省略。
+12. 所有描述字段使用中文；所有复数字段必须是 JSON 字符串数组；persons.count 必须是整数。"""
 
 # 从 VL 返回文本中抠 JSON 的兜底正则
 _JSON_BLOCK_RE = re.compile(r"```(?:json)?\s*([\s\S]*?)```", re.IGNORECASE)
@@ -191,7 +204,7 @@ async def analyze_image(image_url: str) -> ImageAnalysis:
             },
             "parameters": {
                 "result_format": "message",
-                "max_tokens": 800,
+                "max_tokens": 1200,
             },
         }
         headers = {
@@ -267,6 +280,7 @@ def parse_vl_response(raw_text: str) -> ImageAnalysis:
             raise ValueError("parsed JSON is not an object")
         analysis = ImageAnalysis.model_validate(data)
         analysis.parse_quality = "ok"
+        analysis.analysis_version = VL_ANALYSIS_PROMPT_VERSION
         return analysis
     except (json.JSONDecodeError, ValueError) as exc:
         logger.info("parse_vl_response JSON decode failed, trying regex fallback | exc=%s", exc)
@@ -302,7 +316,64 @@ def _fallback_analysis(reason: str) -> ImageAnalysis:
         scene_detail=None,
         summary="图片内容识别失败或响应异常",
         parse_quality=reason,
+        analysis_version=VL_ANALYSIS_PROMPT_VERSION,
     )
+
+
+def build_retrieval_text(description: str, analysis: ImageAnalysis) -> str:
+    """把结构化视觉证据展开为 embedding 文本，避免 JSON 新字段只存不搜。"""
+
+    def _clean(values: list[str]) -> list[str]:
+        seen: set[str] = set()
+        result: list[str] = []
+        for value in values:
+            normalized = str(value).strip()
+            if not normalized or normalized in seen:
+                continue
+            seen.add(normalized)
+            result.append(normalized)
+        return result
+
+    parts: list[str] = []
+    for value in (description, analysis.summary):
+        value = (value or "").strip()
+        if value and value not in parts:
+            parts.append(value)
+
+    scalar_fields = (
+        ("场景", analysis.scene if analysis.scene != "unknown" else None),
+        ("场景细节", analysis.scene_detail),
+        ("模糊类型", analysis.blur_type),
+        ("氛围", analysis.mood),
+    )
+    for label, value in scalar_fields:
+        if value and str(value).strip():
+            parts.append(f"{label}：{str(value).strip()}")
+
+    list_fields = (
+        ("动作", analysis.actions),
+        ("年龄组", analysis.age_groups),
+        ("拍摄方式", analysis.capture_context),
+        ("空间位置", analysis.spatial_layout),
+        ("区分细节", analysis.distinctive_details),
+        ("物体", analysis.objects),
+        ("画面文字", analysis.text_in_image),
+        ("颜色", analysis.colors),
+    )
+    for label, values in list_fields:
+        cleaned = _clean(values)
+        if cleaned:
+            parts.append(f"{label}：{'、'.join(cleaned)}")
+
+    if analysis.persons.count:
+        person_bits = [f"{analysis.persons.count}人"]
+        if analysis.persons.age_estimate:
+            person_bits.append(analysis.persons.age_estimate.strip())
+        if analysis.persons.expression:
+            person_bits.append(analysis.persons.expression.strip())
+        parts.append(f"人物：{'，'.join(person_bits)}")
+
+    return "\n".join(parts)[:2000]
 
 
 async def embed_text(text: str) -> list[float]:

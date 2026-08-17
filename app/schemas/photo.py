@@ -39,6 +39,11 @@ class PhotoOut(BaseModel):
     taken_at: datetime | None
     ai_description: str | None
     status: str
+    search_index_status: str
+    search_index_message: str
+    embedding_retry_count: int = 0
+    embedding_max_attempts: int = 5
+    embedding_next_retry_at: datetime | None = None
     created_at: datetime
 
 
@@ -52,6 +57,30 @@ class PhotoListItem(BaseModel):
     taken_at: datetime | None
     ai_description: str | None
     status: str
+    search_index_status: str
+    search_index_message: str
+    embedding_retry_count: int = 0
+    embedding_max_attempts: int = 5
+    embedding_next_retry_at: datetime | None = None
+
+
+class PhotoProcessingStatus(BaseModel):
+    photo_id: UUID
+    photo_status: str
+    search_index_status: str
+    retry_count: int = 0
+    max_attempts: int = 5
+    next_retry_at: datetime | None = None
+    next_retry_in_seconds: int | None = None
+    message: str
+
+
+class PhotoProcessingStatusBatchRequest(BaseModel):
+    photo_ids: list[UUID] = Field(..., min_length=1, max_length=100)
+
+
+class PhotoProcessingStatusBatchResponse(BaseModel):
+    items: list[PhotoProcessingStatus]
 
 
 # ------------------------------------------------------------------
@@ -152,6 +181,26 @@ class SearchRerankCheck(BaseModel):
     unjudged_filtered_count: int = 0
     cache_hit: bool = False
     latency_ms: float = 0.0
+    visual_verification_applied: bool = False
+    visual_prompt_version: str | None = None
+    visual_trigger_reason: str | None = None
+    visual_candidates_checked: int = 0
+    visual_match_count: int = 0
+    visual_uncertain_count: int = 0
+    visual_contradiction_count: int = 0
+    visual_cache_hit: bool = False
+    visual_degraded: bool = False
+    visual_degraded_reason: str | None = None
+    visual_latency_ms: float = 0.0
+
+
+class SearchIndexCoverage(BaseModel):
+    total_photos: int = 0
+    indexed_photos: int = 0
+    retrying_photos: int = 0
+    unavailable_photos: int = 0
+    coverage_ratio: float = 1.0
+    message: str | None = None
 
 
 class SearchResult(BaseModel):
@@ -162,6 +211,7 @@ class SearchResult(BaseModel):
     cache_hit: bool = False  # embedding 是否命中缓存
     constraint_check: SearchConstraintCheck | None = None
     rerank_check: SearchRerankCheck | None = None
+    index_coverage: SearchIndexCoverage | None = None
 
 
 class AlbumFallbackQuery(BaseModel):

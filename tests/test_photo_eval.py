@@ -286,12 +286,13 @@ def test_vl_experiment_extract_and_failure_classification() -> None:
     assert classified["failure_ids"]["ocr"] == ["p-1"]
 
 
-def test_production_prompt_matches_frozen_v3() -> None:
+def test_production_prompt_matches_frozen_version() -> None:
     root = Path(__file__).parents[1]
-    frozen = (root / "tests/eval/prompts/vl-analysis-v3.txt").read_text(
+    frozen = (
+        root / f"tests/eval/prompts/vl-analysis-{VL_ANALYSIS_PROMPT_VERSION}.txt"
+    ).read_text(
         encoding="utf-8"
     )
-    assert VL_ANALYSIS_PROMPT_VERSION == "v3"
     assert _VL_ANALYSIS_PROMPT.strip() == frozen.strip()
 
 

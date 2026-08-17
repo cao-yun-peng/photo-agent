@@ -1,6 +1,7 @@
 {
   "description": "小程序项目配置文件，可在微信开发者工具里改。",
   "compileType": "miniprogram",
+  "appid": "touristappid",
   "libVersion": "3.5.0",
   
   "projectname": "photo-agent-mini",

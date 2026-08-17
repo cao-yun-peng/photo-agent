@@ -8,8 +8,11 @@ from app.services.search_reranker import (
     RerankDecision,
     apply_rerank_decisions,
     evidence_from_scored,
+    merge_visual_decisions,
     rerank_scored_candidates,
+    visual_trigger_reason,
 )
+from app.services.search_visual_verifier import VisualDecision
 from scripts.evaluate_search_reranker import replay, validate_rerank_labels
 
 
@@ -18,6 +21,8 @@ def _row(photo_id: str, score: float, analysis: dict | None = None) -> tuple:
         id=photo_id,
         ai_analysis=analysis or {},
         ai_description=f"description-{photo_id}",
+        oss_key=f"users/test/{photo_id}.jpg",
+        hash=f"hash-{photo_id}",
     )
     return (photo, score, 0.0, 0.0, score)
 
@@ -119,6 +124,9 @@ async def test_runtime_reranker_returns_empty_when_no_match(
     monkeypatch.setattr(
         "app.services.search_reranker.settings.search_rerank_require_match", True
     )
+    monkeypatch.setattr(
+        "app.services.search_reranker.settings.search_visual_verify_enabled", False
+    )
 
     result, summary = await rerank_scored_candidates(
         [_row("p-1", 0.9), _row("p-2", 0.8)],
@@ -130,6 +138,98 @@ async def test_runtime_reranker_returns_empty_when_no_match(
     assert result == []
     assert summary is not None
     assert summary["zero_match_filtered"] is True
+
+
+def test_visual_trigger_is_selective(monkeypatch: pytest.MonkeyPatch) -> None:
+    decisions = [
+        RerankDecision("c0", "match", 0.9, "supported"),
+        RerankDecision("c1", "uncertain", 0.5, "not enough"),
+    ]
+    monkeypatch.setattr(
+        "app.services.search_reranker.settings.search_visual_verify_score_gap", 0.05
+    )
+    assert (
+        visual_trigger_reason(
+            "右侧的孩子在跑",
+            [_row("p-1", 0.90), _row("p-2", 0.88)],
+            decisions,
+            reject_confidence=0.8,
+        )
+        == "fine_grained_close_scores"
+    )
+    assert (
+        visual_trigger_reason(
+            "海边照片",
+            [_row("p-1", 0.90), _row("p-2", 0.88)],
+            decisions,
+            reject_confidence=0.8,
+        )
+        is None
+    )
+
+
+def test_visual_uncertain_does_not_erase_text_match() -> None:
+    merged = merge_visual_decisions(
+        [RerankDecision("c0", "match", 0.9, "text")],
+        [VisualDecision("c0", "uncertain", 0.7, "blurred")],
+        reject_confidence=0.8,
+    )
+    assert merged[0].verdict == "match"
+
+
+@pytest.mark.asyncio
+async def test_runtime_visual_verifier_recovers_zero_text_match(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    async def no_text_match(*args, **kwargs):
+        return (
+            [
+                RerankDecision("c0", "uncertain", 0.6, "missing action"),
+                RerankDecision("c1", "uncertain", 0.6, "missing action"),
+            ],
+            {"cache_hit": False, "model": "test", "latency_ms": 1.0},
+        )
+
+    async def visual_match(*args, **kwargs):
+        return (
+            [
+                VisualDecision("c0", "match", 0.95, "visible action"),
+                VisualDecision("c1", "contradiction", 0.95, "wrong action"),
+            ],
+            {"cache_hit": False, "model": "vl-test", "latency_ms": 2.0},
+        )
+
+    monkeypatch.setattr(
+        "app.services.search_reranker.judge_candidate_evidence", no_text_match
+    )
+    monkeypatch.setattr(
+        "app.services.search_reranker.judge_visual_candidates", visual_match
+    )
+    monkeypatch.setattr(
+        "app.services.search_reranker.settings.search_rerank_enabled", True
+    )
+    monkeypatch.setattr(
+        "app.services.search_reranker.settings.search_rerank_require_match", True
+    )
+    monkeypatch.setattr(
+        "app.services.search_reranker.settings.search_visual_verify_enabled", True
+    )
+    monkeypatch.setattr(
+        "app.services.search_reranker.settings.search_visual_verify_top_k", 2
+    )
+
+    result, summary = await rerank_scored_candidates(
+        [_row("p-1", 0.9), _row("p-2", 0.8)],
+        "孩子正在跑动",
+        enabled=True,
+        page_limit=2,
+    )
+
+    assert [row[0].id for row in result] == ["p-1"]
+    assert summary is not None
+    assert summary["visual_verification_applied"] is True
+    assert summary["visual_trigger_reason"] == "zero_match_uncertain"
+    assert summary["visual_match_count"] == 1
 
 
 @pytest.mark.asyncio

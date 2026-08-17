@@ -1,0 +1,22 @@
+# Secrets and local environment. Docker Compose may inject .env at runtime,
+# but it must never enter the build context or an image layer.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local tooling and generated artifacts
+.git
+.venv
+__pycache__
+.pytest_cache
+.ruff_cache
+artifacts
+*.log
+
+# Large local evaluation media is not required by the runtime image.
+test_photos
+test_photos_realistic

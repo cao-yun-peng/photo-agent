@@ -15,6 +15,9 @@ from app.schemas.photo import (
     PhotoInteract,
     PhotoListItem,
     PhotoOut,
+    PhotoProcessingStatus,
+    PhotoProcessingStatusBatchRequest,
+    PhotoProcessingStatusBatchResponse,
     UploadUrlRequest,
     UploadUrlResponse,
 )
@@ -28,7 +31,8 @@ from app.services.oss import (
     sign_put_url,
     thumb_key_of,
 )
-from app.workers.tasks import enqueue_process_photo
+from app.services.search_index import processing_status
+from app.workers.tasks import enqueue_process_photo, enqueue_retry_photo_embedding
 
 router = APIRouter()
 
@@ -196,9 +200,40 @@ async def list_photos(
             taken_at=p.taken_at,
             ai_description=p.ai_description,
             status=p.status,
+            search_index_status=p.search_index_status,
+            search_index_message=p.search_index_message,
+            embedding_retry_count=p.embedding_retry_count,
+            embedding_next_retry_at=p.embedding_next_retry_at,
         )
         for p in photos
     ]
+
+
+@router.post(
+    "/processing-status/batch",
+    response_model=PhotoProcessingStatusBatchResponse,
+    summary="批量轮询照片处理和智能搜索索引状态",
+)
+async def batch_processing_status(
+    payload: PhotoProcessingStatusBatchRequest,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> PhotoProcessingStatusBatchResponse:
+    """仅返回属于当前用户的照片；不存在或越权 ID 不回显。"""
+    unique_ids = list(dict.fromkeys(payload.photo_ids))
+    result = await db.execute(
+        select(Photo).where(
+            Photo.id.in_(unique_ids),
+            Photo.user_id == current_user.id,
+        )
+    )
+    by_id = {photo.id: photo for photo in result.scalars().all()}
+    items = [
+        PhotoProcessingStatus(**processing_status(by_id[photo_id]))
+        for photo_id in unique_ids
+        if photo_id in by_id
+    ]
+    return PhotoProcessingStatusBatchResponse(items=items)
 
 
 @router.get(
@@ -221,6 +256,81 @@ async def get_photo(
     if photo is None:
         raise HTTPException(status_code=404, detail="Photo not found")
     return photo
+
+
+@router.get(
+    "/{photo_id}/processing-status",
+    response_model=PhotoProcessingStatus,
+    summary="轮询单张照片处理和智能搜索索引状态",
+)
+async def get_processing_status(
+    photo_id: str,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> PhotoProcessingStatus:
+    photo = (
+        await db.execute(
+            select(Photo).where(
+                Photo.id == photo_id,
+                Photo.user_id == current_user.id,
+            )
+        )
+    ).scalar_one_or_none()
+    if photo is None:
+        raise HTTPException(status_code=404, detail="Photo not found")
+    return PhotoProcessingStatus(**processing_status(photo))
+
+
+@router.post(
+    "/{photo_id}/retry-search-index",
+    response_model=PhotoProcessingStatus,
+    summary="手动重试已经耗尽或入队失败的智能搜索索引",
+)
+async def retry_search_index(
+    photo_id: str,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> PhotoProcessingStatus:
+    photo = (
+        await db.execute(
+            select(Photo).where(
+                Photo.id == photo_id,
+                Photo.user_id == current_user.id,
+            )
+        )
+    ).scalar_one_or_none()
+    if photo is None:
+        raise HTTPException(status_code=404, detail="Photo not found")
+    if photo.embedding is not None and photo.status == "done":
+        return PhotoProcessingStatus(**processing_status(photo))
+    if photo.status != "partial_done" or photo.partial_reason not in {
+        "embedding_retry_exhausted",
+        "embedding_retry_enqueue_failed",
+    }:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Search index is not eligible for manual retry",
+        )
+    if not photo.ai_description or not photo.ai_analysis:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Reusable image analysis is unavailable",
+        )
+
+    photo.embedding_retry_count = 0
+    photo.embedding_last_error = None
+    photo.embedding_next_retry_at = None
+    photo.partial_reason = "embedding_retrying"
+    await db.commit()
+    queued = await enqueue_retry_photo_embedding(photo.id)
+    if not queued:
+        photo.partial_reason = "embedding_retry_enqueue_failed"
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Retry queue is temporarily unavailable",
+        )
+    return PhotoProcessingStatus(**processing_status(photo))
 
 
 @router.post(

@@ -8,7 +8,7 @@ from PIL import Image
 
 from app.schemas.analysis import ImageAnalysis
 from app.services.agent import PhotoAgent
-from app.services.ai import _stable_mock_seed, parse_vl_response
+from app.services.ai import _stable_mock_seed, build_retrieval_text, parse_vl_response
 from app.services.quality import (
     QualityGateResult,
     can_transition,
@@ -55,6 +55,23 @@ def test_parse_vl_response_fallback() -> None:
 def test_parse_vl_response_empty() -> None:
     analysis = parse_vl_response("")
     assert analysis.parse_quality != "ok"
+
+
+def test_build_retrieval_text_includes_fine_grained_visual_fields() -> None:
+    analysis = ImageAnalysis(
+        scene="车内",
+        actions=["孩子向右跑动"],
+        age_groups=["儿童"],
+        blur_type="运动模糊",
+        capture_context=["公交车内", "隔窗拍摄"],
+        spatial_layout=["孩子位于画面右侧"],
+        summary="公交车内拍摄的孩子跑动画面",
+    )
+    text = build_retrieval_text("一张车内照片", analysis)
+    assert "动作：孩子向右跑动" in text
+    assert "模糊类型：运动模糊" in text
+    assert "拍摄方式：公交车内、隔窗拍摄" in text
+    assert "空间位置：孩子位于画面右侧" in text
 
 
 # ------------------------------------------------------------------
@@ -131,7 +148,7 @@ def test_quality_gate_partial_description_too_short() -> None:
     assert "description_too_short" in gate.issues
 
 
-def test_quality_gate_skip_missing_embedding() -> None:
+def test_quality_gate_partial_missing_embedding() -> None:
     analysis = ImageAnalysis(summary="海边", parse_quality="ok")
     gate = quality_gate(
         description="一张海边的照片",
@@ -139,7 +156,34 @@ def test_quality_gate_skip_missing_embedding() -> None:
         analysis=analysis,
     )
     assert gate.ok is False
+    assert gate.storage_tier == "partial"
+    decision = decide_storage(gate)
+    assert decision.status == "partial_done"
+    assert decision.store_description is True
+    assert decision.store_analysis is True
+    assert decision.store_embedding is False
+
+
+@pytest.mark.parametrize(
+    ("embedding", "expected_issue"),
+    [
+        ([0.01] * 12, "embedding_dim_mismatch"),
+        ([float("nan")] * 1024, "embedding_non_finite"),
+        ([0.0] * 1024, "embedding_norm_abnormal"),
+        (["not-a-number"] * 1024, "embedding_invalid_numeric"),
+    ],
+)
+def test_quality_gate_skips_unsafe_embedding(
+    embedding: list[float] | list[str], expected_issue: str
+) -> None:
+    analysis = ImageAnalysis(summary="海边照片", parse_quality="ok")
+    gate = quality_gate(
+        description="一张清晰的海边照片",
+        embedding=embedding,  # type: ignore[arg-type]
+        analysis=analysis,
+    )
     assert gate.storage_tier == "skip"
+    assert any(issue.startswith(expected_issue) for issue in gate.issues)
 
 
 # ------------------------------------------------------------------
@@ -161,7 +205,7 @@ def test_decide_storage_full() -> None:
 
 def test_decide_storage_skip() -> None:
     gate = QualityGateResult(
-        ok=False, storage_tier="skip", issues=["embedding_missing"]
+        ok=False, storage_tier="skip", issues=["embedding_dim_mismatch:12"]
     )
     decision = decide_storage(gate)
     assert decision.status == "skipped"

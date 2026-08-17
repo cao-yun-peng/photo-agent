@@ -14,6 +14,7 @@ half_open → open：探测失败（立即重置计时器）
 from __future__ import annotations
 
 import logging
+import math
 import time
 from typing import Any, Callable
 
@@ -47,6 +48,7 @@ class CircuitBreaker:
         self.failure_count = 0
         self.state = "closed"  # closed | open | half_open
         self.last_failure_time: float = 0.0
+        self._half_open_probe_in_flight = False
 
     async def call(self, fn: Callable[..., Any], *args, **kwargs) -> Any:
         """包装一次外部调用。熔断时抛 ServiceDegradedError。"""
@@ -61,6 +63,12 @@ class CircuitBreaker:
                     self.name,
                     f"retry after {self.recovery_interval - elapsed:.0f}s",
                 )
+
+        # half-open 只允许一个真实探测请求，其他调用立即降级。
+        if self.state == "half_open":
+            if self._half_open_probe_in_flight:
+                raise ServiceDegradedError(self.name, "recovery probe is in progress")
+            self._half_open_probe_in_flight = True
 
         # 2. 执行调用（closed 和 half_open 都走这里）
         try:
@@ -77,6 +85,7 @@ class CircuitBreaker:
             logger.info("circuit_breaker %s: half_open → closed (recovered)", self.name)
         self.failure_count = 0
         self.state = "closed"
+        self._half_open_probe_in_flight = False
 
     def _on_failure(self) -> None:
         """调用失败：累计计数。half_open 探测失败 → 立即回 open。"""
@@ -85,6 +94,7 @@ class CircuitBreaker:
 
         if self.state == "half_open":
             self.state = "open"
+            self._half_open_probe_in_flight = False
             logger.warning(
                 "circuit_breaker %s: half_open → open (probe failed)", self.name
             )
@@ -101,6 +111,16 @@ class CircuitBreaker:
         self.failure_count = 0
         self.state = "closed"
         self.last_failure_time = 0.0
+        self._half_open_probe_in_flight = False
+
+    def retry_after_seconds(self) -> int:
+        """熔断时距离下一次恢复探测的秒数；closed 返回 0。"""
+        if self.state == "half_open":
+            return 1
+        if self.state != "open":
+            return 0
+        elapsed = time.monotonic() - self.last_failure_time
+        return max(1, math.ceil(self.recovery_interval - elapsed))
 
     def to_dict(self) -> dict[str, Any]:
         """返回当前状态，供健康检查使用。"""
@@ -134,6 +154,11 @@ search_rerank_breaker = CircuitBreaker(
     "dashscope_search_rerank",
     failure_threshold=settings.cb_failure_threshold,
     recovery_interval=settings.cb_search_rerank_recovery_interval,
+)
+search_visual_verify_breaker = CircuitBreaker(
+    "dashscope_search_visual_verify",
+    failure_threshold=settings.cb_failure_threshold,
+    recovery_interval=settings.cb_search_visual_verify_recovery_interval,
 )
 image_gen_breaker = CircuitBreaker(
     "dashscope_image_gen",

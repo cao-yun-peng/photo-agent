@@ -35,6 +35,7 @@ from app.services.circuit_breaker import (
     image_gen_breaker,
     oss_breaker,
     search_rerank_breaker,
+    search_visual_verify_breaker,
     vl_breaker,
 )
 from app.services.lock import get_redis
@@ -263,6 +264,7 @@ async def health() -> dict:
         "embedding": embedding_breaker.to_dict(),
         "agent_llm": agent_llm_breaker.to_dict(),
         "search_rerank": search_rerank_breaker.to_dict(),
+        "search_visual_verify": search_visual_verify_breaker.to_dict(),
         "image_gen": image_gen_breaker.to_dict(),
         "oss": oss_breaker.to_dict(),
     }

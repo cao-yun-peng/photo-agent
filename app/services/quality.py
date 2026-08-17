@@ -155,16 +155,23 @@ def quality_gate(
     if not description or len(description.strip()) < _MIN_DESCRIPTION_LEN:
         issues.append("description_too_short")
 
-    # 2. embedding 检查
+    # 2. embedding 检查。缺失表示服务降级，可保留其他 AI 产物；畸形向量不可安全索引。
     if embedding is None:
         issues.append("embedding_missing")
     else:
-        vec = np.array(embedding, dtype=float)
-        if vec.shape[0] != 1024:
-            issues.append(f"embedding_dim_mismatch:{vec.shape[0]}")
-        norm = float(np.linalg.norm(vec))
-        if norm == 0 or norm > _MAX_EMBEDDING_NORM:
-            issues.append(f"embedding_norm_abnormal:{norm:.2f}")
+        try:
+            vec = np.asarray(embedding, dtype=float)
+        except (TypeError, ValueError):
+            issues.append("embedding_invalid_numeric")
+        else:
+            if vec.ndim != 1 or vec.shape[0] != 1024:
+                issues.append(f"embedding_dim_mismatch:{'x'.join(map(str, vec.shape))}")
+            elif not np.isfinite(vec).all():
+                issues.append("embedding_non_finite")
+            else:
+                norm = float(np.linalg.norm(vec))
+                if norm == 0 or norm > _MAX_EMBEDDING_NORM:
+                    issues.append(f"embedding_norm_abnormal:{norm:.2f}")
 
     # 3. 结构化分析检查
     if analysis is None:
@@ -175,10 +182,15 @@ def quality_gate(
         if analysis.parse_quality != "ok":
             issues.append(f"analysis_parse_quality:{analysis.parse_quality}")
 
-    # 决策：有严重问题则降级存储
-    # Embedding 服务降级时仍保留已经成功的描述和 VL 分析，状态为 partial_done。
-    # 只有维度错误代表不可安全索引，才进入 skip。
-    critical_reasons = {"embedding_dim_mismatch"}
+    # 单一产品语义：
+    # - embedding 缺失是外部服务降级，保留描述/VL 分析并标记 partial_done；
+    # - embedding 存在但畸形，说明产物不可安全索引，进入 skip，避免污染向量列。
+    critical_reasons = {
+        "embedding_dim_mismatch",
+        "embedding_invalid_numeric",
+        "embedding_non_finite",
+        "embedding_norm_abnormal",
+    }
     if any(issue.split(":")[0] in critical_reasons for issue in issues):
         return QualityGateResult(
             ok=False,
@@ -242,7 +254,7 @@ def decide_storage(gate: QualityGateResult) -> StorageDecision:
     """根据质量关卡结果决定存储策略和最终状态。
 
     - full：全部存储，状态 done
-    - partial：存描述/向量/分析但标记 partial_done，便于搜索时降级或提示
+    - partial：保存可用产物并标记 partial_done；缺失/降级产物不写入
     - skip：只保留缩略图和基础元数据，状态 skipped，不进入搜索索引
     """
     if gate.storage_tier == "full":

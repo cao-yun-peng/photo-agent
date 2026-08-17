@@ -7,6 +7,7 @@ from sqlalchemy import (
     CHAR,
     DateTime,
     ForeignKey,
+    Integer,
     String,
     Text,
     UniqueConstraint,
@@ -75,6 +76,49 @@ class Photo(Base):
     partial_reason: Mapped[str | None] = mapped_column(
         String(32), nullable=True
     )
+
+    # embedding 专项补算状态；不重复调用已经成功的 VL。
+    embedding_retry_count: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default="0"
+    )
+    embedding_next_retry_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    embedding_last_attempt_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    # 只保存稳定错误码/异常类型，不保存第三方响应正文或密钥。
+    embedding_last_error: Mapped[str | None] = mapped_column(
+        String(64), nullable=True
+    )
+
+    @property
+    def search_index_status(self) -> str:
+        """面向客户端的搜索索引状态，不暴露 embedding 技术细节。"""
+        if self.embedding is not None and self.status == "done":
+            return "ready"
+        if self.status in {"pending", "processing"}:
+            return "indexing"
+        if self.partial_reason == "embedding_service_busy":
+            return "service_busy"
+        if self.partial_reason in {
+            "embedding_missing",
+            "embedding_degraded",
+            "embedding_retrying",
+        }:
+            return "retrying"
+        return "unavailable"
+
+    @property
+    def search_index_message(self) -> str:
+        messages = {
+            "ready": "智能搜索已就绪",
+            "indexing": "正在建立智能搜索",
+            "retrying": "智能搜索服务繁忙，正在继续尝试",
+            "service_busy": "智能搜索服务暂时繁忙，恢复后将继续尝试",
+            "unavailable": "暂时无法通过文字搜索找到这张照片",
+        }
+        return messages[self.search_index_status]
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

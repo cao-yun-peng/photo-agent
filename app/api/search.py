@@ -18,6 +18,7 @@ from app.schemas.photo import (
     SearchConstraintCheck,
     SearchQuery,
     SearchRerankCheck,
+    SearchIndexCoverage,
     SearchResult,
     SearchResultItem,
 )
@@ -44,6 +45,55 @@ from app.services.search import (
 router = APIRouter()
 
 
+async def _get_index_coverage(
+    db: AsyncSession, user_id
+) -> SearchIndexCoverage:
+    """统计搜索可见范围，让客户端明确知道结果是否覆盖整个相册。"""
+    retry_reasons = {
+        "embedding_missing",
+        "embedding_degraded",
+        "embedding_retrying",
+        "embedding_service_busy",
+    }
+    result = await db.execute(
+        select(
+            func.count(Photo.id),
+            func.count(Photo.id).filter(
+                Photo.status == "done", Photo.embedding.is_not(None)
+            ),
+            func.count(Photo.id).filter(
+                or_(
+                    Photo.status.in_(("pending", "processing")),
+                    Photo.partial_reason.in_(retry_reasons),
+                )
+            ),
+        ).where(Photo.user_id == user_id)
+    )
+    # 兼容离线回放里的最小 AsyncSession 测试桩；真实 SQLAlchemy Result
+    # 始终提供 one()。
+    if not hasattr(result, "one"):
+        return SearchIndexCoverage()
+    total, indexed, retrying = (int(value or 0) for value in result.one())
+    unavailable = max(0, total - indexed - retrying)
+    ratio = round(indexed / total, 4) if total else 1.0
+    message = None
+    if retrying or unavailable:
+        parts = []
+        if retrying:
+            parts.append(f"{retrying} 张仍在建立智能搜索")
+        if unavailable:
+            parts.append(f"{unavailable} 张暂时无法被文字检索")
+        message = "；".join(parts) + "，当前结果可能不完整"
+    return SearchIndexCoverage(
+        total_photos=total,
+        indexed_photos=indexed,
+        retrying_photos=retrying,
+        unavailable_photos=unavailable,
+        coverage_ratio=ratio,
+        message=message,
+    )
+
+
 @router.post(
     "",
     response_model=SearchResult,
@@ -54,6 +104,7 @@ async def semantic_search(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> SearchResult:
+    index_coverage = await _get_index_coverage(db, current_user.id)
     # ---------- 1. 可选：自动解析自然语言条件 ----------
     parsed = None
     if payload.auto_parse:
@@ -211,6 +262,7 @@ async def semantic_search(
         rerank_check=(
             SearchRerankCheck(**rerank_summary) if rerank_summary is not None else None
         ),
+        index_coverage=index_coverage,
     )
 
 
@@ -257,6 +309,7 @@ async def album_fallback(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> SearchResult:
     """当普通搜索无结果时，返回用户全量相册的智能排序结果。"""
+    index_coverage = await _get_index_coverage(db, current_user.id)
     page, next_cursor = await smart_album_fallback(
         db=db,
         user_id=current_user.id,
@@ -289,4 +342,5 @@ async def album_fallback(
         next_cursor=next_cursor,
         parsed=None,
         cache_hit=False,
+        index_coverage=index_coverage,
     )

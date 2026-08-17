@@ -6,11 +6,12 @@
 路线等显式约束；两者都无法可靠处理“语义相近但关键主体/动作不存在”的开放集查询。
 Top-K 判同重排在最终返回前判断查询与候选是否真正一致。
 
-当前 v1 只向 `qwen-plus` 发送已经存入数据库的结构化描述，不发送原图：
+文本 v1 只向 `qwen-plus` 发送已经存入数据库的结构化描述。可选的视觉 v1 只在低置信
+或细粒度近分候选上查看最多 3 张原图：
 
 ```text
 向量召回 → 混合排序 → 结构化约束校验 → 游标过滤
-→ 当前页前 K 个候选批量判同 → 高置信矛盾删除/分层重排 → 返回
+→ 当前页前 K 个候选批量判同 → 按需二次视觉核验 → 高置信矛盾删除/分层重排 → 返回
 ```
 
 它不是重复图片检测器。pHash、连拍聚类和相册去重属于另一条链路。
@@ -41,6 +42,13 @@ SEARCH_RERANK_REQUIRE_MATCH=true
 SEARCH_RERANK_TIMEOUT_SECONDS=12
 SEARCH_RERANK_CACHE_TTL_SECONDS=604800
 CB_SEARCH_RERANK_RECOVERY_INTERVAL=120
+SEARCH_VISUAL_VERIFY_ENABLED=false
+SEARCH_VISUAL_VERIFY_TOP_K=3
+SEARCH_VISUAL_VERIFY_SCORE_GAP=0.05
+SEARCH_VISUAL_VERIFY_TIMEOUT_SECONDS=45
+SEARCH_VISUAL_VERIFY_CACHE_TTL_SECONDS=604800
+SEARCH_VISUAL_VERIFY_IMAGE_URL_TTL_SECONDS=300
+CB_SEARCH_VISUAL_VERIFY_RECOVERY_INTERVAL=180
 ```
 
 `SEARCH_RERANK_MODEL` 为空时复用 `QWEN_CHAT_MODEL`。开启
@@ -48,6 +56,13 @@ CB_SEARCH_RERANK_RECOVERY_INTERVAL=120
 全是矛盾或证据不足的候选伪装成搜索成功；同时不会用未经过模型判定的候选回填被过滤的
 位置，因此结果条数可以少于请求的 `limit`。API 请求可用
 `verify_semantic=false` 显式关闭重排，便于同一服务运行基线。
+
+VL v4 字段、触发策略、已有图片安全重算和评测协议见
+`docs/visual-retrieval-v4.md`。二次视觉功能默认关闭，完成 development/validation A/B
+前不应直接在生产流量开启。
+
+冻结参数下的 development/validation 真实 A/B 均通过，详见
+`docs/visual-retrieval-v4-results-2026-08-15.md`；该结果不包含新的未见 test。
 
 ## 4. 数据集
 
