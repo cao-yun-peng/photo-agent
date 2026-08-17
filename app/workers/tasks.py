@@ -531,6 +531,7 @@ class WorkerSettings:
 
     # 延迟 import 避免循环
     from app.workers.gen_tasks import generate_photo
+    from app.workers.search_tasks import prefetch_search_candidates
 
     functions = [
         process_photo,
@@ -541,6 +542,7 @@ class WorkerSettings:
         migrate_photos_batch,
         archive_cold_events,
         count_events_by_age,
+        prefetch_search_candidates,
     ]
     redis_settings = RedisSettings.from_dsn(settings.redis_url)
     max_jobs = settings.worker_max_jobs

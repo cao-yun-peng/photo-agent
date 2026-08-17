@@ -71,6 +71,17 @@ class Settings(BaseSettings):
     search_visual_verify_cache_ttl_seconds: int = 7 * 24 * 3600
     search_visual_verify_image_url_ttl_seconds: int = 300
 
+    # Agent 多轮续搜：首次搜索后预取一批明确匹配的候选，追问优先从池中取。
+    agent_search_candidate_pool_size: int = 12
+    agent_search_visual_fallback: bool = True
+    agent_search_auto_repair_index: bool = True
+    agent_search_index_repair_limit: int = 10
+    agent_search_turn_budget_seconds: float = 12.0
+    # 仅后台预取会启用强制视觉兜底；30 秒兼顾弱文本描述召回与 180 秒 Worker 总预算。
+    agent_search_visual_budget_seconds: float = 30.0
+    agent_search_prefetch_wait_seconds: float = 2.0
+    agent_search_pool_ttl_seconds: int = 10 * 60
+
     # OpenAI (可选，用于 gpt-image-2 / Agent function calling)
     openai_api_key: str = ""
     openai_base_url: str = "https://api.openai.com/v1"

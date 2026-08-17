@@ -28,7 +28,11 @@ from app.services.search_constraints import (
     extract_structured_constraints,
     validate_scored_candidates,
 )
-from app.services.search_reranker import rerank_scored_candidates
+from app.services.search_index import get_index_coverage
+from app.services.search_reranker import (
+    rerank_scored_candidates,
+    verify_scored_candidate_pool,
+)
 from app.services.recommend import recommend_skills
 from app.services.search import (
     combine,
@@ -41,8 +45,6 @@ from app.services.search import (
     resolve_search_result_limits,
     semantic_score,
 )
-from app.workers.tasks import enqueue_generate_photo
-
 logger = logging.getLogger(__name__)
 
 
@@ -181,6 +183,10 @@ async def search_photos(
     verify_constraints: bool = True,
     verify_semantic: bool = True,
     result_mode: str = "browse",
+    verified_only: bool = False,
+    candidate_pool_size: int = 12,
+    force_visual_verify: bool = False,
+    include_index_coverage: bool = False,
     w_semantic: float = 0.7,
     w_recency: float = 0.2,
     w_interaction: float = 0.1,
@@ -202,6 +208,10 @@ async def search_photos(
             result_mode,
             limit,
         )
+        candidate_pool_size = max(1, min(int(candidate_pool_size), 30))
+        if verified_only:
+            output_limit = max(1, min(int(limit), candidate_pool_size))
+            verification_limit = candidate_pool_size
         effective_q = query
         parsed_obj: ParsedQuery | None = None
         if auto_parse:
@@ -304,12 +314,22 @@ async def search_photos(
                     or (abs(fin - cur_score) < 1e-9 and str(p.id) > cur_id)
                 ]
 
-        scored, rerank_summary = await rerank_scored_candidates(
-            scored,
-            query,
-            enabled=verify_semantic,
-            page_limit=verification_limit,
-        )
+        if verified_only:
+            scored, rerank_summary = await verify_scored_candidate_pool(
+                scored,
+                query,
+                enabled=verify_semantic,
+                max_candidates=verification_limit,
+                max_results=candidate_pool_size,
+                force_visual_on_zero_match=force_visual_verify,
+            )
+        else:
+            scored, rerank_summary = await rerank_scored_candidates(
+                scored,
+                query,
+                enabled=verify_semantic,
+                page_limit=verification_limit,
+            )
 
         page = scored[:output_limit]
         items = [
@@ -327,15 +347,28 @@ async def search_photos(
             else "未找到匹配照片，建议尝试更宽泛的描述或时间范围"
         )
 
+        index_coverage = (
+            await get_index_coverage(db, user_id) if include_index_coverage else None
+        )
+        remaining_items = (
+            [
+                _photo_to_search_item(p, sem, rec, inter, fin)
+                for (p, sem, rec, inter, fin) in scored[output_limit:]
+            ]
+            if verified_only
+            else []
+        )
         return {
             "ok": True,
             "items": items,
+            "_candidate_pool_items": remaining_items,
             "parsed": parsed_dict,
             "next_cursor": None,
             "total": len(items),
             "result_mode": result_mode,
             "constraint_check": constraint_summary,
             "rerank_check": rerank_summary,
+            "index_coverage": index_coverage,
             "hint": hint,
         }
 
@@ -526,6 +559,10 @@ async def apply_skill(
         db.add(gen)
         await db.commit()
         await db.refresh(gen)
+        # 延迟导入，避免 Worker 注册搜索预取任务时形成
+        # tasks -> search_tasks -> agent_tools -> tasks 的循环依赖。
+        from app.workers.tasks import enqueue_generate_photo
+
         await enqueue_generate_photo(gen.id)
 
         return {

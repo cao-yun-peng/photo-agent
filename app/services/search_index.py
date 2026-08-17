@@ -5,7 +5,11 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
+from sqlalchemy import func, or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.config import settings
+from app.models.photo import Photo
 
 
 def retry_delay_after_failure(failure_count: int) -> int | None:
@@ -40,3 +44,113 @@ def processing_status(photo: Any, *, now: datetime | None = None) -> dict[str, A
         "next_retry_in_seconds": next_retry_in_seconds,
         "message": photo.search_index_message,
     }
+
+
+async def get_index_coverage(db: AsyncSession, user_id: Any) -> dict[str, Any]:
+    """返回用户相册的文字搜索索引覆盖情况，供 API 与 Agent 共用。"""
+
+    retry_reasons = {
+        "embedding_missing",
+        "embedding_degraded",
+        "embedding_retrying",
+        "embedding_service_busy",
+        "embedding_retry_enqueue_failed",
+    }
+    result = await db.execute(
+        select(
+            func.count(Photo.id),
+            func.count(Photo.id).filter(
+                Photo.status == "done", Photo.embedding.is_not(None)
+            ),
+            func.count(Photo.id).filter(
+                or_(
+                    Photo.status.in_(("pending", "processing")),
+                    Photo.partial_reason.in_(retry_reasons),
+                )
+            ),
+        ).where(Photo.user_id == user_id)
+    )
+    if not hasattr(result, "one"):
+        return {
+            "total_photos": 0,
+            "indexed_photos": 0,
+            "retrying_photos": 0,
+            "unavailable_photos": 0,
+            "coverage_ratio": 1.0,
+            "complete": True,
+            "message": None,
+        }
+
+    total, indexed, retrying = (int(value or 0) for value in result.one())
+    unavailable = max(0, total - indexed - retrying)
+    ratio = round(indexed / total, 4) if total else 1.0
+    message = None
+    if retrying or unavailable:
+        parts = []
+        if retrying:
+            parts.append(f"{retrying} 张仍在建立智能搜索")
+        if unavailable:
+            parts.append(f"{unavailable} 张暂时无法被文字检索")
+        message = "；".join(parts) + "，当前结果可能不完整"
+    return {
+        "total_photos": total,
+        "indexed_photos": indexed,
+        "retrying_photos": retrying,
+        "unavailable_photos": unavailable,
+        "coverage_ratio": ratio,
+        "complete": indexed == total,
+        "message": message,
+    }
+
+
+async def enqueue_index_repairs(
+    db: AsyncSession,
+    user_id: Any,
+    *,
+    limit: int = 10,
+) -> int:
+    """幂等地为可补算 embedding 的照片触发后台修复。"""
+
+    retryable_reasons = {
+        "embedding_missing",
+        "embedding_degraded",
+        "embedding_retry_exhausted",
+        "embedding_retry_enqueue_failed",
+    }
+    result = await db.execute(
+        select(Photo)
+        .where(
+            Photo.user_id == user_id,
+            Photo.embedding.is_(None),
+            Photo.status == "partial_done",
+            Photo.partial_reason.in_(retryable_reasons),
+            Photo.ai_description.is_not(None),
+            Photo.ai_analysis.is_not(None),
+        )
+        .limit(max(1, min(limit, 50)))
+    )
+    photos = list(result.scalars().all())
+    if not photos:
+        return 0
+
+    # 先标记为 retrying，后续相同搜索不会重复入队。
+    for photo in photos:
+        photo.partial_reason = "embedding_retrying"
+        photo.embedding_next_retry_at = None
+    await db.commit()
+
+    from app.workers.tasks import enqueue_retry_photo_embedding
+
+    queued = 0
+    for photo in photos:
+        try:
+            was_queued = await enqueue_retry_photo_embedding(photo.id)
+        except Exception:  # noqa: BLE001
+            was_queued = False
+        if was_queued:
+            queued += 1
+        else:
+            photo.partial_reason = "embedding_retry_enqueue_failed"
+    if queued != len(photos):
+        await db.commit()
+    return queued

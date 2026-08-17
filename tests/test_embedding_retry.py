@@ -9,7 +9,12 @@ from uuid import uuid4
 import pytest
 
 from app.services.circuit_breaker import CircuitBreaker, ServiceDegradedError
-from app.services.search_index import processing_status, retry_delay_after_failure
+from app.services.search_index import (
+    enqueue_index_repairs,
+    get_index_coverage,
+    processing_status,
+    retry_delay_after_failure,
+)
 from app.workers.tasks import retry_photo_embedding
 
 
@@ -70,6 +75,45 @@ def test_processing_status_exposes_short_poll_countdown() -> None:
     assert status["retry_count"] == 2
     assert status["max_attempts"] == 5
     assert status["next_retry_in_seconds"] == 8
+
+
+@pytest.mark.asyncio
+async def test_index_coverage_marks_partial_album_incomplete() -> None:
+    result = MagicMock()
+    result.one.return_value = (3, 2, 0)
+    db = MagicMock()
+    db.execute = AsyncMock(return_value=result)
+
+    coverage = await get_index_coverage(db, uuid4())
+
+    assert coverage["coverage_ratio"] == pytest.approx(2 / 3, abs=0.0001)
+    assert coverage["unavailable_photos"] == 1
+    assert coverage["complete"] is False
+
+
+@pytest.mark.asyncio
+async def test_enqueue_index_repairs_marks_jobs_before_enqueue() -> None:
+    photo = SimpleNamespace(
+        id=uuid4(),
+        partial_reason="embedding_retry_exhausted",
+        embedding_next_retry_at=None,
+    )
+    result = MagicMock()
+    result.scalars.return_value.all.return_value = [photo]
+    db = MagicMock()
+    db.execute = AsyncMock(return_value=result)
+    db.commit = AsyncMock()
+
+    with patch(
+        "app.workers.tasks.enqueue_retry_photo_embedding",
+        new=AsyncMock(return_value=True),
+    ) as enqueue:
+        queued = await enqueue_index_repairs(db, uuid4())
+
+    assert queued == 1
+    assert photo.partial_reason == "embedding_retrying"
+    db.commit.assert_awaited_once()
+    enqueue.assert_awaited_once_with(photo.id)
 
 
 @pytest.mark.asyncio

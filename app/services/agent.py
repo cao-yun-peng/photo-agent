@@ -33,6 +33,15 @@ from app.services.agent_tools import (
     search_photos,
 )
 from app.services.circuit_breaker import ServiceDegradedError, agent_llm_breaker
+from app.services.search_candidate_pool import (
+    candidate_pool_key,
+    candidate_pool_size,
+    get_prefetch_status,
+    pop_verified_candidate,
+    set_prefetch_status,
+    wait_for_verified_candidate,
+)
+from app.services.search_index import enqueue_index_repairs
 from app.utils.json_parser import (
     extract_json_field_by_regex,
     parse_as_dict,
@@ -690,11 +699,201 @@ class PhotoAgent:
                     if value
                 }
             )
+            candidate_pool = [
+                item
+                for item in state.active_search.get("candidate_pool_items", [])
+                if isinstance(item, dict)
+                and str(item.get("id", ""))
+                and str(item.get("id")) not in excluded
+            ]
+            if candidate_pool:
+                next_item = candidate_pool.pop(0)
+                photo_id = str(next_item["id"])
+                result = {
+                    "ok": True,
+                    "items": [next_item],
+                    "total": 1,
+                    "source": "candidate_pool",
+                    "index_coverage": state.active_search.get("index_coverage"),
+                    "hint": "从上一轮已验证候选中继续返回",
+                }
+                arguments = {
+                    "query": active_query,
+                    "result_mode": "browse",
+                    "limit": 1,
+                    "source": "candidate_pool",
+                    "exclude_photo_ids": excluded,
+                }
+                emit(
+                    "tool_call",
+                    {
+                        "tool": "search_photos",
+                        "arguments": json.dumps(arguments, ensure_ascii=False),
+                    },
+                )
+                emit("tool_result", {"tool": "search_photos", "result": result})
+                shown_ids = list(state.active_search.get("shown_photo_ids", []))
+                if photo_id not in shown_ids:
+                    shown_ids.append(photo_id)
+                state.last_search_items = [next_item]
+                state.active_search["shown_photo_ids"] = shown_ids
+                state.active_search["candidate_pool_items"] = candidate_pool
+                state.active_search["candidate_pool_count"] = len(candidate_pool)
+                state.active_search["exhausted"] = False
+                final_message = "又找到 1 张符合条件的照片。"
+                emit("final", {"message": final_message, "continuation": True})
+                _remember_message(state, "user", query)
+                _remember_message(state, "assistant", final_message)
+                return state, events
+
+            # 新会话的续搜候选由后台 Worker 预取到 Redis。只在状态中明确
+            # 记录了后台池时访问 Redis，兼容尚未迁移的旧会话和单元测试。
+            has_background_pool = bool(
+                state.active_search.get("pool_key")
+                or state.active_search.get("prefetch_status")
+            )
+            prefetch_status = "missing"
+            if has_background_pool:
+                prefetch_status = await get_prefetch_status(state.session_id)
+                if prefetch_status in {"queued", "running"}:
+                    next_item = await wait_for_verified_candidate(state.session_id)
+                else:
+                    next_item = await pop_verified_candidate(state.session_id)
+                prefetch_status = await get_prefetch_status(state.session_id)
+                if next_item is not None:
+                    photo_id = str(next_item["id"])
+                    remaining = await candidate_pool_size(state.session_id)
+                    if remaining == 0 and prefetch_status == "ready":
+                        await set_prefetch_status(state.session_id, "exhausted")
+                        prefetch_status = "exhausted"
+                    result = {
+                        "ok": True,
+                        "items": [next_item],
+                        "total": 1,
+                        "source": "redis_candidate_pool",
+                        "index_coverage": state.active_search.get("index_coverage"),
+                        "prefetch_status": prefetch_status,
+                        "hint": "从后台已验证候选中继续返回",
+                    }
+                    arguments = {
+                        "query": active_query,
+                        "result_mode": "browse",
+                        "limit": 1,
+                        "source": "redis_candidate_pool",
+                        "exclude_photo_ids": excluded,
+                    }
+                    emit(
+                        "tool_call",
+                        {
+                            "tool": "search_photos",
+                            "arguments": json.dumps(arguments, ensure_ascii=False),
+                        },
+                    )
+                    emit("tool_result", {"tool": "search_photos", "result": result})
+                    shown_ids = list(state.active_search.get("shown_photo_ids", []))
+                    if photo_id not in shown_ids:
+                        shown_ids.append(photo_id)
+                    state.last_search_items = [next_item]
+                    state.active_search["shown_photo_ids"] = shown_ids
+                    state.active_search["candidate_pool_count"] = remaining
+                    state.active_search["prefetch_status"] = prefetch_status
+                    state.active_search["exhausted"] = False
+                    final_message = "又找到 1 张符合条件的照片。"
+                    emit("final", {"message": final_message, "continuation": True})
+                    _remember_message(state, "user", query)
+                    _remember_message(state, "assistant", final_message)
+                    return state, events
+
+                if prefetch_status in {"queued", "running"}:
+                    result = {
+                        "ok": True,
+                        "items": [],
+                        "total": 0,
+                        "search_pending": True,
+                        "prefetch_status": prefetch_status,
+                        "hint": "后台仍在筛选剩余照片，搜索进度已保留",
+                    }
+                    emit(
+                        "tool_call",
+                        {
+                            "tool": "search_photos",
+                            "arguments": json.dumps(
+                                {
+                                    "query": active_query,
+                                    "result_mode": "browse",
+                                    "limit": 1,
+                                    "source": "redis_candidate_pool",
+                                    "exclude_photo_ids": excluded,
+                                },
+                                ensure_ascii=False,
+                            ),
+                        },
+                    )
+                    emit("tool_result", {"tool": "search_photos", "result": result})
+                    state.active_search["prefetch_status"] = prefetch_status
+                    state.active_search["exhausted"] = False
+                    final_message = "还在继续筛选剩余照片，稍后再说“还有一张”即可继续。"
+                    emit("final", {"message": final_message, "continuation": True})
+                    _remember_message(state, "user", query)
+                    _remember_message(state, "assistant", final_message)
+                    return state, events
+
+                # ready/exhausted 的池为空代表后台已完整验证过候选，不再重复
+                # 发起昂贵的前台视觉搜索；只有 failed/missing 才走可恢复兜底。
+                coverage = state.active_search.get("index_coverage") or {}
+                coverage_complete = not coverage or coverage.get("complete", True)
+                if (
+                    prefetch_status in {"ready", "exhausted"}
+                    and coverage_complete
+                ):
+                    state.active_search["prefetch_status"] = "exhausted"
+                    state.active_search["candidate_pool_count"] = 0
+                    state.active_search["exhausted"] = True
+                    result = {
+                        "ok": True,
+                        "items": [],
+                        "total": 0,
+                        "search_exhausted": True,
+                        "prefetch_status": "exhausted",
+                        "index_coverage": state.active_search.get("index_coverage"),
+                    }
+                    emit(
+                        "tool_call",
+                        {
+                            "tool": "search_photos",
+                            "arguments": json.dumps(
+                                {
+                                    "query": active_query,
+                                    "result_mode": "browse",
+                                    "limit": 1,
+                                    "source": "redis_candidate_pool",
+                                    "exclude_photo_ids": excluded,
+                                },
+                                ensure_ascii=False,
+                            ),
+                        },
+                    )
+                    emit("tool_result", {"tool": "search_photos", "result": result})
+                    final_message = "没有更多符合当前搜索条件的照片了。"
+                    emit("final", {"message": final_message, "continuation": True})
+                    _remember_message(state, "user", query)
+                    _remember_message(state, "assistant", final_message)
+                    return state, events
+
             arguments = {
                 "query": active_query,
                 "result_mode": "browse",
                 "limit": 1,
                 "exclude_photo_ids": excluded,
+                "verified_only": True,
+                "candidate_pool_size": min(
+                    5, settings.agent_search_candidate_pool_size
+                ),
+                "force_visual_verify": False,
+                "include_index_coverage": True,
+                "w_semantic": 0.9,
+                "w_recency": 0.05,
+                "w_interaction": 0.05,
             }
             emit(
                 "tool_call",
@@ -712,8 +911,23 @@ class PhotoAgent:
             emit("tool_result", {"tool": "search_photos", "result": result})
             if result.get("ok") and result.get("items"):
                 final_message = f"又找到 {len(result['items'])} 张符合条件的照片。"
+            elif result.get("search_pending"):
+                state.active_search["exhausted"] = False
+                final_message = (
+                    "这轮筛选还没完成，但搜索进度已经保留；"
+                    "稍后再说“还有一张”即可继续。"
+                )
             elif result.get("ok"):
-                final_message = "没有更多符合当前搜索条件的照片了。"
+                coverage = result.get("index_coverage") or {}
+                queued = int(result.get("index_repair_queued", 0) or 0)
+                if not coverage.get("complete", True):
+                    suffix = f"，已触发 {queued} 张补索引" if queued else ""
+                    final_message = (
+                        "当前没有找到下一张，但相册搜索索引尚未完整"
+                        f"{suffix}，稍后再试可以继续查找。"
+                    )
+                else:
+                    final_message = "没有更多符合当前搜索条件的照片了。"
             else:
                 final_message = "继续搜索时出现问题，请稍后再试。"
             emit("final", {"message": final_message, "continuation": True})
@@ -910,6 +1124,14 @@ class PhotoAgent:
             for item in state.last_search_items[:5]
             if isinstance(item, dict) and item.get("id")
         ]
+        active_search_for_model = {
+            key: value
+            for key, value in state.active_search.items()
+            if key != "candidate_pool_items"
+        }
+        active_search_for_model["candidate_pool_count"] = len(
+            state.active_search.get("candidate_pool_items", [])
+        )
         summary = json.dumps(
             {
                 "step": state.step,
@@ -921,7 +1143,7 @@ class PhotoAgent:
                 "confirmed_photo_id": state.confirmed_photo_id,
                 "fallback_level": state.fallback_level,
                 "active_intent": state.active_intent,
-                "active_search": state.active_search,
+                "active_search": active_search_for_model,
                 "followup_type": state.followup_type,
                 "last_search_count": len(recent_results),
                 "last_search_items": recent_results,
@@ -1063,6 +1285,7 @@ class PhotoAgent:
                     "建议调用 fallback_search 兜底或向用户确认需求。",
                 }
             state.search_attempts += 1
+            args.setdefault("include_index_coverage", True)
 
         # 特殊业务逻辑：ask_clarification 次数限制
         if tool_name == "ask_clarification":
@@ -1105,10 +1328,27 @@ class PhotoAgent:
 
         # P0-2: 工具执行超时保护
         tool_timeout = spec.timeout or self.constraints.tool_timeout
+        if tool_name == "search_photos" and state.followup_type == "more_search_results":
+            tool_timeout = min(
+                float(tool_timeout), settings.agent_search_turn_budget_seconds
+            )
         try:
             result = await asyncio.wait_for(spec.fn(**args), timeout=tool_timeout)
         except TimeoutError:
-            logger.warning("Tool execution timed out | tool=%s timeout=%ds", tool_name, tool_timeout)
+            logger.warning(
+                "Tool execution timed out | tool=%s timeout=%.1fs",
+                tool_name,
+                tool_timeout,
+            )
+            if tool_name == "search_photos" and state.followup_type == "more_search_results":
+                return {
+                    "ok": True,
+                    "items": [],
+                    "total": 0,
+                    "search_pending": True,
+                    "error_type": "timeout_resumable",
+                    "hint": "本轮时间预算已用完，搜索进度已保留",
+                }
             return {
                 "ok": False,
                 "error_type": "timeout",
@@ -1117,6 +1357,74 @@ class PhotoAgent:
         except Exception as exc:
             logger.exception("Tool execution failed | tool=%s", tool_name)
             return {"ok": False, "error_type": _classify_exception(exc), "error": str(exc)}
+
+        candidate_pool_items = list(result.pop("_candidate_pool_items", []) or [])
+
+        # 首次搜索后只投递后台预取任务，不再在用户请求内同步执行第二次
+        # 多批判同。这样首轮响应与后续“还有一张”不会争用同一个 15 秒预算。
+        prefetch_status: str | None = None
+        prefetch_pool_key: str | None = None
+        if (
+            tool_name == "search_photos"
+            and state.followup_type != "more_search_results"
+            and result.get("items")
+            and result.get("rerank_check", {}).get("applied")
+            and not result.get("rerank_check", {}).get("degraded")
+            and settings.agent_search_candidate_pool_size > 0
+        ):
+            shown = {
+                str(item.get("id"))
+                for item in result.get("items", [])
+                if isinstance(item, dict) and item.get("id")
+            }
+            excluded = sorted(
+                shown
+                | {str(value) for value in state.rejected_photo_ids if value}
+            )
+            query_used = str(args.get("query", state.original_query)).strip()
+            prefetch_pool_key = candidate_pool_key(state.session_id)
+            try:
+                from app.workers.search_tasks import enqueue_search_prefetch
+
+                queued = await asyncio.wait_for(
+                    enqueue_search_prefetch(
+                        session_id=str(state.session_id),
+                        user_id=str(user_id),
+                        query=query_used,
+                        exclude_photo_ids=excluded,
+                    ),
+                    timeout=max(0.5, settings.agent_search_prefetch_wait_seconds),
+                )
+                prefetch_status = "queued" if queued else "failed"
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(
+                    "Agent candidate prefetch enqueue degraded | error=%s: %s",
+                    type(exc).__name__,
+                    exc,
+                )
+                prefetch_status = "failed"
+
+        if (
+            tool_name == "search_photos"
+            and state.followup_type == "more_search_results"
+            and result.get("ok")
+            and not result.get("items")
+            and not (result.get("index_coverage") or {}).get("complete", True)
+            and settings.agent_search_auto_repair_index
+        ):
+            try:
+                result["index_repair_queued"] = await enqueue_index_repairs(
+                    self.db,
+                    user_id,
+                    limit=settings.agent_search_index_repair_limit,
+                )
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(
+                    "Agent index repair enqueue degraded | error=%s: %s",
+                    type(exc).__name__,
+                    exc,
+                )
+                result["index_repair_queued"] = 0
 
         # 更新 State
         if tool_name in ("search_photos", "fallback_search") and result.get("ok"):
@@ -1132,6 +1440,25 @@ class PhotoAgent:
                 if photo_id and photo_id not in shown_ids:
                     shown_ids.append(photo_id)
             query_used = str(args.get("query", state.original_query)).strip()
+            existing_pool = (
+                list(state.active_search.get("candidate_pool_items", []))
+                if is_continuation
+                else []
+            )
+            pool_by_id: dict[str, dict] = {}
+            for candidate in [*existing_pool, *candidate_pool_items]:
+                if not isinstance(candidate, dict):
+                    continue
+                candidate_id = str(candidate.get("id", ""))
+                if candidate_id and candidate_id not in shown_ids:
+                    pool_by_id.setdefault(candidate_id, candidate)
+            candidate_pool = list(pool_by_id.values())[
+                : settings.agent_search_candidate_pool_size
+            ]
+            coverage = result.get("index_coverage") or state.active_search.get(
+                "index_coverage"
+            )
+            coverage_complete = not coverage or coverage.get("complete", True)
             state.last_search_items = items
             state.active_intent = "search_photos"
             state.active_search = {
@@ -1148,9 +1475,33 @@ class PhotoAgent:
                 },
                 "shown_photo_ids": shown_ids,
                 "rejected_photo_ids": sorted(state.rejected_photo_ids),
+                "candidate_pool_items": candidate_pool,
+                "candidate_pool_count": len(candidate_pool),
+                "pool_key": (
+                    prefetch_pool_key
+                    if prefetch_pool_key is not None
+                    else state.active_search.get("pool_key")
+                ),
+                "prefetch_status": (
+                    prefetch_status
+                    if prefetch_status is not None
+                    else state.active_search.get("prefetch_status")
+                ),
+                "recall_stage": (
+                    int(state.active_search.get("recall_stage", 0)) + 1
+                    if is_continuation
+                    else 0
+                ),
+                "index_coverage": coverage,
                 "next_cursor": result.get("next_cursor"),
                 "exhausted": bool(result.get("search_exhausted"))
-                or (is_continuation and not items),
+                or (
+                    is_continuation
+                    and not items
+                    and not candidate_pool
+                    and not result.get("search_pending")
+                    and coverage_complete
+                ),
             }
             state.fallback_level = result.get("fallback_level", state.fallback_level)
         elif tool_name == "apply_skill" and result.get("ok"):

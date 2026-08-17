@@ -138,6 +138,288 @@ async def test_more_followup_reuses_query_and_excludes_shown_photos() -> None:
 
 
 @pytest.mark.asyncio
+async def test_more_followup_consumes_verified_candidate_pool_before_search() -> None:
+    state = AgentState(
+        session_id=uuid4(),
+        user_id=uuid4(),
+        original_query="搜索切尔西相关照片",
+        active_intent="search_photos",
+        active_search={
+            "resolved_query": "切尔西相关照片",
+            "shown_photo_ids": ["photo-1", "photo-2"],
+            "candidate_pool_items": [
+                {"id": "photo-3", "ai_description": "第三张切尔西球员照片"}
+            ],
+            "candidate_pool_count": 1,
+        },
+    )
+    search = AsyncMock()
+    registry = ToolRegistry()
+    registry.register(
+        ToolSpec(
+            name="search_photos",
+            description="test search",
+            parameters={"type": "object", "properties": {}},
+            fn=search,
+        )
+    )
+
+    with patch("app.services.agent._llm_decide", new=AsyncMock()) as llm:
+        updated, events = await PhotoAgent(
+            db=MagicMock(), registry=registry, system_prompt="test"
+        ).run(state.user_id, "还有一张", initial_state=state)
+
+    search.assert_not_awaited()
+    llm.assert_not_awaited()
+    assert updated.last_search_items[0]["id"] == "photo-3"
+    assert updated.active_search["candidate_pool_count"] == 0
+    assert updated.active_search["shown_photo_ids"] == [
+        "photo-1",
+        "photo-2",
+        "photo-3",
+    ]
+    assert events[2]["payload"]["result"]["source"] == "candidate_pool"
+
+
+@pytest.mark.asyncio
+async def test_initial_search_prefetches_verified_candidates_for_followup() -> None:
+    calls: list[dict] = []
+
+    async def search(**kwargs):
+        calls.append(kwargs)
+        return {
+            "ok": True,
+            "items": [
+                {"id": "photo-1", "ai_description": "切尔西第一张"},
+                {"id": "photo-2", "ai_description": "切尔西第二张"},
+            ],
+            "rerank_check": {"applied": True, "degraded": False},
+            "index_coverage": {"complete": True},
+        }
+
+    registry = ToolRegistry()
+    registry.register(
+        ToolSpec(
+            name="search_photos",
+            description="test search",
+            parameters={"type": "object", "properties": {}},
+            fn=search,
+        )
+    )
+    state = AgentState(
+        session_id=uuid4(), user_id=uuid4(), original_query="切尔西相关照片"
+    )
+    agent = PhotoAgent(db=MagicMock(), registry=registry, system_prompt="test")
+
+    enqueue = AsyncMock(return_value=True)
+    with patch(
+        "app.workers.search_tasks.enqueue_search_prefetch", new=enqueue
+    ):
+        result = await agent._execute_tool(
+            state.user_id,
+            "search_photos",
+            json.dumps({"query": "切尔西相关照片"}, ensure_ascii=False),
+            state,
+        )
+
+    assert result["items"][0]["id"] == "photo-1"
+    assert len(calls) == 1
+    enqueue.assert_awaited_once_with(
+        session_id=str(state.session_id),
+        user_id=str(state.user_id),
+        query="切尔西相关照片",
+        exclude_photo_ids=["photo-1", "photo-2"],
+    )
+    assert state.active_search["candidate_pool_items"] == []
+    assert state.active_search["prefetch_status"] == "queued"
+    assert state.active_search["pool_key"].endswith(str(state.session_id))
+
+
+@pytest.mark.asyncio
+async def test_more_followup_consumes_background_verified_candidate() -> None:
+    state = AgentState(
+        session_id=uuid4(),
+        user_id=uuid4(),
+        original_query="搜索切尔西相关照片",
+        active_intent="search_photos",
+        active_search={
+            "resolved_query": "切尔西相关照片",
+            "shown_photo_ids": ["photo-1", "photo-2"],
+            "pool_key": "agent:search-pool:test",
+            "prefetch_status": "queued",
+        },
+    )
+    search = AsyncMock()
+    registry = ToolRegistry()
+    registry.register(
+        ToolSpec(
+            name="search_photos",
+            description="test search",
+            parameters={"type": "object", "properties": {}},
+            fn=search,
+        )
+    )
+    candidate = {"id": "photo-3", "ai_description": "切尔西第三张"}
+
+    with (
+        patch(
+            "app.services.agent.get_prefetch_status",
+            new=AsyncMock(side_effect=["running", "ready"]),
+        ),
+        patch(
+            "app.services.agent.wait_for_verified_candidate",
+            new=AsyncMock(return_value=candidate),
+        ),
+        patch(
+            "app.services.agent.candidate_pool_size",
+            new=AsyncMock(return_value=0),
+        ),
+        patch(
+            "app.services.agent.set_prefetch_status", new=AsyncMock()
+        ) as set_status,
+    ):
+        updated, events = await PhotoAgent(
+            db=MagicMock(), registry=registry, system_prompt="test"
+        ).run(state.user_id, "还有一张", initial_state=state)
+
+    search.assert_not_awaited()
+    set_status.assert_awaited_once_with(state.session_id, "exhausted")
+    assert updated.last_search_items[0]["id"] == "photo-3"
+    assert updated.active_search["shown_photo_ids"][-1] == "photo-3"
+    assert events[2]["payload"]["result"]["source"] == "redis_candidate_pool"
+
+
+@pytest.mark.asyncio
+async def test_more_followup_reports_pending_without_running_foreground_search() -> None:
+    state = AgentState(
+        session_id=uuid4(),
+        user_id=uuid4(),
+        original_query="搜索切尔西相关照片",
+        active_intent="search_photos",
+        active_search={
+            "resolved_query": "切尔西相关照片",
+            "shown_photo_ids": ["photo-1", "photo-2"],
+            "pool_key": "agent:search-pool:test",
+            "prefetch_status": "queued",
+        },
+    )
+    search = AsyncMock()
+    registry = ToolRegistry()
+    registry.register(
+        ToolSpec(
+            name="search_photos",
+            description="test search",
+            parameters={"type": "object", "properties": {}},
+            fn=search,
+        )
+    )
+
+    with (
+        patch(
+            "app.services.agent.get_prefetch_status",
+            new=AsyncMock(side_effect=["running", "running"]),
+        ),
+        patch(
+            "app.services.agent.wait_for_verified_candidate",
+            new=AsyncMock(return_value=None),
+        ),
+    ):
+        updated, events = await PhotoAgent(
+            db=MagicMock(), registry=registry, system_prompt="test"
+        ).run(state.user_id, "还有一张", initial_state=state)
+
+    search.assert_not_awaited()
+    assert updated.active_search["exhausted"] is False
+    assert events[-2]["payload"]["result"]["search_pending"] is True
+    assert "搜索进度" not in events[-1]["payload"]["message"]
+    assert "还在继续筛选" in events[-1]["payload"]["message"]
+
+
+@pytest.mark.asyncio
+async def test_more_followup_timeout_is_resumable_not_generic_error() -> None:
+    async def slow_search(**_kwargs):
+        import asyncio
+
+        await asyncio.sleep(0.1)
+        return {"ok": True, "items": []}
+
+    registry = ToolRegistry()
+    registry.register(
+        ToolSpec(
+            name="search_photos",
+            description="test search",
+            parameters={"type": "object", "properties": {}},
+            fn=slow_search,
+            timeout=0.01,
+        )
+    )
+    state = AgentState(
+        session_id=uuid4(),
+        user_id=uuid4(),
+        original_query="搜索切尔西相关照片",
+        active_search={
+            "resolved_query": "切尔西相关照片",
+            "shown_photo_ids": ["photo-1", "photo-2"],
+        },
+    )
+
+    updated, events = await PhotoAgent(
+        db=MagicMock(), registry=registry, system_prompt="test"
+    ).run(state.user_id, "还有一张", initial_state=state)
+
+    assert updated.active_search["exhausted"] is False
+    assert events[-2]["payload"]["result"]["error_type"] == "timeout_resumable"
+    assert "进度已经保留" in events[-1]["payload"]["message"]
+    assert "出现问题" not in events[-1]["payload"]["message"]
+
+
+@pytest.mark.asyncio
+async def test_incomplete_index_does_not_claim_search_is_exhausted() -> None:
+    async def search(**_kwargs):
+        return {
+            "ok": True,
+            "items": [],
+            "index_coverage": {
+                "total_photos": 3,
+                "indexed_photos": 2,
+                "retrying_photos": 0,
+                "unavailable_photos": 1,
+                "complete": False,
+            },
+        }
+
+    registry = ToolRegistry()
+    registry.register(
+        ToolSpec(
+            name="search_photos",
+            description="test search",
+            parameters={"type": "object", "properties": {}},
+            fn=search,
+        )
+    )
+    state = AgentState(
+        session_id=uuid4(),
+        user_id=uuid4(),
+        original_query="切尔西相关照片",
+        active_search={
+            "resolved_query": "切尔西相关照片",
+            "shown_photo_ids": ["photo-1", "photo-2"],
+        },
+    )
+
+    with patch(
+        "app.services.agent.enqueue_index_repairs", new=AsyncMock(return_value=1)
+    ):
+        updated, events = await PhotoAgent(
+            db=MagicMock(), registry=registry, system_prompt="test"
+        ).run(state.user_id, "还有一张", initial_state=state)
+
+    assert updated.active_search["exhausted"] is False
+    assert events[-2]["payload"]["result"]["index_repair_queued"] == 1
+    assert "索引尚未完整" in events[-1]["payload"]["message"]
+
+
+@pytest.mark.asyncio
 async def test_nontrivial_followup_receives_recent_dialogue_and_structured_memory() -> None:
     captured: list[dict] = []
 

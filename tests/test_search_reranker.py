@@ -10,6 +10,7 @@ from app.services.search_reranker import (
     evidence_from_scored,
     merge_visual_decisions,
     rerank_scored_candidates,
+    verify_scored_candidate_pool,
     visual_trigger_reason,
 )
 from app.services.search_visual_verifier import VisualDecision
@@ -79,6 +80,48 @@ def test_evidence_is_compact_and_does_not_include_image_url() -> None:
     assert evidence[0]["candidate_key"] == "c0"
     assert len(evidence[0]["analysis"]["objects"]) == 20
     assert "image_url" not in evidence[0]
+
+
+@pytest.mark.asyncio
+async def test_verified_pool_can_find_match_beyond_first_top_five(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    async def judge(_query, candidates, **_kwargs):
+        decisions = []
+        for candidate in candidates:
+            is_target = candidate["description"] == "description-p-6"
+            decisions.append(
+                RerankDecision(
+                    candidate["candidate_key"],
+                    "match" if is_target else "contradiction",
+                    0.99,
+                    "test",
+                )
+            )
+        return decisions, {"cache_hit": False, "model": "test", "latency_ms": 1.0}
+
+    monkeypatch.setattr(
+        "app.services.search_reranker.judge_candidate_evidence", judge
+    )
+    monkeypatch.setattr(
+        "app.services.search_reranker.settings.search_rerank_enabled", True
+    )
+    monkeypatch.setattr(
+        "app.services.search_reranker.settings.search_rerank_top_k", 5
+    )
+    scored = [_row(f"p-{index}", 1 - index / 100) for index in range(1, 9)]
+
+    result, summary = await verify_scored_candidate_pool(
+        scored,
+        "切尔西",
+        enabled=True,
+        max_candidates=8,
+        max_results=3,
+    )
+
+    assert [row[0].id for row in result] == ["p-6"]
+    assert summary["batch_count"] == 2
+    assert summary["match_count"] == 1
 
 
 @pytest.mark.asyncio

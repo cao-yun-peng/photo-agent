@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 import logging
@@ -441,6 +442,102 @@ def apply_rerank_decisions(
         **verdict_counts,
         "rejected": rejected,
     }
+
+
+async def verify_scored_candidate_pool(
+    scored: Sequence[_Scored],
+    query: str,
+    *,
+    enabled: bool,
+    max_candidates: int,
+    max_results: int,
+    force_visual_on_zero_match: bool = False,
+) -> tuple[list[_Scored], dict[str, Any]]:
+    """分批验证更大的候选池，只返回明确 ``match`` 的候选。"""
+
+    pool = list(scored[: max(0, max_candidates)])
+    batch_size = max(1, int(settings.search_rerank_top_k))
+    summary: dict[str, Any] = {
+        "applied": bool(enabled and settings.search_rerank_enabled),
+        "degraded": False,
+        "prompt_version": RERANK_PROMPT_VERSION,
+        "candidates_checked": 0,
+        "match_count": 0,
+        "uncertain_count": 0,
+        "contradiction_count": 0,
+        "visual_candidates_checked": 0,
+        "visual_match_count": 0,
+        "batch_count": 0,
+    }
+    if not pool or max_results <= 0:
+        return [], summary
+    if not enabled or not settings.search_rerank_enabled:
+        summary.update({"degraded": True, "degraded_reason": "reranker_disabled"})
+        return [], summary
+
+    verified: list[_Scored] = []
+    degraded_reasons: list[str] = []
+    for offset in range(0, len(pool), batch_size):
+        if len(verified) >= max_results:
+            break
+        batch = pool[offset : offset + batch_size]
+        summary["batch_count"] += 1
+        candidates = evidence_from_scored(batch, len(batch))
+        try:
+            decisions, _call_meta = await judge_candidate_evidence(query, candidates)
+        except Exception as exc:  # noqa: BLE001
+            degraded_reasons.append(type(exc).__name__)
+            continue
+
+        counts = {
+            verdict: sum(item.verdict == verdict for item in decisions)
+            for verdict in ("match", "uncertain", "contradiction")
+        }
+        summary["candidates_checked"] += len(batch)
+        for verdict, count in counts.items():
+            summary[f"{verdict}_count"] += count
+
+        if (
+            force_visual_on_zero_match
+            and counts["match"] == 0
+            and counts["uncertain"] > 0
+        ):
+            visual_candidates = _visual_candidates(batch, decisions)
+            summary["visual_candidates_checked"] += len(visual_candidates)
+            if visual_candidates:
+                try:
+                    visual_decisions, _visual_meta = await asyncio.wait_for(
+                        judge_visual_candidates(query, visual_candidates),
+                        timeout=settings.agent_search_visual_budget_seconds,
+                    )
+                    summary["visual_match_count"] += sum(
+                        item.verdict == "match" for item in visual_decisions
+                    )
+                    decisions = merge_visual_decisions(
+                        decisions,
+                        visual_decisions,
+                        reject_confidence=settings.search_rerank_reject_confidence,
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    degraded_reasons.append(f"visual:{type(exc).__name__}")
+
+        by_key = {item.candidate_key: item for item in decisions}
+        for index, item in enumerate(batch):
+            decision = by_key.get(f"c{index}")
+            if decision is not None and decision.verdict == "match":
+                verified.append(item)
+                if len(verified) >= max_results:
+                    break
+
+    if degraded_reasons:
+        summary.update(
+            {
+                "degraded": True,
+                "degraded_reason": ",".join(dict.fromkeys(degraded_reasons))[:240],
+            }
+        )
+    verified.sort(key=lambda item: float(item[4]), reverse=True)
+    return verified[:max_results], summary
 
 
 async def rerank_scored_candidates(

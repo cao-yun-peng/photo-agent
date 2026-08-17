@@ -30,6 +30,7 @@ from app.services.search_constraints import (
     validate_scored_candidates,
 )
 from app.services.search_reranker import rerank_scored_candidates
+from app.services.search_index import get_index_coverage
 from app.services.search import (
     combine,
     decode_cursor,
@@ -48,50 +49,10 @@ router = APIRouter()
 async def _get_index_coverage(
     db: AsyncSession, user_id
 ) -> SearchIndexCoverage:
-    """统计搜索可见范围，让客户端明确知道结果是否覆盖整个相册。"""
-    retry_reasons = {
-        "embedding_missing",
-        "embedding_degraded",
-        "embedding_retrying",
-        "embedding_service_busy",
-    }
-    result = await db.execute(
-        select(
-            func.count(Photo.id),
-            func.count(Photo.id).filter(
-                Photo.status == "done", Photo.embedding.is_not(None)
-            ),
-            func.count(Photo.id).filter(
-                or_(
-                    Photo.status.in_(("pending", "processing")),
-                    Photo.partial_reason.in_(retry_reasons),
-                )
-            ),
-        ).where(Photo.user_id == user_id)
-    )
-    # 兼容离线回放里的最小 AsyncSession 测试桩；真实 SQLAlchemy Result
-    # 始终提供 one()。
-    if not hasattr(result, "one"):
-        return SearchIndexCoverage()
-    total, indexed, retrying = (int(value or 0) for value in result.one())
-    unavailable = max(0, total - indexed - retrying)
-    ratio = round(indexed / total, 4) if total else 1.0
-    message = None
-    if retrying or unavailable:
-        parts = []
-        if retrying:
-            parts.append(f"{retrying} 张仍在建立智能搜索")
-        if unavailable:
-            parts.append(f"{unavailable} 张暂时无法被文字检索")
-        message = "；".join(parts) + "，当前结果可能不完整"
-    return SearchIndexCoverage(
-        total_photos=total,
-        indexed_photos=indexed,
-        retrying_photos=retrying,
-        unavailable_photos=unavailable,
-        coverage_ratio=ratio,
-        message=message,
-    )
+    """兼容现有路由测试，同时复用公共索引覆盖率实现。"""
+    coverage = await get_index_coverage(db, user_id)
+    coverage.pop("complete", None)
+    return SearchIndexCoverage(**coverage)
 
 
 @router.post(
