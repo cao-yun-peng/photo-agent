@@ -1,6 +1,7 @@
 """照片相关 schema."""
 
 from datetime import date, datetime
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -95,7 +96,9 @@ class SearchQuery(BaseModel):
     """
 
     q: str = Field(..., min_length=1, max_length=200)
-    limit: int = Field(default=20, ge=1, le=100)
+    limit: int = Field(default=5, ge=1, le=100)
+    # browse=展示最多 5 张供选择；best=在 Top-5 判同重排后只返回最佳 1 张
+    result_mode: Literal["browse", "best"] = "browse"
 
     # 过滤维度
     from_date: date | None = None
@@ -206,6 +209,7 @@ class SearchIndexCoverage(BaseModel):
 class SearchResult(BaseModel):
     items: list[SearchResultItem]
     total: int
+    result_mode: Literal["browse", "best"] = "browse"
     next_cursor: str | None = None
     parsed: ParsedQuery | None = None  # 若 auto_parse=True，返回解析结果给前端展示
     cache_hit: bool = False  # embedding 是否命中缓存

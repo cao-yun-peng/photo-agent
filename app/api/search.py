@@ -33,11 +33,11 @@ from app.services.search_reranker import rerank_scored_candidates
 from app.services.search import (
     combine,
     decode_cursor,
-    encode_cursor,
     get_query_embedding,
     get_user_profile,
     personalized_interaction_score,
     recency_score,
+    resolve_search_result_limits,
     semantic_score,
     smart_album_fallback,
 )
@@ -104,6 +104,10 @@ async def semantic_search(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> SearchResult:
+    output_limit, verification_limit = resolve_search_result_limits(
+        payload.result_mode,
+        payload.limit,
+    )
     index_coverage = await _get_index_coverage(db, current_user.id)
     # ---------- 1. 可选：自动解析自然语言条件 ----------
     parsed = None
@@ -177,7 +181,7 @@ async def semantic_search(
         conds.append(or_(*jsonb_conds))
 
     # ---------- 4. 向量召回（强约束查询扩大候选池后再做证据校验） ----------
-    fetch_n = max(payload.limit * 5, 30) if constraints else payload.limit * 3
+    fetch_n = max(verification_limit * 5, 30) if constraints else verification_limit * 3
     dist_col = Photo.embedding.cosine_distance(query_vec).label("dist")
     stmt = select(Photo, dist_col).where(and_(*conds)).order_by(dist_col).limit(fetch_n)
     result = await db.execute(stmt)
@@ -220,10 +224,10 @@ async def semantic_search(
         scored,
         payload.q,
         enabled=payload.verify_semantic,
-        page_limit=payload.limit,
+        page_limit=verification_limit,
     )
 
-    page = scored[: payload.limit]
+    page = scored[:output_limit]
 
     # ---------- 7. 拼接返回 ----------
     items = [
@@ -241,17 +245,11 @@ async def semantic_search(
         for (p, sem, rec, inter, fin) in page
     ]
 
-    next_cursor = None
-    if len(page) == payload.limit and len(scored) > payload.limit:
-        last_p, _, _, _, last_score = sorted(
-            page, key=lambda row: (-row[4], str(row[0].id))
-        )[-1]
-        next_cursor = encode_cursor(last_score, last_p.id)
-
     return SearchResult(
         items=items,
         total=len(page),
-        next_cursor=next_cursor,
+        result_mode=payload.result_mode,
+        next_cursor=None,
         parsed=parsed,
         cache_hit=cache_hit,
         constraint_check=(

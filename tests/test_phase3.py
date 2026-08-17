@@ -130,8 +130,8 @@ async def test_recommend_skills_for_agent_tool() -> None:
 # 主动澄清
 # ------------------------------------------------------------------
 @pytest.mark.asyncio
-async def test_agent_search_photos_builds_next_cursor() -> None:
-    """Agent 搜索结果超过一页时，应按五元组正确生成下一页游标。"""
+async def test_agent_search_photos_result_mode_is_not_paginated() -> None:
+    """明确的 Top-K 结果模式一次返回完整选择集，不再提供下一页。"""
     now = datetime.now(timezone.utc)
     photos = []
     for index in range(3):
@@ -171,7 +171,7 @@ async def test_agent_search_photos_builds_next_cursor() -> None:
 
     assert result["ok"] is True
     assert len(result["items"]) == 2
-    assert result["next_cursor"] is not None
+    assert result["next_cursor"] is None
 
 
 @pytest.mark.asyncio

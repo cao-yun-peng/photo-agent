@@ -37,7 +37,6 @@ from app.services.query_parser import parse_query
 from app.utils.json_parser import (
     extract_json_field_by_regex,
     parse_as_dict,
-    parse_json_field,
     parse_json_or_default,
 )
 
@@ -66,12 +65,13 @@ _DEFAULT_SYSTEM_PROMPT = """你是 Photo Agent，一个帮助用户从个人相�
    - 用户查询完全没有任何具体关键词（例如只说"找照片"、"帮我找一下"），此时可以首次澄清；
    - 累计调用 search_photos 搜索失败 2 次后仍无结果，系统自动触发澄清；
    - 其他情况一律先搜索，不要因为"缺少时间/地点"就直接澄清，用户可能只记得物体关键词。
-4. 搜索重试：若 search_photos 结果为空，可换个关键词或放宽条件重试 1 次。
-5. 兜底策略：累计搜索失败 2 次后，调用 fallback_search 进行三级兜底，不要直接放弃。
-6. 生成意图：当用户明确想要"改造/生成/变成XX风格"某张照片时，且上下文中已有确认的照片，才调用 apply_skill。
-7. Skill 推荐：当用户找到某张照片后询问"有什么风格/滤镜可以用"时，调用 recommend_skills。
-8. 每次决策前，简要说明你的思考（reasoning）。
-9. 必须以 final_answer 结束对话，告知用户结果或下一步操作建议。"""
+4. 搜索结果模式：普通找图调用 search_photos 时使用 result_mode="browse"，最多给出 5 张供用户选择；当用户明确说“最好/最合适/只选一张/帮我挑一张”时，必须使用 result_mode="best"，从 Top-5 判同候选中只返回最佳 1 张。
+5. 搜索重试：若 search_photos 结果为空，可换个关键词或放宽条件重试 1 次。
+6. 兜底策略：累计搜索失败 2 次后，调用 fallback_search 进行三级兜底，不要直接放弃。
+7. 生成意图：当用户明确想要"改造/生成/变成XX风格"某张照片时，且上下文中已有确认的照片，才调用 apply_skill。
+8. Skill 推荐：当用户找到某张照片后询问"有什么风格/滤镜可以用"时，调用 recommend_skills。
+9. 每次决策前，简要说明你的思考（reasoning）。
+10. 必须以 final_answer 结束对话，告知用户结果或下一步操作建议。"""
 
 
 # ------------------------------------------------------------------
@@ -284,6 +284,11 @@ def _build_registry() -> ToolRegistry:
                     "to_date": {
                         "type": "string",
                         "description": "结束日期，格式 YYYY-MM-DD，可选",
+                    },
+                    "result_mode": {
+                        "type": "string",
+                        "enum": ["browse", "best"],
+                        "description": "browse=返回最多5张供选择；best=比较Top-5后只返回最佳1张",
                     },
                 },
                 "required": ["query"],

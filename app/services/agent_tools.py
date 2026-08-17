@@ -38,6 +38,7 @@ from app.services.search import (
     get_user_profile,
     personalized_interaction_score,
     recency_score,
+    resolve_search_result_limits,
     semantic_score,
 )
 from app.workers.tasks import enqueue_generate_photo
@@ -178,6 +179,7 @@ async def search_photos(
     auto_parse: bool = True,
     verify_constraints: bool = True,
     verify_semantic: bool = True,
+    result_mode: str = "browse",
     w_semantic: float = 0.7,
     w_recency: float = 0.2,
     w_interaction: float = 0.1,
@@ -195,6 +197,10 @@ async def search_photos(
         }
     """
     try:
+        output_limit, verification_limit = resolve_search_result_limits(
+            result_mode,
+            limit,
+        )
         effective_q = query
         parsed_obj: ParsedQuery | None = None
         if auto_parse:
@@ -255,7 +261,7 @@ async def search_photos(
         if jsonb_conds:
             conds.append(or_(*jsonb_conds))
 
-        fetch_n = max(limit * 5, 30) if constraints else limit * 3
+        fetch_n = max(verification_limit * 5, 30) if constraints else verification_limit * 3
         dist_col = Photo.embedding.cosine_distance(query_vec).label("dist")
         stmt = (
             select(Photo, dist_col)
@@ -293,24 +299,21 @@ async def search_photos(
             scored,
             query,
             enabled=verify_semantic,
-            page_limit=limit,
+            page_limit=verification_limit,
         )
 
-        page = scored[:limit]
+        page = scored[:output_limit]
         items = [
             _photo_to_search_item(p, sem, rec, inter, fin)
             for (p, sem, rec, inter, fin) in page
         ]
-        next_cursor = None
-        if len(page) == limit and len(scored) > limit:
-            last_p, _, _, _, last_score = sorted(
-                page, key=lambda row: (-row[4], str(row[0].id))
-            )[-1]
-            next_cursor = encode_cursor(last_score, last_p.id)
-
         parsed_dict = parsed_obj.model_dump() if parsed_obj else None
         hint = (
-            f"找到 {len(items)} 张相关照片"
+            (
+                "已从 Top-5 候选中选出最佳照片"
+                if result_mode == "best"
+                else f"找到 {len(items)} 张相关照片供你选择"
+            )
             if items
             else "未找到匹配照片，建议尝试更宽泛的描述或时间范围"
         )
@@ -319,8 +322,9 @@ async def search_photos(
             "ok": True,
             "items": items,
             "parsed": parsed_dict,
-            "next_cursor": next_cursor,
+            "next_cursor": None,
             "total": len(items),
+            "result_mode": result_mode,
             "constraint_check": constraint_summary,
             "rerank_check": rerank_summary,
             "hint": hint,

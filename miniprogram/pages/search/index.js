@@ -13,7 +13,7 @@ Page({
     parsed: null,
     loading: false,
     cacheHit: false,
-    nextCursor: null,
+    resultMode: 'browse',
     recording: false,
     apiBase: API_BASE,
   },
@@ -29,21 +29,30 @@ Page({
 
   onTapChip(e) {
     const chip = e.currentTarget.dataset.chip;
-    this.setData({ q: chip, activeChip: chip }, () => this.onSearch(true));
+    this.setData({ q: chip, activeChip: chip }, () => this._runSearch('browse'));
   },
 
-  async onSearch(autoParse) {
+  onSearch() {
+    return this._runSearch('browse');
+  },
+
+  onSearchBest() {
+    return this._runSearch('best');
+  },
+
+  async _runSearch(resultMode) {
     const q = (this.data.q || '').trim();
     if (!q) {
       wx.showToast({ title: '请输入或说一句话', icon: 'none' });
       return;
     }
-    this.setData({ loading: true, results: [], nextCursor: null });
+    this.setData({ loading: true, results: [], resultMode });
     try {
       const resp = await search.query({
         q,
-        limit: 20,
-        auto_parse: !!autoParse,
+        limit: 5,
+        result_mode: resultMode,
+        auto_parse: true,
       });
       this.setData({
         results: (resp.items || []).map((it) => ({
@@ -52,38 +61,13 @@ Page({
         })),
         parsed: resp.parsed,
         cacheHit: !!resp.cache_hit,
-        nextCursor: resp.next_cursor,
+        resultMode: resp.result_mode || resultMode,
       });
       if (resp.items.length === 0) {
         wx.showToast({ title: '没有找到相关照片', icon: 'none' });
       }
     } catch (err) {
       wx.showToast({ title: (err.detail || '搜索失败').slice(0, 20), icon: 'none' });
-    } finally {
-      this.setData({ loading: false });
-    }
-  },
-
-  async onLoadMore() {
-    if (!this.data.nextCursor || this.data.loading) return;
-    this.setData({ loading: true });
-    try {
-      const resp = await search.query({
-        q: this.data.q,
-        limit: 20,
-        cursor: this.data.nextCursor,
-      });
-      this.setData({
-        results: this.data.results.concat(
-          (resp.items || []).map((it) => ({
-            ...it,
-            thumb_url_full: this._resolveThumb(it.thumb_url),
-          })),
-        ),
-        nextCursor: resp.next_cursor,
-      });
-    } catch (err) {
-      wx.showToast({ title: '加载更多失败', icon: 'none' });
     } finally {
       this.setData({ loading: false });
     }

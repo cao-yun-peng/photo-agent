@@ -31,11 +31,11 @@
   </scroll-view>
 
   <view class="actions">
-    <button class="btn" bindtap="onSearch" data-auto="true" loading="{{loading}}">
-      智能搜索（识别时间/地点）
+    <button class="btn" bindtap="onSearch" loading="{{loading}}">
+      搜索相关照片（Top-5）
     </button>
-    <button class="btn btn--ghost" bindtap="onSearch" data-auto="false">
-      纯语义搜索
+    <button class="btn btn--ghost" bindtap="onSearchBest" disabled="{{loading}}">
+      帮我选最好的一张
     </button>
   </view>
 
@@ -59,9 +59,13 @@
     <view class="empty__hint">"上周西湖" · "夕阳" · "小橘" 都可以</view>
   </view>
 
-  <view wx:else class="results">
+  <view wx:if="{{results.length > 0}}" class="result-summary">
+    {{resultMode === 'best' ? '最佳匹配 · 已从 Top-5 中选出 1 张' : '相关照片 · 最多展示 5 张'}}
+  </view>
+
+  <view wx:if="{{results.length > 0}}" class="results">
     <block wx:for="{{results}}" wx:key="id">
-      <view class="result card">
+      <view class="result card {{resultMode === 'best' ? 'result--best' : ''}}">
         <image class="result__thumb" src="{{item.thumb_url_full}}" mode="aspectFill" />
         <view class="result__body">
           <view class="result__desc">{{item.ai_description || '（还在处理）'}}</view>
@@ -76,7 +80,4 @@
   </view>
 
   <view wx:if="{{loading}}" class="loading">加载中...</view>
-  <view wx:if="{{nextCursor && !loading}}" class="more" bindtap="onLoadMore">
-    加载更多
-  </view>
 </view>

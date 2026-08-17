@@ -67,6 +67,12 @@
   margin-bottom: 16rpx;
 }
 
+.result-summary {
+  margin: 4rpx 0 16rpx;
+  color: var(--muted);
+  font-size: 24rpx;
+}
+
 .results {
   display: flex;
   flex-direction: column;
@@ -76,6 +82,10 @@
   display: flex;
   gap: 20rpx;
   padding: 20rpx;
+}
+.result--best {
+  border: 2rpx solid var(--brand);
+  background: var(--brand-soft);
 }
 .result__thumb {
   width: 160rpx;
@@ -100,11 +110,4 @@
   gap: 8rpx;
   margin-top: 16rpx;
   flex-wrap: wrap;
-}
-
-.more {
-  text-align: center;
-  padding: 30rpx 0;
-  color: var(--brand);
-  font-size: 28rpx;
 }

@@ -20,6 +20,27 @@ from app.services.ai import embed_query
 
 logger = logging.getLogger(__name__)
 
+SEARCH_SELECTION_POOL_SIZE = 5
+SEARCH_RESULT_MODES = frozenset({"browse", "best"})
+
+
+def resolve_search_result_limits(
+    result_mode: str,
+    requested_limit: int,
+) -> tuple[int, int]:
+    """返回（输出数量，判同候选数量）。
+
+    普通搜索最多展示 Top-5；最佳单图模式仍先比较 Top-5，再只输出第一张，
+    避免把“Top-1”错误实现为只检查向量召回的原始第一名。
+    """
+    if result_mode not in SEARCH_RESULT_MODES:
+        raise ValueError(f"unsupported search result mode: {result_mode}")
+    output_limit = 1 if result_mode == "best" else min(
+        requested_limit,
+        SEARCH_SELECTION_POOL_SIZE,
+    )
+    return output_limit, SEARCH_SELECTION_POOL_SIZE
+
 
 # ------------------------------------------------------------------
 # Redis 连接（懒加载单例）
