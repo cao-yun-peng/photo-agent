@@ -176,6 +176,7 @@ async def search_photos(
     status: str | None = "done",
     limit: int = 10,
     cursor: str | None = None,
+    exclude_photo_ids: list[str] | None = None,
     auto_parse: bool = True,
     verify_constraints: bool = True,
     verify_semantic: bool = True,
@@ -222,6 +223,14 @@ async def search_photos(
         conds = [Photo.user_id == user_id, Photo.embedding.is_not(None)]
         if status:
             conds.append(Photo.status == status)
+        excluded_ids: list[UUID] = []
+        for raw_id in exclude_photo_ids or []:
+            try:
+                excluded_ids.append(UUID(str(raw_id)))
+            except (TypeError, ValueError, AttributeError):
+                continue
+        if excluded_ids:
+            conds.append(Photo.id.notin_(excluded_ids))
 
         if from_date:
             conds.append(
@@ -354,6 +363,7 @@ async def browse_candidates(
     to_date: date | None = None,
     limit: int = 50,
     cursor: str | None = None,
+    exclude_photo_ids: list[str] | None = None,
 ) -> dict:
     """Agent 浏览 Tool：按时间倒序列出用户照片，作为最终兜底手段。
 
@@ -368,6 +378,14 @@ async def browse_candidates(
     """
     try:
         conds = [Photo.user_id == user_id]
+        excluded_ids: list[UUID] = []
+        for raw_id in exclude_photo_ids or []:
+            try:
+                excluded_ids.append(UUID(str(raw_id)))
+            except (TypeError, ValueError, AttributeError):
+                continue
+        if excluded_ids:
+            conds.append(Photo.id.notin_(excluded_ids))
         if from_date:
             conds.append(
                 Photo.taken_at
@@ -587,6 +605,8 @@ async def fallback_search(
     to_date: date | None = None,
     limit: int = 30,
     start_level: int = 0,
+    exclude_photo_ids: list[str] | None = None,
+    allow_unfiltered_browse: bool = True,
 ) -> dict:
     """当普通搜索找不到结果时，按三级策略逐步放宽条件。
 
@@ -614,6 +634,7 @@ async def fallback_search(
             to_date=to_date,
             status="done",
             limit=limit,
+            exclude_photo_ids=exclude_photo_ids,
         )
         if res.get("ok") and res.get("items"):
             return {
@@ -632,6 +653,7 @@ async def fallback_search(
         to_date=to_date,
         status=None,
         limit=limit,
+        exclude_photo_ids=exclude_photo_ids,
     )
     if res.get("ok") and res.get("items"):
         return {
@@ -658,6 +680,7 @@ async def fallback_search(
             from_date=from_date,
             to_date=to_date,
             limit=limit,
+            exclude_photo_ids=exclude_photo_ids,
         )
         if res.get("ok") and res.get("items"):
             return {
@@ -667,11 +690,22 @@ async def fallback_search(
                 "hint": f"【时间线兜底】{res['hint']}",
             }
 
+    # 续搜场景必须保留原语义锚点；没有更多匹配时不能混入全相册无关照片。
+    if not allow_unfiltered_browse:
+        return {
+            "ok": True,
+            "items": [],
+            "fallback_level": 1,
+            "hint": "没有更多符合当前搜索条件的照片",
+            "search_exhausted": True,
+        }
+
     # Level 3: 全相册兜底
     res = await browse_candidates(
         user_id=user_id,
         db=db,
         limit=limit,
+        exclude_photo_ids=exclude_photo_ids,
     )
     return {
         "ok": res.get("ok", False),

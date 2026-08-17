@@ -487,10 +487,21 @@ def evaluate_test_case(
                 minimum - expected_tools.count(tool_name)
             )
     actual_tools = [call["tool"] for call in result.tool_calls]
-    result.score_tool_selection = _selection_score(expected_tools, actual_tools)
+    expected_tool_sets = [expected_tools]
+    expected_tool_sets.extend(
+        list(candidate) for candidate in expected.get("expected_tools_any_of", [])
+    )
+    selection_scores = [
+        _selection_score(candidate, actual_tools) for candidate in expected_tool_sets
+    ]
+    best_tool_index = max(
+        range(len(selection_scores)), key=selection_scores.__getitem__
+    )
+    expected_tools = expected_tool_sets[best_tool_index]
+    result.score_tool_selection = selection_scores[best_tool_index]
     if result.score_tool_selection < 1:
         result.evaluation_notes.append(
-            f"工具集合不匹配: expected={expected_tools}, actual={actual_tools}"
+            f"工具集合不匹配: expected_any_of={expected_tool_sets}, actual={actual_tools}"
         )
 
     expected_order = [t for t in expected_tools if t not in CONTROL_TOOLS]
@@ -532,12 +543,15 @@ def evaluate_test_case(
         result.score_parameter = 1.0
 
     expected_status = expected.get("expected_final_status")
+    allowed_statuses = list(expected.get("expected_final_status_any_of", []))
+    if not allowed_statuses and expected_status:
+        allowed_statuses = [expected_status]
     result.score_final_status = (
-        1.0 if not expected_status or result.final_status == expected_status else 0.0
+        1.0 if not allowed_statuses or result.final_status in allowed_statuses else 0.0
     )
     if result.score_final_status == 0:
         result.evaluation_notes.append(
-            f"最终状态不匹配: expected={expected_status}, actual={result.final_status}"
+            f"最终状态不匹配: expected_any_of={allowed_statuses}, actual={result.final_status}"
         )
 
     content_checks = 0
@@ -554,6 +568,15 @@ def evaluate_test_case(
             content_passed += 1
         else:
             result.evaluation_notes.append(f"结果缺少关键内容: {token}")
+    contains_any = [str(token) for token in expected.get("expected_result_contains_any", [])]
+    if contains_any:
+        content_checks += 1
+        if any(token in combined_text for token in contains_any):
+            content_passed += 1
+        else:
+            result.evaluation_notes.append(
+                f"结果未包含任一允许内容: {contains_any}"
+            )
     hint = expected.get("expected_hint_contains")
     if hint:
         content_checks += 1
@@ -599,6 +622,12 @@ def evaluate_test_case(
         result.score_budget = 0.0
         result.evaluation_notes.append(
             f"耗时超限: {result.elapsed_ms}ms > {float(max_time) * 1000:.0f}ms"
+        )
+    max_total_tokens = expected.get("max_total_tokens")
+    if max_total_tokens is not None and result.total_tokens > int(max_total_tokens):
+        result.score_budget = 0.0
+        result.evaluation_notes.append(
+            f"Token 超限: {result.total_tokens} > {int(max_total_tokens)}"
         )
 
     weights = {
@@ -817,15 +846,28 @@ async def run_single_test(
                 spec.fn = wrapped
 
         context = test_case.get("context", {})
+        default_constraints = AgentConstraints()
         constraints = AgentConstraints(
-            max_steps=int(context.get("max_steps", 8)),
-            max_searches=int(context.get("max_searches", 3)),
-            max_clarifications=int(context.get("max_clarifications", 2)),
+            max_steps=int(context.get("max_steps", default_constraints.max_steps)),
+            max_searches=int(
+                context.get("max_searches", default_constraints.max_searches)
+            ),
+            max_clarifications=int(
+                context.get(
+                    "max_clarifications", default_constraints.max_clarifications
+                )
+            ),
             enable_browse_fallback=True,
-            max_time_seconds=int(context.get("max_time_seconds", 60)),
-            max_total_tokens=int(context.get("max_total_tokens", 8000)),
-            max_cost_yuan=float(context.get("max_cost_yuan", 1.0)),
-            tool_timeout=5,
+            max_time_seconds=int(
+                context.get("max_time_seconds", default_constraints.max_time_seconds)
+            ),
+            max_total_tokens=int(
+                context.get("max_total_tokens", default_constraints.max_total_tokens)
+            ),
+            max_cost_yuan=float(
+                context.get("max_cost_yuan", default_constraints.max_cost_yuan)
+            ),
+            tool_timeout=min(default_constraints.tool_timeout, 5),
         )
         user_id = uuid4()
         agent = PhotoAgent(db=object(), registry=registry, constraints=constraints)
@@ -842,20 +884,6 @@ async def run_single_test(
             ),
         ]
 
-        async def deterministic_clarification(_: str) -> dict[str, Any]:
-            return {
-                "ok": True,
-                "needs_clarification": True,
-                "question": "请补充时间、地点、人物或照片类型等线索。",
-                "options": ["按时间", "按地点", "按类型"],
-            }
-
-        patches.append(
-            patch(
-                "app.services.agent._generate_clarification",
-                new=deterministic_clarification,
-            )
-        )
         if mode == "replay":
             patches.append(
                 patch(
@@ -1000,8 +1028,28 @@ def validate_dataset(dataset: dict[str, Any]) -> None:
     for test_case in test_cases:
         if not test_case.get("id") or not test_case.get("dimension"):
             raise ValueError("每条用例必须包含 id 和 dimension")
+        expected = test_case.get("expected", {})
+        expected_tools = list(expected.get("expected_tools", []))
+        if "fallback_search" in expected_tools:
+            minimum_searches = int(
+                expected.get("min_tool_calls", {}).get("search_photos", 0)
+            )
+            if minimum_searches < 2:
+                raise ValueError(
+                    f"{test_case['id']} 的 fallback_search 必须在两次 "
+                    "search_photos 失败后执行"
+                )
+        if "ask_clarification" in expected_tools:
+            alternative_tools = expected.get("expected_tools_any_of", [])
+            allowed_statuses = set(expected.get("expected_final_status_any_of", []))
+            if [] not in alternative_tools or not {"clarified", "completed"}.issubset(
+                allowed_statuses
+            ):
+                raise ValueError(
+                    f"{test_case['id']} 必须同时接受结构化澄清和有效自然语言澄清"
+                )
         for name, rule in (
-            test_case.get("expected", {}).get("parameter_checks", {}).items()
+            expected.get("parameter_checks", {}).items()
         ):
             if "." not in name:
                 raise ValueError(f"参数断言必须使用 tool.parameter 格式: {name}")

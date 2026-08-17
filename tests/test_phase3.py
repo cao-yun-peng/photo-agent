@@ -17,9 +17,13 @@ from app.services.agent import (
     PhotoAgent,
     ToolRegistry,
     ToolSpec,
-    _generate_clarification,
+    ask_clarification,
 )
-from app.services.agent_tools import recommend_skills_for_agent, search_photos
+from app.services.agent_tools import (
+    fallback_search,
+    recommend_skills_for_agent,
+    search_photos,
+)
 from app.services.recommend import (
     _freshness_score,
     _keyword_match_score,
@@ -175,25 +179,84 @@ async def test_agent_search_photos_result_mode_is_not_paginated() -> None:
 
 
 @pytest.mark.asyncio
-async def test_generate_clarification_options() -> None:
-    """对模糊查询应自动生成时间/地点/类型等澄清选项。"""
-    result = await _generate_clarification("找照片")
-    assert result["needs_clarification"] is True
-    assert any("地点" in opt for opt in result["options"])
-    assert any("时间" in opt for opt in result["options"])
+async def test_search_photos_adds_excluded_ids_to_database_query() -> None:
+    photo = MagicMock()
+    photo.id = uuid4()
+    photo.thumb_key = "thumb.jpg"
+    photo.oss_key = "photo.jpg"
+    photo.taken_at = datetime.now(timezone.utc)
+    photo.ai_description = "切尔西球员"
+    photo.status = "done"
+    photo.ai_analysis = {}
+
+    query_result = MagicMock()
+    query_result.all.return_value = [(photo, 0.1)]
+    db = AsyncMock()
+    db.execute.return_value = query_result
+    excluded_id = uuid4()
+
+    with (
+        patch(
+            "app.services.agent_tools.get_query_embedding",
+            new=AsyncMock(return_value=([0.0] * 1024, False)),
+        ),
+        patch(
+            "app.services.agent_tools.get_user_profile",
+            new=AsyncMock(return_value=None),
+        ),
+        patch(
+            "app.services.agent_tools.sign_get_url",
+            side_effect=lambda key: f"https://example.com/{key}",
+        ),
+    ):
+        result = await search_photos(
+            user_id=uuid4(),
+            db=db,
+            query="切尔西",
+            auto_parse=False,
+            verify_semantic=False,
+            exclude_photo_ids=[str(excluded_id), "not-a-uuid"],
+        )
+
+    statement = db.execute.await_args.args[0]
+    assert result["ok"] is True
+    assert "photos.id NOT IN" in str(statement)
 
 
 @pytest.mark.asyncio
-async def test_generate_clarification_with_place() -> None:
-    """当查询已包含地点时，不应再询问地点。"""
-    result = await _generate_clarification("去年在西湖拍的照片")
-    options_text = " ".join(result["options"])
-    assert "地点" not in options_text
+async def test_followup_fallback_does_not_browse_unfiltered_album() -> None:
+    empty = {
+        "ok": True,
+        "items": [],
+        "constraint_check": {"applied": False},
+        "hint": "empty",
+    }
+    browse = AsyncMock()
+    with (
+        patch(
+            "app.services.agent_tools.search_photos",
+            new=AsyncMock(return_value=empty),
+        ),
+        patch("app.services.agent_tools.browse_candidates", new=browse),
+    ):
+        result = await fallback_search(
+            user_id=uuid4(),
+            db=MagicMock(),
+            query="切尔西相关照片",
+            start_level=1,
+            exclude_photo_ids=[str(uuid4())],
+            allow_unfiltered_browse=False,
+        )
+
+    assert result["ok"] is True
+    assert result["items"] == []
+    assert result["search_exhausted"] is True
+    browse.assert_not_awaited()
 
 
 @pytest.mark.asyncio
-async def test_active_clarification_after_two_failed_searches() -> None:
-    """search_photos 连续失败 2 次后应自动返回澄清。"""
+async def test_two_failed_searches_do_not_auto_clarify() -> None:
+    """search_photos 连续两次为空时保留空结果，由 Agent 继续调用 fallback_search。"""
     db = MagicMock()
 
     async def empty_search(**kwargs):
@@ -208,12 +271,19 @@ async def test_active_clarification_after_two_failed_searches() -> None:
             fn=empty_search,
         )
     )
+    registry.register(
+        ToolSpec(
+            name="ask_clarification",
+            description="mock clarification",
+            parameters={"type": "object", "properties": {}},
+            fn=ask_clarification,
+        )
+    )
 
     agent = PhotoAgent(
         db=db,
         registry=registry,
         constraints=AgentConstraints(
-            max_searches=3,
             max_clarifications=2,
             enable_browse_fallback=False,
         ),
@@ -240,9 +310,32 @@ async def test_active_clarification_after_two_failed_searches() -> None:
         state,
     )
     assert state.search_attempts == 2
-    assert state.clarification_attempts == 1
-    assert result2.get("needs_clarification") is True
-    assert result2.get("options")
+    assert state.clarification_attempts == 0
+    assert result2["ok"] is True
+    assert result2["items"] == []
+    assert not result2.get("needs_clarification")
+
+    clarification = await agent._execute_tool(
+        state.user_id,
+        "ask_clarification",
+        json.dumps({"question": "请补充线索"}),
+        state,
+    )
+    assert clarification["ok"] is False
+    assert "fallback_search" in clarification["hint"]
+    assert not clarification.get("needs_clarification")
+    assert state.clarification_attempts == 0
+
+    result3 = await agent._execute_tool(
+        state.user_id,
+        "search_photos",
+        json.dumps({"query": "找照片"}),
+        state,
+    )
+    assert state.search_attempts == 2
+    assert result3["ok"] is False
+    assert "fallback_search" in result3["hint"]
+    assert state.clarification_attempts == 0
 
 
 # ------------------------------------------------------------------

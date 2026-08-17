@@ -146,7 +146,7 @@ curl -X POST http://localhost:8000/auth/wechat \
 | `GET /photos` | 获取当前用户的照片时间线 |
 | `POST /search` | 自然语言检索，支持结构化约束与按需核验 |
 | `POST /agent/run` | 运行或续接 Photo Agent 会话 |
-| `POST /agent/run/stream` | 以 SSE 返回 Agent 进度、工具调用和结果 |
+| `POST /agent/stream` | 以 SSE 返回 Agent 进度、工具调用和结果 |
 | `GET /skills/plaza` | 获取官方和公开的用户 Skill |
 | `POST /photos/{id}/generate` | 使用 Skill 异步改造照片 |
 | `GET /generations/{id}` | 查询生成任务状态与结果 |
@@ -200,6 +200,9 @@ python scripts/agent_eval.py --mode replay
 ./scripts/e2e_ai.sh
 ./scripts/e2e_search.sh
 ./scripts/e2e_generate.sh
+
+# 真实 Agent HTTP/JWT/Redis/DB/LLM/Tool/SSE 端到端测试
+python scripts/agent_e2e.py --confirm-test-account
 ```
 
 真实模型评测、检索 A/B 和数据切分不能与 Mock 回放混为一谈。进一步阅读：
@@ -208,6 +211,7 @@ python scripts/agent_eval.py --mode replay
 - [视觉检索 v4 结果](docs/visual-retrieval-v4-results-2026-08-15.md)
 - [搜索重排设计](docs/search-reranker.md)
 - [Agent 评测说明](docs/agent-evaluation.md)
+- [Agent 真实端到端测试](docs/agent-e2e.md)
 - [质量门禁](docs/quality-gates.md)
 - [安全审计](docs/security-audit-2026-08-15.md)
 
@@ -218,4 +222,3 @@ python scripts/agent_eval.py --mode replay
 - 语音按钮目前只完成录音交互，尚未接入 ASR。
 - 生产部署仍需补齐公网 HTTPS、真实微信 AppID、OSS CORS 与监控告警。
 - 通义万相当前只接收待改造原图；需要多张参考图时使用 OpenAI Images 适配器。
-

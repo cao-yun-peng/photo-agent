@@ -14,6 +14,7 @@ from app.services.agent import AgentState
 logger = logging.getLogger(__name__)
 
 _DEFAULT_EXPIRE_MINUTES = 30
+_RESUMABLE_SESSION_STATUSES = ("active", "completed")
 
 
 async def load_session(
@@ -21,7 +22,12 @@ async def load_session(
     session_id: UUID,
     user_id: UUID,
 ) -> AgentSession | None:
-    """加载属于指定用户的活跃会话。过期或已完成的不返回。"""
+    """加载属于指定用户且仍可续接的会话。
+
+    ``completed`` 表示上一轮已经产生正常最终回复，不代表用户显式关闭了会话。
+    在过期时间内允许它继续承载“就这张”“换成狗的”等后续指令；失败、放弃或
+    过期会话仍不可恢复。
+    """
     now = datetime.now(timezone.utc)
     return (
         await db.execute(
@@ -29,7 +35,7 @@ async def load_session(
                 and_(
                     AgentSession.id == session_id,
                     AgentSession.user_id == user_id,
-                    AgentSession.status == "active",
+                    AgentSession.status.in_(_RESUMABLE_SESSION_STATUSES),
                     AgentSession.expires_at > now,
                 )
             )

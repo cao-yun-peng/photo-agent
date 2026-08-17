@@ -83,7 +83,8 @@ class Settings(BaseSettings):
 
     # Agent 循环预算（P0-1: 时间/Token/费用预算）
     agent_max_time_seconds: int = 60
-    agent_max_total_tokens: int = 8000
+    # 真实 Agent 每步约消耗 1.8k Token；8 步链路累计预算留到 20k。
+    agent_max_total_tokens: int = 20000
     agent_max_cost_yuan: float = 1.0
     # Agent 单工具执行超时（P0-2: 工具执行超时保护）
     agent_tool_timeout: int = 15

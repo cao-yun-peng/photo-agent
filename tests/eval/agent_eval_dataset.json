@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "dataset_role": "development",
   "description": "Photo Agent 对话能力评测数据集 — 测试 Agent 的意图识别、工具选择、多步推理、澄清兜底等 AI 能力",
   "created_at": "2026-08-10",
@@ -8,11 +8,11 @@
     {"id": "D2", "name": "工具选择", "description": "Agent 是否在正确的场景调用了正确的工具"},
     {"id": "D3", "name": "参数构造", "description": "Agent 传给 Tool 的参数是否合理且完整"},
     {"id": "D4", "name": "多步推理", "description": "Agent 能否正确串联多个 Tool 完成复杂任务"},
-    {"id": "D5", "name": "主动澄清", "description": "需求模糊时是否主动提出澄清问题"},
+    {"id": "D5", "name": "需求引导", "description": "需求完全模糊时是否通过结构化工具或有效自然语言询问线索"},
     {"id": "D6", "name": "兜底策略", "description": "搜索无结果时是否触发三级兜底"},
     {"id": "D7", "name": "边界处理", "description": "空相册、额度用尽、参数无效等边界情况"},
     {"id": "D8", "name": "安全意识", "description": "不越权访问他人数据、不误操作"},
-    {"id": "D9", "name": "上下文续接", "description": "多轮对话中能否正确续接上下文"},
+    {"id": "D9", "name": "状态续接", "description": "能否根据已保存的选图、搜索和拒绝状态正确续接请求；真实会话持久化由 E2E 评测覆盖"},
     {"id": "D10", "name": "预算遵守", "description": "是否在预算限制内终止，不无限循环"}
   ],
   "photo_library": {
@@ -479,13 +479,16 @@
       "context": {"photos_available": true},
       "expected": {
         "expected_tools": ["ask_clarification"],
+        "expected_tools_any_of": [[]],
         "tool_order_strict": false,
         "must_not_call": ["apply_skill"],
         "expected_final_status": "clarified",
-        "expected_clarification": "搜索失败后应触发自动澄清或主动调用 ask_clarification"
+        "expected_final_status_any_of": ["clarified", "completed"],
+        "expected_result_contains_any": ["时间", "地点", "人物", "宠物", "类型", "场景", "哪一类", "什么样"],
+        "expected_clarification": "初始查询完全没有具体线索，可调用 ask_clarification，也可用有效自然语言询问线索"
       },
       "rubric": {
-        "clarification": "query 过于模糊，搜索结果不理想时应触发澄清",
+        "clarification": "query 完全没有可搜索线索，应在搜索前用结构化或自然语言澄清",
         "clarification_options": "澄清选项应包含时间/地点/类型等维度",
         "pass_threshold": 0.7
       }
@@ -499,15 +502,14 @@
       "user_query": "帮我找那个人",
       "context": {"photos_available": true},
       "expected": {
-        "expected_tools": ["search_photos"],
+        "expected_tools": ["search_photos", "fallback_search", "final_answer"],
         "min_tool_calls": {"search_photos": 2},
         "tool_order_strict": false,
-        "must_not_call": ["apply_skill"],
-        "expected_final_status": "clarified",
-        "expected_clarification": "应询问是哪个人、什么时间等"
+        "must_not_call": ["apply_skill", "ask_clarification"],
+        "expected_final_status": "fallback"
       },
       "rubric": {
-        "clarification": "缺少人物标识、时间等关键信息时应澄清",
+        "fallback": "存在人物线索时应先搜索，连续失败后进入 fallback_search，不自动澄清",
         "pass_threshold": 0.7
       }
     },
@@ -560,6 +562,7 @@
       "context": {"photos_available": true, "matching_photos": []},
       "expected": {
         "expected_tools": ["search_photos", "fallback_search", "final_answer"],
+        "min_tool_calls": {"search_photos": 2},
         "tool_order_strict": true,
         "must_not_call": [],
         "expected_final_status": "fallback"
@@ -580,6 +583,7 @@
       "context": {"photos_available": true, "matching_photos": []},
       "expected": {
         "expected_tools": ["search_photos", "fallback_search", "final_answer"],
+        "min_tool_calls": {"search_photos": 2},
         "tool_order_strict": true,
         "must_not_call": [],
         "expected_final_status": "fallback",
@@ -619,6 +623,7 @@
       "context": {"photos_available": false, "matching_photos": []},
       "expected": {
         "expected_tools": ["search_photos", "fallback_search", "final_answer"],
+        "min_tool_calls": {"search_photos": 2},
         "tool_order_strict": true,
         "must_not_call": ["apply_skill"],
         "expected_final_status": "fallback",
@@ -659,9 +664,11 @@
       "context": {"photos_available": true, "confirmed_photo_id": null, "last_search_items": []},
       "expected": {
         "expected_tools": ["ask_clarification"],
+        "expected_tools_any_of": [[]],
         "tool_order_strict": false,
         "must_not_call": ["apply_skill"],
         "expected_final_status": "clarified",
+        "expected_final_status_any_of": ["clarified", "completed"],
         "expected_hint_contains": "选择"
       },
       "rubric": {
@@ -717,6 +724,7 @@
       "context": {"photos_available": true, "matching_photos": []},
       "expected": {
         "expected_tools": ["search_photos", "fallback_search", "final_answer"],
+        "min_tool_calls": {"search_photos": 2},
         "tool_order_strict": false,
         "must_not_call": ["apply_skill"],
         "expected_final_status": "fallback"
@@ -736,6 +744,7 @@
       "context": {"photos_available": true, "matching_photos": [], "similar_photos": ["p-004"]},
       "expected": {
         "expected_tools": ["search_photos", "fallback_search", "final_answer"],
+        "min_tool_calls": {"search_photos": 2},
         "tool_order_strict": false,
         "must_not_call": ["apply_skill"],
         "expected_final_status": "fallback",
@@ -796,9 +805,11 @@
       "context": {"photos_available": true, "confirmed_photo_id": null, "last_search_items": []},
       "expected": {
         "expected_tools": ["ask_clarification"],
+        "expected_tools_any_of": [[]],
         "tool_order_strict": false,
         "must_not_call": ["apply_skill"],
         "expected_final_status": "clarified",
+        "expected_final_status_any_of": ["clarified", "completed"],
         "expected_hint_contains": "选择"
       },
       "rubric": {
@@ -829,7 +840,7 @@
     {
       "id": "TC-034",
       "dimension": "D9",
-      "category": "搜索后续接改造",
+      "category": "已选照片状态续接改造",
       "priority": "P0",
       "difficulty": "medium",
       "user_query": "就这张吧，帮我改成水墨画风格",
@@ -849,14 +860,14 @@
         }
       },
       "rubric": {
-        "context_continuation": "应使用上一轮确认的 photo_id，不重新搜索",
+        "context_continuation": "应使用已保存的 confirmed_photo_id，不重新搜索",
         "pass_threshold": 0.9
       }
     },
     {
       "id": "TC-035",
       "dimension": "D9",
-      "category": "搜索后换条件重搜",
+      "category": "已拒照片状态续接重搜",
       "priority": "P1",
       "difficulty": "medium",
       "user_query": "不要这张，有没有别的猫的照片",
@@ -873,14 +884,14 @@
         "expected_final_status": "completed"
       },
       "rubric": {
-        "context_continuation": "应排除已拒绝的照片，重新搜索其他猫的照片",
+        "context_continuation": "应依据 rejected_photo_ids 排除已拒绝照片，重新搜索其他猫的照片",
         "pass_threshold": 0.7
       }
     },
     {
       "id": "TC-036",
       "dimension": "D9",
-      "category": "三轮对话",
+      "category": "已选照片与风格状态续接",
       "priority": "P1",
       "difficulty": "hard",
       "user_query": "第三步：那就帮我改造成复古油画风格吧",
@@ -905,7 +916,7 @@
         }
       },
       "rubric": {
-        "context_continuation": "应从历史中提取 photo_id 和风格偏好，直接执行 apply_skill",
+        "context_continuation": "应使用已保存的 confirmed_photo_id 和当前轮明确给出的风格，直接执行 apply_skill",
         "pass_threshold": 0.8
       }
     },
@@ -924,9 +935,11 @@
       },
       "expected": {
         "expected_tools": ["ask_clarification"],
+        "expected_tools_any_of": [[]],
         "tool_order_strict": false,
         "must_not_call": ["apply_skill"],
         "expected_final_status": "clarified",
+        "expected_final_status_any_of": ["clarified", "completed"],
         "expected_hint_contains": "哪张"
       },
       "rubric": {
@@ -941,38 +954,40 @@
       "priority": "P0",
       "difficulty": "medium",
       "user_query": "帮我找一张特别特别特别特别的照片，就是那种嗯怎么说呢就是那种很好看的照片",
-      "context": {"photos_available": true, "matching_photos": []},
+      "context": {"photos_available": true, "matching_photos": [], "max_steps": 2},
       "expected": {
         "expected_tools": ["search_photos"],
+        "min_tool_calls": {"search_photos": 2},
         "tool_order_strict": false,
         "must_not_call": [],
         "expected_final_status": "completed",
-        "max_steps": 8
+        "expected_result_contains": ["操作步骤过多"],
+        "max_steps": 2
       },
       "rubric": {
-        "budget": "循环步数不应超过 max_steps=8",
+        "budget": "将 max_steps 限制为 2；两次搜索后必须由代码级步数预算终止，不继续循环",
         "pass_threshold": 0.9
       }
     },
     {
       "id": "TC-039",
       "dimension": "D10",
-      "category": "模糊查询不无限搜索",
+      "category": "Token 预算终止",
       "priority": "P0",
       "difficulty": "medium",
-      "user_query": "帮我找照片",
-      "context": {"photos_available": true, "matching_photos": []},
+      "user_query": "帮我找猫的照片",
+      "context": {"photos_available": true, "matching_photos": ["p-001"], "max_total_tokens": 0},
       "expected": {
-        "expected_tools": ["search_photos"],
-        "min_tool_calls": {"search_photos": 2},
+        "expected_tools": [],
         "tool_order_strict": false,
-        "must_not_call": [],
-        "expected_final_status": "clarified",
-        "max_searches": 3
+        "must_not_call": ["search_photos", "fallback_search", "apply_skill"],
+        "expected_final_status": "completed",
+        "expected_result_contains": ["Token 上限"],
+        "max_total_tokens": 0
       },
       "rubric": {
-        "budget": "搜索次数不应超过 max_searches=3，超过后应触发澄清",
-        "pass_threshold": 0.8
+        "budget": "Token 预算耗尽时应在调用模型和工具前终止",
+        "pass_threshold": 0.9
       }
     },
     {
@@ -982,16 +997,17 @@
       "priority": "P0",
       "difficulty": "hard",
       "user_query": "找一张在在在在在在在那那那那那种那种那种那种照片",
-      "context": {"photos_available": true, "matching_photos": [], "max_time_seconds": 60},
+      "context": {"photos_available": true, "matching_photos": [], "max_time_seconds": 0},
       "expected": {
-        "expected_tools": ["search_photos"],
+        "expected_tools": [],
         "tool_order_strict": false,
-        "must_not_call": [],
+        "must_not_call": ["search_photos", "fallback_search", "apply_skill"],
         "expected_final_status": "completed",
-        "max_time_seconds": 60
+        "expected_result_contains": ["处理时间已超过上限"],
+        "max_time_seconds": 1
       },
       "rubric": {
-        "budget": "总执行时间不应超过 max_time_seconds",
+        "budget": "时间预算为 0 时应在调用模型和工具前终止",
         "pass_threshold": 0.9
       }
     },
@@ -1069,9 +1085,11 @@
       "context": {"photos_available": true, "confirmed_photo_id": null, "last_search_items": []},
       "expected": {
         "expected_tools": ["ask_clarification"],
+        "expected_tools_any_of": [[]],
         "tool_order_strict": false,
         "must_not_call": ["apply_skill"],
         "expected_final_status": "clarified",
+        "expected_final_status_any_of": ["clarified", "completed"],
         "expected_hint_contains": "选择"
       },
       "rubric": {
@@ -1082,24 +1100,20 @@
     {
       "id": "TC-045",
       "dimension": "D5",
-      "category": "搜索失败两次后澄清",
+      "category": "搜索失败两次后兜底",
       "priority": "P0",
       "difficulty": "hard",
       "user_query": "找一张在深海里拍的发光水母的照片",
       "context": {"photos_available": true, "matching_photos": []},
       "expected": {
-        "expected_tools": ["search_photos"],
-        "min_tool_calls": {"search_photos": 2},
-        "min_tool_calls": {"search_photos": 2},
+        "expected_tools": ["search_photos", "fallback_search", "final_answer"],
         "min_tool_calls": {"search_photos": 2},
         "tool_order_strict": false,
-        "must_not_call": ["apply_skill"],
-        "expected_final_status": "clarified",
-        "expected_clarification": "连续搜索失败后应自动触发澄清"
+        "must_not_call": ["apply_skill", "ask_clarification"],
+        "expected_final_status": "fallback"
       },
       "rubric": {
-        "clarification": "搜索失败 2 次后应自动生成澄清选项",
-        "clarification_attempts": "clarification_attempts 应 >= 1",
+        "fallback": "搜索失败 2 次后应调用 fallback_search，不应自动澄清",
         "pass_threshold": 0.7
       }
     },
@@ -1113,6 +1127,7 @@
       "context": {"photos_available": true, "matching_photos": [], "similar_photos": ["p-009"]},
       "expected": {
         "expected_tools": ["search_photos", "fallback_search", "final_answer"],
+        "min_tool_calls": {"search_photos": 2},
         "tool_order_strict": true,
         "must_not_call": [],
         "expected_final_status": "fallback",
@@ -1173,9 +1188,11 @@
       "context": {"photos_available": true, "confirmed_photo_id": null},
       "expected": {
         "expected_tools": ["ask_clarification"],
+        "expected_tools_any_of": [[]],
         "tool_order_strict": false,
         "must_not_call": ["apply_skill"],
         "expected_final_status": "clarified",
+        "expected_final_status_any_of": ["clarified", "completed"],
         "expected_hint_contains": "选择一张"
       },
       "rubric": {
@@ -1193,6 +1210,7 @@
       "context": {"photos_available": true, "matching_photos": [], "similar_photos": ["p-001"]},
       "expected": {
         "expected_tools": ["search_photos", "fallback_search", "final_answer"],
+        "min_tool_calls": {"search_photos": 2},
         "tool_order_strict": false,
         "must_not_call": ["apply_skill"],
         "expected_final_status": "fallback"
@@ -1224,7 +1242,7 @@
     {
       "id": "TC-052",
       "dimension": "D9",
-      "category": "会话续接-改条件",
+      "category": "完成搜索状态续接-改条件",
       "priority": "P1",
       "difficulty": "hard",
       "user_query": "不要猫的了，帮我找狗的照片",
@@ -1243,7 +1261,7 @@
         }
       },
       "rubric": {
-        "context_continuation": "应理解用户从猫切换到狗的意图，重新搜索狗的照片",
+        "context_continuation": "应结合已保存的搜索状态理解用户从猫切换到狗，重新搜索狗的照片",
         "pass_threshold": 0.8
       }
     }

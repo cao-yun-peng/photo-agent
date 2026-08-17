@@ -36,7 +36,8 @@ class AgentSession(Base):
     status: Mapped[str] = mapped_column(
         String(16), nullable=False, default="active"
     )
-    # active | completed | abandoned
+    # active=等待用户回复；completed=上一轮正常结束但在 expires_at 前仍可续接；
+    # failed/abandoned=不可续接
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default="now()", nullable=False
