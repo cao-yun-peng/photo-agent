@@ -1,0 +1,62 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 256
+  transform/redact:
+    error_mode: ignore
+    trace_statements:
+      - context: span
+        statements:
+          - delete_key(attributes, "http.request.header.authorization")
+          - delete_key(attributes, "http.request.header.cookie")
+          - delete_key(attributes, "http.response.header.set_cookie")
+          - delete_key(attributes, "url.query")
+          - delete_key(attributes, "gen_ai.prompt")
+          - delete_key(attributes, "gen_ai.completion")
+          - delete_key(attributes, "gen_ai.input.messages")
+          - delete_key(attributes, "gen_ai.output.messages")
+    log_statements:
+      - context: log
+        statements:
+          - delete_key(attributes, "authorization")
+          - delete_key(attributes, "cookie")
+          - delete_key(attributes, "prompt")
+          - delete_key(attributes, "completion")
+  batch:
+    timeout: 2s
+    send_batch_size: 1024
+
+exporters:
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+  otlphttp/loki:
+    endpoint: http://loki:3100/otlp
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions: [health_check]
+  telemetry:
+    metrics:
+      address: 0.0.0.0:8888
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, transform/redact, batch]
+      exporters: [otlp/tempo]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, transform/redact, batch]
+      exporters: [otlphttp/loki]

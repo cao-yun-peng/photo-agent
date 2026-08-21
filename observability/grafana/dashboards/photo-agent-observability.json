@@ -1,0 +1,103 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [
+    {"asDropdown": false, "icon": "external link", "includeVars": true, "keepTime": true, "tags": [], "targetBlank": false, "title": "Tempo Trace Explore", "type": "link", "url": "/explore?left={\"datasource\":\"tempo\",\"queries\":[{\"queryType\":\"traceql\",\"query\":\"{ resource.service.name =~ \\\"photo-agent.*\\\" }\"}]}"},
+    {"asDropdown": false, "icon": "external link", "includeVars": true, "keepTime": true, "tags": [], "targetBlank": false, "title": "Loki Log Explore", "type": "link", "url": "/explore?left={\"datasource\":\"loki\",\"queries\":[{\"expr\":\"{service_name=~\\\"photo-agent.*\\\"} | json\"}]}"}
+  ],
+  "panels": [
+    {"collapsed": false, "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0}, "id": 1, "panels": [], "title": "1. 系统总览", "type": "row"},
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "mappings": [], "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 0.02}]}}, "overrides": []},
+      "gridPos": {"h": 5, "w": 6, "x": 0, "y": 1}, "id": 2,
+      "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "showPercentChange": true, "textMode": "auto", "wideLayout": true},
+      "targets": [{"editorMode": "code", "expr": "sum(rate(traces_spanmetrics_calls_total{status_code=\"STATUS_CODE_ERROR\"}[5m])) / clamp_min(sum(rate(traces_spanmetrics_calls_total[5m])), 1)", "legendFormat": "错误率", "range": true, "refId": "A"}],
+      "title": "Trace 错误率", "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "gridPos": {"h": 5, "w": 6, "x": 6, "y": 1}, "id": 3,
+      "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "showPercentChange": false, "textMode": "auto", "wideLayout": true},
+      "targets": [{"editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(traces_spanmetrics_latency_bucket[5m])))", "legendFormat": "P95", "range": true, "refId": "A"}],
+      "title": "端到端 P95", "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {}, "overrides": []}, "gridPos": {"h": 5, "w": 12, "x": 12, "y": 1}, "id": 4,
+      "options": {"legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"editorMode": "code", "expr": "sum by (service) (rate(traces_spanmetrics_calls_total[5m]))", "legendFormat": "{{service}}", "range": true, "refId": "A"}],
+      "title": "各服务吞吐", "type": "timeseries"
+    },
+    {"collapsed": false, "gridPos": {"h": 1, "w": 24, "x": 0, "y": 6}, "id": 5, "panels": [], "title": "2. Trace 与日志联查", "type": "row"},
+    {
+      "datasource": {"type": "tempo", "uid": "tempo"}, "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 7}, "id": 6,
+      "options": {"cellHeight": "sm", "showHeader": true},
+      "targets": [{"limit": 50, "query": "{ resource.service.name =~ \"photo-agent.*\" && status = error }", "queryType": "traceql", "refId": "A", "tableType": "traces"}],
+      "title": "最近异常 Trace（点击进入瀑布图）", "type": "table"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "loki"}, "gridPos": {"h": 9, "w": 12, "x": 12, "y": 7}, "id": 7,
+      "options": {"dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true},
+      "targets": [{"editorMode": "code", "expr": "{service_name=~\"photo-agent.*\"} | json | trace_id=~\"$trace_id\" | level=~\"$level\"", "queryType": "range", "refId": "A"}],
+      "title": "按 Trace ID 过滤结构化日志", "type": "logs"
+    },
+    {"collapsed": false, "gridPos": {"h": 1, "w": 24, "x": 0, "y": 16}, "id": 8, "panels": [], "title": "3. Agent 会话回放", "type": "row"},
+    {
+      "datasource": {"type": "tempo", "uid": "tempo"}, "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 9, "w": 24, "x": 0, "y": 17}, "id": 9, "options": {"cellHeight": "sm", "showHeader": true},
+      "targets": [{"limit": 50, "query": "{ name = \"invoke_agent photo-search\" && span.session.id =~ \"$session_id\" }", "queryType": "traceql", "refId": "A", "tableType": "traces"}],
+      "title": "会话 → LLM → Tool → 搜索/生成（不展示 prompt 与图片内容）", "type": "table"
+    },
+    {"collapsed": false, "gridPos": {"h": 1, "w": 24, "x": 0, "y": 26}, "id": 10, "panels": [], "title": "4. 搜索漏斗", "type": "row"},
+    {
+      "datasource": {"type": "tempo", "uid": "tempo"}, "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 9, "w": 14, "x": 0, "y": 27}, "id": 11, "options": {"cellHeight": "sm", "showHeader": true},
+      "targets": [{"limit": 50, "query": "{ name = \"search retrieve\" }", "queryType": "traceql", "refId": "A", "tableType": "traces"}],
+      "title": "召回 → 强约束 → 文本判同 → 视觉复核 → 返回", "type": "table"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "gridPos": {"h": 9, "w": 10, "x": 14, "y": 27}, "id": 12,
+      "options": {"legend": {"calcs": ["mean", "p95"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le, span_name) (rate(traces_spanmetrics_latency_bucket{span_name=~\"search.*\"}[5m])))", "legendFormat": "{{span_name}}", "range": true, "refId": "A"}],
+      "title": "搜索阶段 P95", "type": "timeseries"
+    },
+    {"collapsed": false, "gridPos": {"h": 1, "w": 24, "x": 0, "y": 36}, "id": 13, "panels": [], "title": "5. Worker / 异步任务", "type": "row"},
+    {
+      "datasource": {"type": "tempo", "uid": "tempo"}, "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 9, "w": 14, "x": 0, "y": 37}, "id": 14, "options": {"cellHeight": "sm", "showHeader": true},
+      "targets": [{"limit": 50, "query": "{ resource.service.name = \"photo-agent-worker\" && name =~ \"arq process.*\" }", "queryType": "traceql", "refId": "A", "tableType": "traces"}],
+      "title": "ARQ 消费、重试与候补池预取", "type": "table"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 9, "w": 10, "x": 14, "y": 37}, "id": 15,
+      "options": {"legend": {"calcs": [], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"editorMode": "code", "expr": "sum by (span_name, status_code) (rate(traces_spanmetrics_calls_total{service=\"photo-agent-worker\"}[5m]))", "legendFormat": "{{span_name}} / {{status_code}}", "range": true, "refId": "A"}],
+      "title": "Worker 任务结果", "type": "timeseries"
+    }
+  ],
+  "refresh": "15s",
+  "schemaVersion": 40,
+  "tags": ["photo-agent", "trace", "logs", "agent"],
+  "templating": {
+    "list": [
+      {"current": {"selected": false, "text": ".*", "value": ".*"}, "hide": 0, "label": "Trace ID", "name": "trace_id", "options": [{"selected": true, "text": ".*", "value": ".*"}], "query": ".*", "skipUrlSync": false, "type": "textbox"},
+      {"current": {"selected": false, "text": ".*", "value": ".*"}, "hide": 0, "label": "Session ID", "name": "session_id", "options": [{"selected": true, "text": ".*", "value": ".*"}], "query": ".*", "skipUrlSync": false, "type": "textbox"},
+      {"current": {"selected": true, "text": ["ERROR", "WARNING", "CRITICAL"], "value": ["ERROR", "WARNING", "CRITICAL"]}, "hide": 0, "includeAll": true, "label": "日志级别", "multi": true, "name": "level", "options": [{"selected": true, "text": "All", "value": "$__all"}], "query": "ERROR,WARNING,CRITICAL,INFO,NOTICE", "skipUrlSync": false, "type": "custom"}
+    ]
+  },
+  "time": {"from": "now-6h", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Photo Agent · 全链路可观测性",
+  "uid": "photo-agent-observability",
+  "version": 1,
+  "weekStart": "monday"
+}

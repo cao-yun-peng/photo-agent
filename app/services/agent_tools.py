@@ -16,6 +16,7 @@ from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.core.telemetry import set_current_span_attributes, traced_async
 from app.models.generation import Generation
 from app.models.photo import Photo
 from app.models.rate_limit import RateLimit
@@ -162,6 +163,10 @@ async def _check_generate_quota(
 # ------------------------------------------------------------------
 # Tool 1: 搜索照片
 # ------------------------------------------------------------------
+@traced_async(
+    "search retrieve",
+    attributes={"gen_ai.operation.name": "retrieval"},
+)
 async def search_photos(
     *,
     user_id: UUID,
@@ -290,6 +295,14 @@ async def search_photos(
         )
         result = await db.execute(stmt)
         rows = result.all()
+        set_current_span_attributes(
+            {
+                "search.fetch_count": len(rows),
+                "search.fetch_limit": fetch_n,
+                "search.constraint_count": len(constraints),
+                "search.verified_only": verified_only,
+            }
+        )
 
         scored: list[tuple[Photo, float, float, float, float]] = []
         for photo, dist in rows:
@@ -357,6 +370,25 @@ async def search_photos(
             ]
             if verified_only
             else []
+        )
+        rerank_trace = rerank_summary or {}
+        set_current_span_attributes(
+            {
+                "search.constraint_pass_count": len(scored),
+                "search.result_count": len(items),
+                "search.candidate_pool_count": len(remaining_items),
+                "search.rerank_applied": bool(rerank_trace.get("applied")),
+                "search.rerank_degraded": bool(rerank_trace.get("degraded")),
+                "search.rerank_match_count": int(
+                    rerank_trace.get("match_count", 0) or 0
+                ),
+                "search.visual_applied": bool(
+                    rerank_trace.get("visual_verification_applied")
+                ),
+                "search.visual_match_count": int(
+                    rerank_trace.get("visual_match_count", 0) or 0
+                ),
+            }
         )
         return {
             "ok": True,

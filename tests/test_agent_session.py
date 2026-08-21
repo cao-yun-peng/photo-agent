@@ -6,6 +6,7 @@ import json
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
+import httpx
 import pytest
 from sqlalchemy.dialects import postgresql
 
@@ -508,3 +509,105 @@ async def test_more_followup_cannot_clarify_or_browse_whole_album() -> None:
     assert "不要澄清" in clarification["hint"]
     assert browse["ok"] is False
     assert "不能退化" in browse["hint"]
+
+
+def _search_then_decision_sequence(*followups):
+    return [
+        (
+            {
+                "role": "assistant",
+                "content": "开始搜索",
+                "tool_calls": [
+                    {
+                        "id": "search-1",
+                        "type": "function",
+                        "function": {
+                            "name": "search_photos",
+                            "arguments": json.dumps(
+                                {"query": "切尔西球员"}, ensure_ascii=False
+                            ),
+                        },
+                    }
+                ],
+            },
+            {"total_tokens": 10},
+        ),
+        *followups,
+    ]
+
+
+def _search_registry() -> ToolRegistry:
+    async def search(**_kwargs):
+        return {
+            "ok": True,
+            "items": [{"id": "photo-1", "ai_description": "切尔西球员"}],
+            "index_coverage": {"complete": True},
+        }
+
+    registry = ToolRegistry()
+    registry.register(
+        ToolSpec(
+            name="search_photos",
+            description="test search",
+            parameters={"type": "object", "properties": {}},
+            fn=search,
+        )
+    )
+    return registry
+
+
+@pytest.mark.asyncio
+async def test_post_search_llm_timeout_retries_once_and_uses_retry_result() -> None:
+    llm = AsyncMock(
+        side_effect=_search_then_decision_sequence(
+            httpx.ConnectTimeout("first timeout"),
+            (
+                {
+                    "role": "assistant",
+                    "content": "已找到一张切尔西球员照片。",
+                    "tool_calls": [],
+                },
+                {"total_tokens": 6},
+            ),
+        )
+    )
+    state = AgentState(
+        session_id=uuid4(), user_id=uuid4(), original_query="切尔西球员"
+    )
+
+    with patch("app.services.agent._llm_decide", new=llm):
+        _updated, events = await PhotoAgent(
+            db=MagicMock(), registry=_search_registry(), system_prompt="test"
+        ).run(state.user_id, "切尔西球员", initial_state=state)
+
+    assert llm.await_count == 3
+    assert events[-1]["type"] == "final"
+    assert events[-1]["payload"]["message"] == "已找到一张切尔西球员照片。"
+    assert not any(event["type"] == "error" for event in events)
+
+
+@pytest.mark.asyncio
+async def test_post_search_llm_retry_failure_uses_local_success_summary() -> None:
+    llm = AsyncMock(
+        side_effect=_search_then_decision_sequence(
+            httpx.ConnectTimeout("first timeout"),
+            httpx.ConnectTimeout("retry timeout"),
+        )
+    )
+    state = AgentState(
+        session_id=uuid4(), user_id=uuid4(), original_query="切尔西球员"
+    )
+
+    with patch("app.services.agent._llm_decide", new=llm):
+        updated, events = await PhotoAgent(
+            db=MagicMock(), registry=_search_registry(), system_prompt="test"
+        ).run(state.user_id, "切尔西球员", initial_state=state)
+
+    assert llm.await_count == 3
+    assert updated.last_search_items[0]["id"] == "photo-1"
+    assert events[-1]["type"] == "final"
+    assert events[-1]["payload"]["partial_success"] is True
+    assert events[-1]["payload"]["fallback"] == "local_search_summary"
+    assert "已找到 1 张符合条件的照片" in events[-1]["payload"]["message"]
+    assert "决策服务暂时不可用" not in events[-1]["payload"]["message"]
+    assert not any(event["type"] == "error" for event in events)

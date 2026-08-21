@@ -22,10 +22,18 @@ def candidate_status_key(session_id: Any) -> str:
     return f"agent:search-prefetch-status:{session_id}"
 
 
+def candidate_trace_key(session_id: Any) -> str:
+    return f"agent:search-prefetch-trace:{session_id}"
+
+
 async def clear_candidate_pool(session_id: Any) -> None:
     try:
         redis = await get_redis()
-        await redis.delete(candidate_pool_key(session_id), candidate_status_key(session_id))
+        await redis.delete(
+            candidate_pool_key(session_id),
+            candidate_status_key(session_id),
+            candidate_trace_key(session_id),
+        )
     except Exception as exc:  # noqa: BLE001
         logger.warning("candidate pool clear degraded: %s", exc)
 
@@ -49,6 +57,36 @@ async def get_prefetch_status(session_id: Any) -> str:
     except Exception as exc:  # noqa: BLE001
         logger.warning("candidate status read degraded: %s", exc)
         return "missing"
+
+
+async def set_candidate_trace_context(
+    session_id: Any, carrier: dict[str, str]
+) -> None:
+    """保存预取 Worker 的 span 上下文，供后续会话用 Span Link 关联。"""
+    if not carrier:
+        return
+    try:
+        redis = await get_redis()
+        await redis.setex(
+            candidate_trace_key(session_id),
+            settings.agent_search_pool_ttl_seconds,
+            json.dumps(carrier),
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("candidate trace write degraded: %s", exc)
+
+
+async def get_candidate_trace_context(session_id: Any) -> dict[str, str] | None:
+    try:
+        raw = await (await get_redis()).get(candidate_trace_key(session_id))
+        value = json.loads(raw) if raw else None
+        if isinstance(value, dict):
+            return {str(key): str(item) for key, item in value.items()}
+    except (TypeError, json.JSONDecodeError) as exc:
+        logger.warning("candidate trace payload invalid: %s", exc)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("candidate trace read degraded: %s", exc)
+    return None
 
 
 async def push_verified_candidates(session_id: Any, items: list[dict]) -> int:

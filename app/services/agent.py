@@ -23,6 +23,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.core.logger import get_logger
 from app.core.registry import prompt_registry
+from app.core.telemetry import (
+    hash_identifier,
+    set_current_span_attributes,
+    start_span,
+    traced_async,
+)
 from app.services.agent_tools import (
     _classify_exception,
     apply_skill,
@@ -36,6 +42,7 @@ from app.services.circuit_breaker import ServiceDegradedError, agent_llm_breaker
 from app.services.search_candidate_pool import (
     candidate_pool_key,
     candidate_pool_size,
+    get_candidate_trace_context,
     get_prefetch_status,
     pop_verified_candidate,
     set_prefetch_status,
@@ -218,6 +225,16 @@ def _remember_message(state: AgentState, role: str, content: str) -> None:
         part for part in (state.conversation_summary, *lines) if part
     )
     state.conversation_summary = combined[-_CONVERSATION_SUMMARY_CHAR_LIMIT:]
+
+
+def _search_result_fallback_message(result_count: int) -> str:
+    """搜索已成功、模型文案失败时生成不依赖外部服务的完成文案。"""
+
+    return (
+        f"已找到 {result_count} 张符合条件的照片，结果已展示。"
+        "智能说明暂时不可用，你可以选择照片查看详情，"
+        "或说“还有一张”继续搜索。"
+    )
 
 
 # ------------------------------------------------------------------
@@ -508,6 +525,14 @@ def _is_mock_llm() -> bool:
     )
 
 
+@traced_async(
+    "chat qwen-plus",
+    kind="client",
+    attributes={
+        "gen_ai.operation.name": "chat",
+        "gen_ai.provider.name": "alibaba_cloud",
+    },
+)
 async def _llm_decide(
     messages: list[dict],
     tools: list[dict],
@@ -609,7 +634,16 @@ async def _llm_decide(
         except (KeyError, IndexError, TypeError) as exc:
             raise RuntimeError(f"Agent LLM unexpected response: {str(data)[:500]}") from exc
 
-    return await agent_llm_breaker.call(_do_call)
+    decision, usage = await agent_llm_breaker.call(_do_call)
+    set_current_span_attributes(
+        {
+            "gen_ai.request.model": settings.qwen_chat_model,
+            "gen_ai.usage.total_tokens": int(usage.get("total_tokens", 0) or 0),
+            "gen_ai.usage.input_tokens": int(usage.get("prompt_tokens", 0) or 0),
+            "gen_ai.usage.output_tokens": int(usage.get("completion_tokens", 0) or 0),
+        }
+    )
+    return decision, usage
 
 
 # ------------------------------------------------------------------
@@ -631,6 +665,13 @@ class PhotoAgent:
         # 优先使用传入的prompt，否则从热更新注册表获取
         self.system_prompt = system_prompt or prompt_registry.get_agent_system_prompt()
 
+    @traced_async(
+        "invoke_agent photo-search",
+        attributes={
+            "gen_ai.operation.name": "invoke_agent",
+            "gen_ai.agent.name": "photo-search",
+        },
+    )
     async def run(
         self,
         user_id: UUID,
@@ -664,6 +705,13 @@ class PhotoAgent:
                 original_query=query,
             )
             state.followup_type = None
+        set_current_span_attributes(
+            {
+                "session.id": str(state.session_id),
+                "user.id_hash": hash_identifier(user_id),
+                "agent.followup_type": state.followup_type or "new",
+            }
+        )
         events: list[dict] = []
         start_monotonic = time.monotonic()
 
@@ -759,6 +807,18 @@ class PhotoAgent:
                     next_item = await wait_for_verified_candidate(state.session_id)
                 else:
                     next_item = await pop_verified_candidate(state.session_id)
+                candidate_trace = await get_candidate_trace_context(state.session_id)
+                with start_span(
+                    "candidate_pool consume",
+                    kind="consumer",
+                    attributes={
+                        "messaging.system": "redis",
+                        "candidate_pool.status": prefetch_status,
+                        "candidate_pool.hit": next_item is not None,
+                    },
+                    link_carriers=[candidate_trace] if candidate_trace else None,
+                ):
+                    pass
                 prefetch_status = await get_prefetch_status(state.session_id)
                 if next_item is not None:
                     photo_id = str(next_item["id"])
@@ -955,6 +1015,7 @@ class PhotoAgent:
         messages.append({"role": "user", "content": query})
 
         final_message = ""
+        search_result_count_this_run = 0
         while state.step < self.constraints.max_steps:
             state.step += 1
 
@@ -984,6 +1045,20 @@ class PhotoAgent:
             try:
                 decision, usage = await _llm_decide(messages, self.registry.schemas())
             except ServiceDegradedError:
+                if search_result_count_this_run:
+                    final_message = _search_result_fallback_message(
+                        search_result_count_this_run
+                    )
+                    emit(
+                        "final",
+                        {
+                            "message": final_message,
+                            "reason": "post_search_llm_degraded",
+                            "partial_success": True,
+                            "fallback": "local_search_summary",
+                        },
+                    )
+                    break
                 if state.followup_type == "more_search_results":
                     final_message = "AI 决策服务暂时不可用，无法安全地继续上一轮搜索，请稍后再试。"
                     emit("final", {"message": final_message, "reason": "llm_degraded"})
@@ -998,17 +1073,69 @@ class PhotoAgent:
                 emit("final", {"message": final_message, "fallback": "browse_candidates"})
                 break
             except Exception as exc:
-                logger.exception("Agent LLM decision failed")
-                detail = str(exc) or type(exc).__name__
-                final_message = f"决策服务暂时不可用：{detail}，请稍后再试。"
-                emit(
-                    "error",
-                    {
-                        "message": final_message,
-                        "error_type": type(exc).__name__,
-                    },
-                )
-                break
+                if search_result_count_this_run and isinstance(
+                    exc, httpx.TimeoutException
+                ):
+                    logger.warning(
+                        "Post-search LLM timed out; retrying once | error=%s",
+                        type(exc).__name__,
+                    )
+                    await asyncio.sleep(0.25)
+                    try:
+                        decision, usage = await _llm_decide(
+                            messages, self.registry.schemas()
+                        )
+                    except Exception as retry_exc:  # noqa: BLE001
+                        logger.warning(
+                            "Post-search LLM retry failed; using local summary | "
+                            "error=%s",
+                            type(retry_exc).__name__,
+                        )
+                        final_message = _search_result_fallback_message(
+                            search_result_count_this_run
+                        )
+                        emit(
+                            "final",
+                            {
+                                "message": final_message,
+                                "reason": "post_search_llm_retry_failed",
+                                "partial_success": True,
+                                "fallback": "local_search_summary",
+                            },
+                        )
+                        break
+                    else:
+                        logger.info("Post-search LLM retry succeeded")
+                elif search_result_count_this_run:
+                    logger.warning(
+                        "Post-search LLM failed; using local summary | error=%s",
+                        type(exc).__name__,
+                    )
+                    final_message = _search_result_fallback_message(
+                        search_result_count_this_run
+                    )
+                    emit(
+                        "final",
+                        {
+                            "message": final_message,
+                            "reason": "post_search_llm_failed",
+                            "partial_success": True,
+                            "fallback": "local_search_summary",
+                        },
+                    )
+                    break
+                else:
+                    logger.exception("Agent LLM decision failed")
+                    detail = str(exc) or type(exc).__name__
+                    final_message = f"决策服务暂时不可用：{detail}，请稍后再试。"
+                    emit(
+                        "error",
+                        {
+                            "message": final_message,
+                            "error_type": type(exc).__name__,
+                        },
+                    )
+                    break
 
             reasoning = decision.get("content", "")
             tool_calls = decision.get("tool_calls", [])
@@ -1052,6 +1179,14 @@ class PhotoAgent:
                 )
 
                 emit("tool_result", {"tool": tool_name, "result": result})
+
+                if (
+                    tool_name
+                    in {"search_photos", "fallback_search", "browse_candidates"}
+                    and result.get("ok")
+                    and result.get("items")
+                ):
+                    search_result_count_this_run = len(result["items"])
 
                 # 记录到 messages，让 LLM 看到结果
                 # P1-2: 截断时追加标记，让 LLM 知道数据被截断
@@ -1333,7 +1468,22 @@ class PhotoAgent:
                 float(tool_timeout), settings.agent_search_turn_budget_seconds
             )
         try:
-            result = await asyncio.wait_for(spec.fn(**args), timeout=tool_timeout)
+            with start_span(
+                f"execute_tool {tool_name}",
+                attributes={
+                    "gen_ai.operation.name": "execute_tool",
+                    "gen_ai.tool.name": tool_name,
+                    "tool.timeout_seconds": float(tool_timeout),
+                },
+            ):
+                result = await asyncio.wait_for(spec.fn(**args), timeout=tool_timeout)
+                set_current_span_attributes(
+                    {
+                        "tool.ok": bool(result.get("ok", True)),
+                        "tool.result_count": len(result.get("items", []) or []),
+                        "tool.error_type": result.get("error_type"),
+                    }
+                )
         except TimeoutError:
             logger.warning(
                 "Tool execution timed out | tool=%s timeout=%.1fs",

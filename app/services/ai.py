@@ -278,6 +278,7 @@ def parse_vl_response(raw_text: str) -> ImageAnalysis:
         data = json.loads(json_text)
         if not isinstance(data, dict):
             raise ValueError("parsed JSON is not an object")
+        _normalize_person_fields(data)
         analysis = ImageAnalysis.model_validate(data)
         analysis.parse_quality = "ok"
         analysis.analysis_version = VL_ANALYSIS_PROMPT_VERSION
@@ -285,6 +286,19 @@ def parse_vl_response(raw_text: str) -> ImageAnalysis:
     except (json.JSONDecodeError, ValueError) as exc:
         logger.info("parse_vl_response JSON decode failed, trying regex fallback | exc=%s", exc)
         return _regex_fallback(raw_text)
+
+
+def _normalize_person_fields(data: dict[str, Any]) -> None:
+    """兼容模型偶发返回 [] 的类型漂移，避免无谓 fallback。"""
+    persons = data.get("persons")
+    if not isinstance(persons, dict):
+        return
+
+    for key in ("age_estimate", "expression"):
+        value = persons.get(key)
+        if isinstance(value, list):
+            cleaned = [str(item).strip() for item in value if str(item).strip()]
+            persons[key] = cleaned[0] if cleaned else None
 
 
 def _regex_fallback(raw_text: str) -> ImageAnalysis:

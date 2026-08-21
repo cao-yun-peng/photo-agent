@@ -6,6 +6,22 @@ function _getToken() {
   return app && app.globalData && app.globalData.token;
 }
 
+function _newLogId() {
+  return 'wx-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+}
+
+function _captureTraceHeaders(headers = {}) {
+  const normalized = {};
+  Object.keys(headers).forEach((key) => { normalized[key.toLowerCase()] = headers[key]; });
+  const trace = {
+    logId: normalized['x-log-id'] || null,
+    traceId: normalized['x-trace-id'] || null,
+  };
+  const app = getApp();
+  if (app && app.globalData) app.globalData.lastTrace = trace;
+  return trace;
+}
+
 /**
  * 统一请求封装。用法：
  *   const data = await request({ url: '/photos', method: 'GET' });
@@ -15,7 +31,7 @@ function _getToken() {
  */
 function request({ url, method = 'GET', data, header = {}, auth = true, timeout = 30000 }) {
   return new Promise((resolve, reject) => {
-    const h = { 'Content-Type': 'application/json', ...header };
+    const h = { 'Content-Type': 'application/json', 'X-Log-ID': _newLogId(), ...header };
     if (auth) {
       const token = _getToken();
       if (token) h['Authorization'] = 'Bearer ' + token;
@@ -27,15 +43,16 @@ function request({ url, method = 'GET', data, header = {}, auth = true, timeout 
       header: h,
       timeout,
       success(res) {
+        const trace = _captureTraceHeaders(res.header);
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data);
         } else {
           const detail = (res.data && (res.data.errMsg || res.data.detail || res.data.message)) || res.errMsg;
-          reject({ status: res.statusCode, detail });
+          reject({ status: res.statusCode, detail, ...trace });
         }
       },
       fail(err) {
-        reject({ status: 0, detail: err.errMsg || String(err) });
+        reject({ status: 0, detail: err.errMsg || String(err), logId: h['X-Log-ID'] });
       },
     });
   });
@@ -191,6 +208,7 @@ const agent = {
       let receivedChunks = false;
       let streamError = null;
       let settled = false;
+      const logId = _newLogId();
       const parser = _createSseParser((event) => {
         events.push(event);
         if (event.type === 'error') streamError = event.payload || {};
@@ -217,22 +235,24 @@ const agent = {
         header: {
           'Content-Type': 'application/json',
           Accept: 'text/event-stream',
+          'X-Log-ID': logId,
           ...(token ? { Authorization: 'Bearer ' + token } : {}),
         },
         enableChunked: true,
         timeout: 90000,
         success(res) {
+          const trace = _captureTraceHeaders(res.header);
           try {
             if (!receivedChunks && typeof res.data === 'string') parser.feed(res.data);
             parser.feed(decoder.decode(null, true));
             parser.flush();
           } catch (error) {
-            rejectOnce({ status: res.statusCode, detail: 'Agent 流数据解析失败：' + error.message });
+            rejectOnce({ status: res.statusCode, detail: 'Agent 流数据解析失败：' + error.message, ...trace });
             return;
           }
           if (res.statusCode < 200 || res.statusCode >= 300) {
             const detail = (res.data && (res.data.detail || res.data.message)) || res.errMsg;
-            rejectOnce({ status: res.statusCode, detail });
+            rejectOnce({ status: res.statusCode, detail, ...trace });
             return;
           }
           if (streamError) {
@@ -240,13 +260,13 @@ const agent = {
             const detail = typeof rawDetail === 'string'
               ? rawDetail
               : (rawDetail && (rawDetail.message || rawDetail.error)) || 'Agent 执行失败';
-            rejectOnce({ status: streamError.status_code || 0, detail });
+            rejectOnce({ status: streamError.status_code || 0, detail, ...trace });
             return;
           }
           resolveOnce();
         },
         fail(err) {
-          rejectOnce({ status: 0, detail: err.errMsg || String(err) });
+          rejectOnce({ status: 0, detail: err.errMsg || String(err), logId });
         },
       });
 

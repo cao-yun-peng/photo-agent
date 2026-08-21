@@ -28,6 +28,11 @@ from app.core.errors import (
 from app.core.logger import get_logger, setup_logging
 from app.core.middleware import LogIDMiddleware
 from app.core.registry import init_registries
+from app.core.telemetry import (
+    instrument_fastapi_app,
+    setup_telemetry,
+    shutdown_telemetry,
+)
 from app.database import AsyncSessionLocal, engine
 from app.services.circuit_breaker import (
     agent_llm_breaker,
@@ -47,6 +52,10 @@ setup_logging(
     json_format=settings.log_json_format,
 )
 logger = get_logger(__name__)
+setup_telemetry(
+    service_name=settings.otel_service_name or f"{settings.app_name}-api",
+    engine=engine,
+)
 
 
 # ---------- 全局HTTP客户端（复用连接池）----------
@@ -125,6 +134,7 @@ async def lifespan(_: FastAPI):
         logger.warning("error disposing database engine", exc_info=True)
 
     logger.info("photo-agent api shutdown complete")
+    shutdown_telemetry()
 
 
 # ---------- 应用实例 ----------
@@ -150,7 +160,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["X-Log-ID"],
+    expose_headers=["X-Log-ID", "X-Trace-ID", "traceparent"],
 )
 
 
@@ -291,6 +301,7 @@ async def ready() -> JSONResponse:
 
 # ---------- 挂载业务路由 ----------
 app.include_router(api_router)
+instrument_fastapi_app(app)
 
 
 async def _seed_official_skills() -> None:

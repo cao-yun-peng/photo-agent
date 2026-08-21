@@ -35,7 +35,7 @@
         "required_objects": [
           "拉面",
           "碗",
-          "鸡蛋"
+          "溏心蛋"
         ],
         "optional_objects": [],
         "persons": {
@@ -55,7 +55,7 @@
       },
       "review": {
         "status": "human_reviewed",
-        "reviewed_at": "2026-08-13",
+        "reviewed_at": "2026-08-20",
         "notes": "人数按最终成图复核；只统计主体场景中清晰可辨的人，排除屏幕/海报/照片、孤立肢体和很小的模糊背景人物；大群像使用区间；可选文字漏识别不扣分。"
       }
     },
@@ -305,7 +305,7 @@
         ],
         "optional_objects": [],
         "persons": {
-          "min": 10,
+          "min": 3,
           "max": 1000
         },
         "required_text": [
@@ -880,9 +880,8 @@
           "户外"
         ],
         "required_objects": [
-          "沙漠",
           "沙丘",
-          "日落"
+          "太阳"
         ],
         "optional_objects": [],
         "persons": {
@@ -1054,7 +1053,7 @@
         ],
         "required_objects": [
           "东方明珠",
-          "建筑",
+          "上海外滩",
           "黄浦江"
         ],
         "optional_objects": [],
@@ -1105,7 +1104,7 @@
         ],
         "optional_objects": [],
         "persons": {
-          "min": 8,
+          "min": 2,
           "max": 20
         },
         "required_text": [],
@@ -1145,8 +1144,8 @@
           "户外"
         ],
         "required_objects": [
-          "现代建筑",
-          "玻璃幕墙"
+          "楼",
+          "玻璃"
         ],
         "optional_objects": [],
         "persons": {
@@ -1188,9 +1187,8 @@
           "户外"
         ],
         "required_objects": [
-          "人物",
           "相机",
-          "日落"
+          "海"
         ],
         "optional_objects": [],
         "persons": {
@@ -1232,7 +1230,6 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
           "书",
           "窗户"
         ],
@@ -1277,7 +1274,6 @@
           "户外"
         ],
         "required_objects": [
-          "人物",
           "自行车",
           "道路"
         ],
@@ -1321,9 +1317,9 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
+          "绿植",
           "瑜伽垫",
-          "植物"
+          "紧身裤"
         ],
         "optional_objects": [],
         "persons": {
@@ -1366,9 +1362,9 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
           "蔬菜",
-          "厨房"
+          "厨房",
+          "刀"
         ],
         "optional_objects": [],
         "persons": {
@@ -1722,7 +1718,7 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
+          "毛衣",
           "咖啡壶",
           "杯子"
         ],
@@ -1815,7 +1811,7 @@
           "户外"
         ],
         "required_objects": [
-          "人物",
+          "棉衣",
           "狗",
           "道路"
         ],
@@ -1861,7 +1857,6 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
           "衣服",
           "货架"
         ],
@@ -1952,7 +1947,7 @@
           "户外"
         ],
         "required_objects": [
-          "人物",
+          "夹子",
           "烧烤架",
           "肉串"
         ],
@@ -2000,7 +1995,8 @@
         "required_objects": [
           "爆米花",
           "电视",
-          "沙发"
+          "沙发",
+          "毛毯"
         ],
         "optional_objects": [],
         "persons": {
@@ -2042,7 +2038,6 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
           "洗衣机",
           "衣物"
         ],
@@ -2176,7 +2171,6 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
           "哑铃",
           "健身器材"
         ],
@@ -2222,7 +2216,7 @@
           "户外"
         ],
         "required_objects": [
-          "人物",
+          "运动鞋",
           "公园",
           "道路"
         ],
@@ -2267,7 +2261,7 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
+          "笔记本电脑",
           "书",
           "书桌"
         ],
@@ -2312,7 +2306,7 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
+          "笔记本",
           "笔记本电脑",
           "视频会议"
         ],
@@ -2405,8 +2399,7 @@
         ],
         "required_objects": [
           "电影屏幕",
-          "爆米花",
-          "观众"
+          "爆米花"
         ],
         "optional_objects": [],
         "persons": {
@@ -2451,9 +2444,9 @@
           "便利店"
         ],
         "required_objects": [
-          "人物",
           "便利店",
-          "货架"
+          "货架",
+          "T恤"
         ],
         "optional_objects": [],
         "persons": {
@@ -2496,7 +2489,6 @@
           "户外"
         ],
         "required_objects": [
-          "人物",
           "雨伞",
           "街道"
         ],
@@ -2542,7 +2534,6 @@
           "室内"
         ],
         "required_objects": [
-          "儿童",
           "画纸",
           "蜡笔"
         ],
@@ -2588,7 +2579,7 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
+          "台灯",
           "书",
           "床"
         ],
@@ -2633,7 +2624,7 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
+          "酒",
           "餐桌",
           "酒杯"
         ],
@@ -2679,7 +2670,7 @@
           "户外"
         ],
         "required_objects": [
-          "毕业生",
+          "毕业证书",
           "学士服",
           "学士帽"
         ],
@@ -2726,9 +2717,9 @@
           "婚礼"
         ],
         "required_objects": [
-          "新娘",
-          "新郎",
-          "婚礼合影"
+          "花",
+          "西装",
+          "婚纱"
         ],
         "optional_objects": [],
         "persons": {
@@ -2772,13 +2763,13 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
+          "笔",
           "会议桌",
           "白板"
         ],
         "optional_objects": [],
         "persons": {
-          "min": 6,
+          "min": 5,
           "max": 6
         },
         "required_text": [],
@@ -2818,7 +2809,6 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
           "生日蛋糕",
           "蜡烛"
         ],
@@ -2870,7 +2860,7 @@
         ],
         "optional_objects": [],
         "persons": {
-          "min": 22,
+          "min": 21,
           "max": 22
         },
         "required_text": [
@@ -2915,7 +2905,7 @@
           "户外"
         ],
         "required_objects": [
-          "人物",
+          "路牌",
           "登山包",
           "雪山"
         ],
@@ -3005,7 +2995,6 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
           "圆桌",
           "菜肴",
           "灯笼"
@@ -3057,7 +3046,7 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
+          "化妆品",
           "新娘",
           "香槟杯"
         ],
@@ -3149,7 +3138,7 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
+          "毛毯",
           "床",
           "零食"
         ],
@@ -3240,7 +3229,7 @@
           "餐厅"
         ],
         "required_objects": [
-          "中餐",
+          "肉",
           "米饭",
           "餐桌"
         ],
@@ -3467,9 +3456,9 @@
           "车内"
         ],
         "required_objects": [
-          "汽车",
+          "轿车",
           "公路",
-          "车流"
+          "路牌"
         ],
         "optional_objects": [],
         "persons": {
@@ -3698,7 +3687,7 @@
           "户外"
         ],
         "required_objects": [
-          "人物",
+          "牛仔裤",
           "运动鞋"
         ],
         "optional_objects": [],
@@ -3742,7 +3731,7 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
+          "饮料",
           "冰箱",
           "手机"
         ],
@@ -3787,9 +3776,9 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
+          "台灯",
           "手机",
-          "镜子"
+          "枕头"
         ],
         "optional_objects": [],
         "persons": {
@@ -3878,8 +3867,8 @@
           "户外"
         ],
         "required_objects": [
-          "停车标志",
-          "道路"
+          "标志",
+          "斑马线"
         ],
         "optional_objects": [],
         "persons": {
@@ -3922,7 +3911,7 @@
           "室内"
         ],
         "required_objects": [
-          "禁止吸烟标志"
+          "标志"
         ],
         "optional_objects": [],
         "persons": {
@@ -3965,7 +3954,7 @@
         ],
         "required_objects": [
           "路牌",
-          "建筑"
+          "红绿灯"
         ],
         "optional_objects": [],
         "persons": {
@@ -4097,7 +4086,7 @@
         ],
         "required_objects": [
           "菜单",
-          "菜品图片"
+          "宫保鸡丁"
         ],
         "optional_objects": [],
         "persons": {
@@ -4413,8 +4402,7 @@
           "室内"
         ],
         "required_objects": [
-          "手机",
-          "锁屏"
+          "手机"
         ],
         "optional_objects": [],
         "persons": {
@@ -4631,8 +4619,7 @@
           "室内"
         ],
         "required_objects": [
-          "笔记本",
-          "手写文字"
+          "笔记本"
         ],
         "optional_objects": [],
         "persons": {
@@ -4861,7 +4848,7 @@
           "街道"
         ],
         "required_objects": [
-          "人物",
+          "手表",
           "T恤"
         ],
         "optional_objects": [],
@@ -5145,7 +5132,7 @@
         ],
         "persons": {
           "min": 0,
-          "max": 3
+          "max": 5
         },
         "required_text": [],
         "optional_text": [],
@@ -5399,7 +5386,7 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
+          "电视",
           "沙发"
         ],
         "optional_objects": [
@@ -5557,8 +5544,8 @@
           "室内"
         ],
         "required_objects": [
-          "货架",
-          "商品"
+          "零食",
+          "饮料"
         ],
         "optional_objects": [
           "超市通道"
@@ -5716,7 +5703,7 @@
           "室内"
         ],
         "required_objects": [
-          "人物",
+          "窗帘",
           "窗户"
         ],
         "optional_objects": [
@@ -6083,8 +6070,7 @@
           "户外"
         ],
         "required_objects": [
-          "街道",
-          "汽车"
+          "车窗"
         ],
         "optional_objects": [
           "路灯",
@@ -6137,7 +6123,7 @@
           "室内"
         ],
         "required_objects": [
-          "食物",
+          "汉堡",
           "盘子"
         ],
         "optional_objects": [

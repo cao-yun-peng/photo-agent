@@ -11,7 +11,13 @@ from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
-from app.core.logger import generate_log_id, get_logger, set_logging_context
+from app.core.logger import (
+    generate_log_id,
+    get_logger,
+    reset_logging_context,
+    set_logging_context,
+)
+from app.core.telemetry import current_trace_ids
 
 logger = get_logger(__name__)
 
@@ -61,7 +67,7 @@ class LogIDMiddleware(BaseHTTPMiddleware):
         user_id = "-"
 
         # 设置日志上下文
-        set_logging_context(
+        context_token = set_logging_context(
             log_id=log_id,
             user_id=user_id,
             path=request.url.path,
@@ -92,6 +98,9 @@ class LogIDMiddleware(BaseHTTPMiddleware):
 
             # 注入 LogID 到响应头
             response.headers["X-Log-ID"] = log_id
+            trace_id, _ = current_trace_ids()
+            if trace_id != "-":
+                response.headers["X-Trace-ID"] = trace_id
 
             if should_log:
                 logger.info(
@@ -127,6 +136,8 @@ class LogIDMiddleware(BaseHTTPMiddleware):
             )
             # 交给 FastAPI 的统一异常处理器生成标准错误响应，避免两套 500 协议。
             raise
+        finally:
+            reset_logging_context(context_token)
 
     @staticmethod
     def _get_client_ip(request: Request) -> str:

@@ -6,6 +6,7 @@ App({
     apiBase: API_BASE,
     user: null,        // { id, nickname, avatar_url }
     token: null,       // JWT
+    lastTrace: null,   // { logId, traceId }，报障时用于服务端精确定位
   },
 
   onLaunch() {

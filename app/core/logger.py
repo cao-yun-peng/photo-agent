@@ -10,11 +10,12 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import logging
 import os
 import sys
 import uuid
-from contextvars import ContextVar
+from contextvars import ContextVar, Token
 from datetime import datetime, timezone
 from logging.handlers import RotatingFileHandler
 from typing import Any, Dict, Optional
@@ -52,7 +53,7 @@ def set_logging_context(
     user_id: Optional[str] = None,
     path: Optional[str] = None,
     **kwargs: Any,
-) -> None:
+) -> Token[Dict[str, Any]]:
     """设置当前协程的日志上下文."""
     ctx = _log_context.get().copy()
     if log_id is not None:
@@ -62,7 +63,12 @@ def set_logging_context(
     if path is not None:
         ctx["path"] = path
     ctx.update(kwargs)
-    _log_context.set(ctx)
+    return _log_context.set(ctx)
+
+
+def reset_logging_context(token: Token[Dict[str, Any]]) -> None:
+    """恢复进入请求/任务前的上下文，避免协程复用造成字段串线。"""
+    _log_context.reset(token)
 
 
 def get_log_context() -> Dict[str, Any]:
@@ -75,6 +81,25 @@ def generate_log_id() -> str:
     return uuid.uuid4().hex[:16]
 
 
+def _current_trace_ids() -> tuple[str, str]:
+    """延迟读取 OTel 上下文；未启用时保持日志格式稳定。"""
+    try:
+        from opentelemetry import trace
+
+        context = trace.get_current_span().get_span_context()
+        if context.is_valid:
+            return f"{context.trace_id:032x}", f"{context.span_id:016x}"
+    except (ImportError, AttributeError):
+        pass
+    return "-", "-"
+
+
+def _user_id_hash(value: Any) -> str:
+    if value in (None, "", "-"):
+        return "-"
+    return hashlib.sha256(str(value).encode("utf-8")).hexdigest()[:16]
+
+
 # ---------- JSON 格式化器 ----------
 class JSONFormatter(logging.Formatter):
     """JSON结构化日志格式化器."""
@@ -85,6 +110,7 @@ class JSONFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         ctx = _log_context.get()
+        trace_id, span_id = _current_trace_ids()
 
         log_data: Dict[str, Any] = {
             "ts": datetime.now(timezone.utc).isoformat(),
@@ -93,8 +119,10 @@ class JSONFormatter(logging.Formatter):
             "logger": record.name,
             "file": f"{os.path.basename(record.pathname)}:{record.lineno}",
             "logId": ctx.get("logId", "-"),
-            "userId": ctx.get("userId", "-"),
+            "userIdHash": _user_id_hash(ctx.get("userId", "-")),
             "path": ctx.get("path", "-"),
+            "trace_id": trace_id,
+            "span_id": span_id,
             "msg": record.getMessage(),
         }
 
@@ -136,11 +164,13 @@ class ConsoleFormatter(logging.Formatter):
         ctx = _log_context.get()
         log_id = ctx.get("logId", "-")[:8]
         user_id = ctx.get("userId", "-")
+        trace_id, _ = _current_trace_ids()
         color = self.COLORS.get(record.levelname, "")
 
         parts = [
             f"{color}{record.levelname:<8}{self.RESET}",
             f"[{log_id}]",
+            f"[trace={trace_id[:8]}]" if trace_id != "-" else "",
             f"{record.name}:{record.lineno}",
         ]
         if user_id != "-":

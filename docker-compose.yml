@@ -11,10 +11,15 @@ services:
       - ossmock:/tmp/photo-agent-oss-mock   # mock OSS 磁盘：与 worker 共享
     env_file:
       - .env
+    environment:
+      OTEL_SERVICE_NAME: photo-agent-api
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
     depends_on:
       db:
         condition: service_healthy
       redis:
+        condition: service_started
+      otel-collector:
         condition: service_started
     restart: unless-stopped
 
@@ -27,10 +32,15 @@ services:
       - ossmock:/tmp/photo-agent-oss-mock   # 与 api 共享同一份 mock 磁盘
     env_file:
       - .env
+    environment:
+      OTEL_SERVICE_NAME: photo-agent-worker
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
     depends_on:
       db:
         condition: service_healthy
       redis:
+        condition: service_started
+      otel-collector:
         condition: service_started
     restart: unless-stopped
 
@@ -61,7 +71,81 @@ services:
       - redisdata:/data
     restart: unless-stopped
 
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.157.0
+    container_name: photo-agent-otel-collector
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./observability/otel-collector.yaml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "8888:8888"
+    depends_on:
+      - tempo
+      - loki
+    restart: unless-stopped
+
+  tempo:
+    image: grafana/tempo:2.10.7
+    container_name: photo-agent-tempo
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./observability/tempo.yaml:/etc/tempo.yaml:ro
+      - tempodata:/var/tempo
+    ports:
+      - "3200:3200"
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:3.7.2
+    container_name: photo-agent-loki
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    volumes:
+      - ./observability/loki.yaml:/etc/loki/local-config.yaml:ro
+      - lokidata:/loki
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    container_name: photo-agent-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-remote-write-receiver
+      - --storage.tsdb.retention.time=7d
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheusdata:/prometheus
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:13.1.0
+    container_name: photo-agent-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafanadata:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - tempo
+      - loki
+      - prometheus
+    restart: unless-stopped
+
 volumes:
   pgdata:
   redisdata:
   ossmock:
+  tempodata:
+  lokidata:
+  prometheusdata:
+  grafanadata:

@@ -18,6 +18,7 @@ from typing import Any, Sequence, TypeVar
 import httpx
 
 from app.config import settings
+from app.core.telemetry import traced_async
 from app.services.circuit_breaker import ServiceDegradedError, search_rerank_breaker
 from app.services.metrics import metrics
 from app.services.lock import get_redis
@@ -313,6 +314,11 @@ def _parse_decisions(
     return parsed
 
 
+@traced_async(
+    "search rerank text",
+    kind="client",
+    attributes={"gen_ai.operation.name": "rerank"},
+)
 async def judge_candidate_evidence(
     query: str,
     candidates: list[dict[str, Any]],

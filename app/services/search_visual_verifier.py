@@ -16,6 +16,7 @@ from typing import Any
 import httpx
 
 from app.config import settings
+from app.core.telemetry import traced_async
 from app.services.circuit_breaker import (
     ServiceDegradedError,
     search_visual_verify_breaker,
@@ -154,6 +155,11 @@ async def _write_cache(key: str, decisions: list[VisualDecision]) -> None:
         logger.warning("visual verifier cache write failed: %s", exc)
 
 
+@traced_async(
+    "search verify visual",
+    kind="client",
+    attributes={"gen_ai.operation.name": "rerank", "search.verifier": "visual"},
+)
 async def judge_visual_candidates(
     query: str,
     candidates: list[VisualCandidate],

@@ -28,6 +28,15 @@ httpx==0.27.2
 oss2==2.19.0
 dashscope==1.20.11
 
+# Observability (OpenTelemetry API/SDK + automatic client/server instrumentation)
+opentelemetry-api==1.44.0
+opentelemetry-sdk==1.44.0
+opentelemetry-exporter-otlp-proto-http==1.44.0
+opentelemetry-instrumentation-fastapi==0.65b0
+opentelemetry-instrumentation-httpx==0.65b0
+opentelemetry-instrumentation-redis==0.65b0
+opentelemetry-instrumentation-sqlalchemy==0.65b0
+
 # Image
 numpy==2.1.2
 Pillow==10.4.0

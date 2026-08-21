@@ -13,6 +13,16 @@ class Settings(BaseSettings):
     log_dir: str = ""  # 日志文件目录，空则仅输出到控制台
     log_json_format: bool = False  # dev环境用彩色控制台，生产环境用JSON
 
+    # OpenTelemetry：默认关闭，避免本地/测试环境依赖 Collector。
+    # 生产环境通过 OTEL_ENABLED=true 开启 Trace + Log OTLP 导出。
+    otel_enabled: bool = False
+    otel_service_name: str = ""
+    otel_exporter_otlp_endpoint: str = "http://otel-collector:4318"
+    otel_trace_sample_ratio: float = 1.0
+    otel_export_logs: bool = True
+    otel_capture_content: bool = False
+    otel_excluded_urls: str = "/live,/health,/ready,/docs,/openapi.json"
+
     # DB
     database_url: str
 

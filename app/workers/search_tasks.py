@@ -11,11 +11,13 @@ from uuid import UUID
 from arq import create_pool
 
 from app.config import settings
+from app.core.telemetry import enqueue_job_with_trace, inject_trace_context
 from app.database import AsyncSessionLocal
 from app.services.agent_tools import search_photos
 from app.services.search_candidate_pool import (
     clear_candidate_pool,
     push_verified_candidates,
+    set_candidate_trace_context,
     set_prefetch_status,
 )
 
@@ -62,6 +64,7 @@ async def prefetch_search_candidates(
             if photo_id and photo_id not in excluded:
                 unique.setdefault(photo_id, item)
         pushed = await push_verified_candidates(session_id, list(unique.values()))
+        await set_candidate_trace_context(session_id, inject_trace_context())
         await set_prefetch_status(session_id, "ready" if pushed else "exhausted")
         return {"ok": True, "verified_count": pushed}
     except Exception as exc:  # noqa: BLE001
@@ -91,7 +94,8 @@ async def enqueue_search_prefetch(
             [query, sorted(exclude_photo_ids)], ensure_ascii=False
         ).encode("utf-8")
     ).hexdigest()[:16]
-    job = await _pool.enqueue_job(
+    job = await enqueue_job_with_trace(
+        _pool,
         "prefetch_search_candidates",
         session_id,
         user_id,

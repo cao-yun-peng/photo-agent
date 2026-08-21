@@ -80,7 +80,7 @@ flowchart LR
 - **精细拒识**：文本 Top-K 判同过滤冲突候选，只在必要时查看原图做二次视觉判定。
 - **Photo Agent**：普通与 SSE 流式接口，支持搜索、澄清、选图、应用 Skill，并限制时间、Token、费用和工具调用预算。
 - **AI 二创**：官方与用户自定义 Skill、公开广场、每日额度、异步生成历史；支持通义万相与 OpenAI Images，未配置时自动走 Mock。
-- **工程保障**：数据库迁移、重试与补算、熔断器、结构化日志、Log ID、liveness/readiness 和评测产物留档。
+- **工程保障**：数据库迁移、重试与补算、熔断器、OpenTelemetry 全链路 Trace、结构化日志联查、liveness/readiness 和评测产物留档。部署、看板和验收口径见 [全链路可观测性方案](docs/observability.md)。
 
 ## 三分钟运行
 

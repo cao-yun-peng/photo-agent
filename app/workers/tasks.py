@@ -27,7 +27,14 @@ from arq.connections import RedisSettings
 from sqlalchemy import select
 
 from app.config import settings
-from app.database import AsyncSessionLocal
+from app.core.logger import setup_logging
+from app.core.telemetry import (
+    enqueue_job_with_trace,
+    setup_telemetry,
+    shutdown_telemetry,
+    traced_job,
+)
+from app.database import AsyncSessionLocal, engine
 from app.models.photo import Photo
 from app.services import ai as ai_service
 from app.services import image as image_service
@@ -80,7 +87,8 @@ async def _schedule_embedding_retry(
         f"{int(scheduled_at.timestamp())}"
     )
     try:
-        job = await redis.enqueue_job(
+        job = await enqueue_job_with_trace(
+            redis,
             "retry_photo_embedding",
             photo_id,
             _defer_by=delay_seconds,
@@ -483,7 +491,7 @@ async def enqueue_process_photo(photo_id) -> None:
     global _pool
     if _pool is None:
         _pool = await create_pool(WorkerSettings.redis_settings)
-    await _pool.enqueue_job("process_photo", str(photo_id))
+    await enqueue_job_with_trace(_pool, "process_photo", str(photo_id))
 
 
 async def enqueue_retry_photo_embedding(photo_id) -> bool:
@@ -510,7 +518,7 @@ async def enqueue_generate_photo(generation_id) -> None:
     global _pool
     if _pool is None:
         _pool = await create_pool(WorkerSettings.redis_settings)
-    await _pool.enqueue_job("generate_photo", str(generation_id))
+    await enqueue_job_with_trace(_pool, "generate_photo", str(generation_id))
 
 
 async def enqueue_profile_update(user_id) -> None:
@@ -520,10 +528,28 @@ async def enqueue_profile_update(user_id) -> None:
     global _pool
     if _pool is None:
         _pool = await create_pool(WorkerSettings.redis_settings)
-    await _pool.enqueue_job("aggregate_user_profile", str(user_id))
+    await enqueue_job_with_trace(_pool, "aggregate_user_profile", str(user_id))
 
 
 # --- ARQ Worker 配置 -----------------------------------------------------
+
+
+async def worker_startup(_: dict[str, Any]) -> None:
+    setup_logging(
+        log_level=settings.log_level,
+        log_dir=settings.log_dir or None,
+        json_format=settings.log_json_format,
+    )
+    setup_telemetry(
+        service_name=settings.otel_service_name or f"{settings.app_name}-worker",
+        engine=engine,
+    )
+    logger.info("photo-agent worker telemetry ready")
+
+
+async def worker_shutdown(_: dict[str, Any]) -> None:
+    logger.info("photo-agent worker shutting down")
+    shutdown_telemetry()
 
 
 class WorkerSettings:
@@ -534,16 +560,18 @@ class WorkerSettings:
     from app.workers.search_tasks import prefetch_search_candidates
 
     functions = [
-        process_photo,
-        retry_photo_embedding,
-        generate_photo,
-        aggregate_user_profile,
-        aggregate_all_profiles,
-        migrate_photos_batch,
-        archive_cold_events,
-        count_events_by_age,
-        prefetch_search_candidates,
+        traced_job(process_photo),
+        traced_job(retry_photo_embedding),
+        traced_job(generate_photo),
+        traced_job(aggregate_user_profile),
+        traced_job(aggregate_all_profiles),
+        traced_job(migrate_photos_batch),
+        traced_job(archive_cold_events),
+        traced_job(count_events_by_age),
+        traced_job(prefetch_search_candidates),
     ]
+    on_startup = worker_startup
+    on_shutdown = worker_shutdown
     redis_settings = RedisSettings.from_dsn(settings.redis_url)
     max_jobs = settings.worker_max_jobs
     job_timeout = 180         # 生图较慢，给 3 分钟
