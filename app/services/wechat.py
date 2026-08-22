@@ -17,9 +17,17 @@ async def code2session(code: str) -> dict:
     返回原始 dict，至少包含 openid。
     dev 环境下若未配置 AppID，则返回 mock 数据便于本地联调。
     """
-    if not settings.wechat_appid or settings.wechat_appid == "wx_your_appid":
+    has_wechat_config = bool(
+        settings.wechat_appid
+        and settings.wechat_appid != "wx_your_appid"
+        and settings.wechat_secret
+        and settings.wechat_secret != "your_secret"
+    )
+    if settings.app_env == "dev" and not has_wechat_config:
         # 本地开发：伪造一个 openid，避免必须先配置微信才能起服务
         return {"openid": f"dev_openid_{code}", "mock": True}
+    if not has_wechat_config:
+        raise WeChatError("WeChat login is not configured")
 
     params = {
         "appid": settings.wechat_appid,

@@ -2,6 +2,7 @@
 
 from functools import lru_cache
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,6 +13,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     log_dir: str = ""  # 日志文件目录，空则仅输出到控制台
     log_json_format: bool = False  # dev环境用彩色控制台，生产环境用JSON
+    cors_origins: list[str] = Field(default_factory=list)
 
     # OpenTelemetry：默认关闭，避免本地/测试环境依赖 Collector。
     # 生产环境通过 OTEL_ENABLED=true 开启 Trace + Log OTLP 导出。

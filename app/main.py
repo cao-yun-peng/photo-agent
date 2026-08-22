@@ -153,10 +153,14 @@ app = FastAPI(
 # 1. LogID全链路追踪（最先注册，最外层）
 app.add_middleware(LogIDMiddleware, app_name=settings.app_name)
 
-# 2. CORS（开发阶段全开，生产上要收紧）
+# 2. CORS（开发态提供 Web 默认值，生产必须显式配置 allowlist）
+cors_origins = settings.cors_origins
+if not cors_origins and settings.app_env == "dev":
+    cors_origins = ["http://localhost:3001", "http://127.0.0.1:3001"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if settings.app_env == "dev" else [],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

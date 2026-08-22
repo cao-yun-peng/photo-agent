@@ -1,0 +1,241 @@
+.page {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: minmax(0, 1.15fr) minmax(380px, 0.85fr);
+}
+
+.story {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: clamp(34px, 5vw, 76px);
+}
+
+.story::after {
+  position: absolute;
+  right: -12vw;
+  bottom: -16vw;
+  width: 50vw;
+  height: 50vw;
+  border: 1px solid rgb(201 80 32 / 18%);
+  border-radius: 48% 52% 58% 42%;
+  box-shadow:
+    0 0 0 70px rgb(201 80 32 / 5%),
+    0 0 0 140px rgb(70 102 81 / 4%);
+  content: '';
+  transform: rotate(18deg);
+}
+
+.brand {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand strong {
+  display: block;
+  font-size: 17px;
+}
+
+.brand span:last-child span {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero {
+  z-index: 1;
+  max-width: 720px;
+  padding: 72px 0;
+}
+
+.eyebrow {
+  margin: 0 0 20px;
+  color: var(--accent-dark);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(48px, 7vw, 94px);
+  font-weight: 650;
+  letter-spacing: -0.07em;
+  line-height: 0.96;
+}
+
+.hero p {
+  max-width: 580px;
+  margin: 30px 0 0;
+  color: var(--muted);
+  font-size: clamp(16px, 1.6vw, 20px);
+  line-height: 1.75;
+}
+
+.capabilities {
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.capabilities span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgb(255 253 248 / 55%);
+  color: var(--muted);
+  font-size: 12px;
+  padding: 8px 12px;
+}
+
+.panelWrap {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  border-left: 1px solid var(--line);
+  background: rgb(255 253 248 / 74%);
+  padding: 34px;
+  backdrop-filter: blur(18px);
+}
+
+.panel {
+  width: min(100%, 430px);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: var(--surface-strong);
+  box-shadow: var(--shadow);
+  padding: clamp(28px, 4vw, 46px);
+}
+
+.mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border-radius: 999px;
+  background: var(--sage-soft);
+  color: var(--sage);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 8px 12px;
+  text-transform: uppercase;
+}
+
+.panel h2 {
+  margin: 26px 0 10px;
+  font-size: 30px;
+  letter-spacing: -0.04em;
+}
+
+.intro {
+  margin: 0 0 28px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.field {
+  display: grid;
+  gap: 9px;
+}
+
+.field label {
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.field input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 13px 14px;
+}
+
+.field input:focus {
+  border-color: var(--accent);
+}
+
+.submit {
+  width: 100%;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 13px;
+  background: var(--ink);
+  color: #fffaf0;
+  cursor: pointer;
+  font-weight: 750;
+  padding: 14px 18px;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.submit:hover:not(:disabled) {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+}
+
+.submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.error {
+  border-left: 3px solid var(--danger);
+  margin: 16px 0 0;
+  background: #fff2f0;
+  color: var(--danger);
+  font-size: 12px;
+  line-height: 1.55;
+  padding: 10px 12px;
+}
+
+.endpoint {
+  margin: 24px 0 0;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+
+.notice {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+@media (max-width: 880px) {
+  .page {
+    display: block;
+  }
+
+  .story {
+    min-height: auto;
+    padding: 28px 24px 52px;
+  }
+
+  .hero {
+    padding: 82px 0 62px;
+  }
+
+  .hero h1 {
+    font-size: clamp(48px, 16vw, 76px);
+  }
+
+  .panelWrap {
+    min-height: auto;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+    padding: 44px 20px 70px;
+  }
+}
