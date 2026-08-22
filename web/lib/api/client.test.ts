@@ -18,4 +18,13 @@ describe('API error normalization', () => {
     expect(failure.logId).toBe('web-log-1');
     expect(failure.traceId).toBe('trace-1');
   });
+
+  it('extracts generation domain messages from nested details', async () => {
+    const response = new Response(null, { status: 429 });
+    const failure = await toApiFailure(response, {
+      detail: { code: 'quota_exceeded', message: '今日生成额度已用完' },
+    });
+
+    expect(failure.detail).toBe('今日生成额度已用完');
+  });
 });

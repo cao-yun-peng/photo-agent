@@ -1,0 +1,16 @@
+services:
+  api:
+    environment:
+      OSS_BUCKET: photo-agent-dev
+      OSS_KEY_ID: LTAI_xxx
+      OSS_KEY_SECRET: xxx
+      DASHSCOPE_API_KEY: sk-xxx
+      OPENAI_API_KEY: sk-openai-xxx
+
+  worker:
+    environment:
+      OSS_BUCKET: photo-agent-dev
+      OSS_KEY_ID: LTAI_xxx
+      OSS_KEY_SECRET: xxx
+      DASHSCOPE_API_KEY: sk-xxx
+      OPENAI_API_KEY: sk-openai-xxx

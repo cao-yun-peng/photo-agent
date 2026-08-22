@@ -99,7 +99,9 @@ async def semantic_search(
 
     # ---------- 3. 构造过滤条件 ----------
     conds = [Photo.user_id == current_user.id, Photo.embedding.is_not(None)]
-    if payload.status:
+    if payload.status == "done":
+        conds.append(Photo.status.in_(("done", "partial_done")))
+    elif payload.status:
         conds.append(Photo.status == payload.status)
 
     if payload.from_date:

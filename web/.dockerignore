@@ -1,0 +1,10 @@
+node_modules
+dist
+.next
+.vinext
+.wrangler
+playwright-report
+test-results
+coverage
+.env*
+npm-debug.log*

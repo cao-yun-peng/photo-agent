@@ -1,0 +1,44 @@
+services:
+  web-runtime:
+    build:
+      context: ./web
+      target: runtime
+      args:
+        NEXT_PUBLIC_API_ORIGIN: /api
+        NEXT_PUBLIC_ENABLE_DEV_LOGIN: ${NEXT_PUBLIC_ENABLE_DEV_LOGIN:-true}
+    container_name: photo-agent-web-runtime
+    environment:
+      PORT: 3001
+    expose:
+      - "3001"
+    depends_on:
+      api:
+        condition: service_started
+      worker:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/login').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  web-gateway:
+    build:
+      context: ./web
+      target: gateway
+      args:
+        NEXT_PUBLIC_API_ORIGIN: /api
+        NEXT_PUBLIC_ENABLE_DEV_LOGIN: ${NEXT_PUBLIC_ENABLE_DEV_LOGIN:-true}
+    container_name: photo-agent-web-gateway
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      web-runtime:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/login"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped

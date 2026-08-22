@@ -45,7 +45,11 @@ export function AppShell({
             <Link
               key={item.href}
               href={item.href}
-              data-active={pathname === item.href}
+              data-active={
+                pathname === item.href
+                || pathname.startsWith(`${item.href}/`)
+                || (item.href === '/skills' && pathname.startsWith('/generate'))
+              }
             >
               <span className={styles.navGlyph} aria-hidden="true">
                 {item.glyph}
@@ -66,7 +70,7 @@ export function AppShell({
 
       <main className={styles.main}>
         <header className={styles.topbar}>
-          <span className={styles.phase}>Phase 2 · Agent search</span>
+          <span className={styles.phase}>Phase 4 · Automated delivery</span>
           <span className={styles.environment}>
             <span className="status-dot" aria-hidden="true" />
             FastAPI 已连接

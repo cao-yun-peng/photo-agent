@@ -44,9 +44,15 @@ export async function toApiFailure(
     | { detail?: unknown; message?: unknown; errMsg?: unknown }
     | undefined;
   const detailValue = body?.detail ?? body?.message ?? body?.errMsg;
+  const nestedMessage =
+    detailValue && typeof detailValue === 'object' && 'message' in detailValue
+      ? (detailValue as { message?: unknown }).message
+      : undefined;
   const detail =
     typeof detailValue === 'string'
       ? detailValue
+      : typeof nestedMessage === 'string'
+        ? nestedMessage
       : detailValue
         ? JSON.stringify(detailValue)
         : `请求失败（HTTP ${response.status}）`;

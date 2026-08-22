@@ -136,15 +136,21 @@ async def generate_photo(ctx: dict[str, Any], generation_id: str) -> dict[str, A
                 image_bytes = result.image_bytes
                 content_type = result.content_type
             elif result.image_url:
-                async with httpx.AsyncClient(timeout=60.0) as client:
-                    resp = await client.get(result.image_url)
-                if resp.status_code != 200:
-                    raise RuntimeError(
-                        f"download result HTTP {resp.status_code}: {resp.text[:200]}"
-                    )
-                image_bytes = resp.content
-                content_type = resp.headers.get("content-type", "image/jpeg")
-                content_type = content_type.partition(";")[0].strip().lower()
+                if result.image_url.startswith("/") and oss.is_mock():
+                    image_bytes = await oss.get_object(source.oss_key)
+                    if image_bytes is None:
+                        raise RuntimeError("mock generation source object is missing")
+                    content_type = source.mime_type or "image/jpeg"
+                else:
+                    async with httpx.AsyncClient(timeout=60.0) as client:
+                        resp = await client.get(result.image_url)
+                    if resp.status_code != 200:
+                        raise RuntimeError(
+                            f"download result HTTP {resp.status_code}: {resp.text[:200]}"
+                        )
+                    image_bytes = resp.content
+                    content_type = resp.headers.get("content-type", "image/jpeg")
+                    content_type = content_type.partition(";")[0].strip().lower()
             else:
                 raise RuntimeError("image generation returned no image data")
 

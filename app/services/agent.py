@@ -2009,8 +2009,8 @@ class PhotoAgent:
             tool_name == "search_photos"
             and state.followup_type != "more_search_results"
             and result.get("items")
-            and result.get("rerank_check", {}).get("applied")
-            and not result.get("rerank_check", {}).get("degraded")
+            and (result.get("rerank_check") or {}).get("applied")
+            and not (result.get("rerank_check") or {}).get("degraded")
             and settings.agent_search_candidate_pool_size > 0
         ):
             shown = {

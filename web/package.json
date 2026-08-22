@@ -9,12 +9,15 @@
     "dev": "vinext dev",
     "build": "npm run typecheck && vinext build",
     "start": "vinext start",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .vinext --ignore-pattern .wrangler",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
     "api:types": "openapi-typescript http://localhost:8000/openapi.json -o lib/api/generated.ts",
-    "check": "npm run lint && npm run test && npm run build"
+    "check": "npm run lint && npm run test && npm run build",
+    "check:ci": "npm run lint && npm run typecheck && npm run test && npm run build && npm run test:e2e"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.4",
@@ -25,9 +28,11 @@
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@cloudflare/vite-plugin": "^1.53.1",
     "@cloudflare/workers-types": "^5.20260820.1",
     "@openai/sites-vite-plugin": "^0.1.0 || ^0.2.0",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "4.2.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",

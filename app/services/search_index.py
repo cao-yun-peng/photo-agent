@@ -60,7 +60,8 @@ async def get_index_coverage(db: AsyncSession, user_id: Any) -> dict[str, Any]:
         select(
             func.count(Photo.id),
             func.count(Photo.id).filter(
-                Photo.status == "done", Photo.embedding.is_not(None)
+                Photo.status.in_(("done", "partial_done")),
+                Photo.embedding.is_not(None),
             ),
             func.count(Photo.id).filter(
                 or_(

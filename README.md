@@ -4,7 +4,7 @@
 
 **中文语境下的 AI 照片管家：把“存照片、找照片、再创作”串成一个完整闭环。**
 
-微信小程序 · FastAPI · PostgreSQL / pgvector · Redis / ARQ · Qwen VL / Embedding / Chat · 通义万相 / OpenAI Images
+Web / 微信小程序 · FastAPI · PostgreSQL / pgvector · Redis / ARQ · Qwen VL / Embedding / Chat · 通义万相 / OpenAI Images
 
 </div>
 
@@ -40,7 +40,9 @@ Photo Agent 让用户直接上传手机照片，由异步 Worker 自动完成 EX
 ```mermaid
 flowchart LR
     U["微信小程序"] -->|"JWT / REST / SSE"| API["FastAPI API"]
+    WEB["React / Vinext Web"] -->|"JWT / REST / SSE"| API
     U -->|"签名 URL 直传"| OSS["OSS / 本地 Mock"]
+    WEB -->|"签名 URL 直传"| OSS
 
     subgraph Backend["应用层"]
         API --> AUTH["微信登录与用户隔离"]
@@ -126,6 +128,17 @@ curl http://localhost:8000/ready
 - 综合健康状态：<http://localhost:8000/health>
 - 仅检查进程存活：<http://localhost:8000/live>
 
+浏览器入口开发模式：
+
+```powershell
+Set-Location web
+npm ci
+if (-not (Test-Path .env.local)) { Copy-Item .env.example .env.local }
+npm run dev
+```
+
+打开 <http://localhost:3001/login>。完整的 Web 开发、Playwright 测试与 Docker/Nginx 交付步骤见 [Web 开发手册](docs/web-development.md)。
+
 开发环境可用任意非空 `code` 登录：
 
 ```bash
@@ -179,6 +192,7 @@ photo-agent/
 │   └── workers/             # ARQ 照片处理与生成任务
 ├── alembic/                 # 数据库迁移
 ├── miniprogram/             # 微信小程序：时间线、上传、搜索、Skill 广场
+├── web/                     # React/Vinext Web：完整照片、Agent、Skill 与生成闭环
 ├── scripts/                 # E2E、评测、审计、校准与补算脚本
 ├── tests/                   # 单元、集成与评测数据
 ├── artifacts/               # 可追溯的评测原始结果
@@ -201,6 +215,13 @@ python scripts/agent_eval.py --mode replay
 ./scripts/e2e_ai.sh
 ./scripts/e2e_search.sh
 ./scripts/e2e_generate.sh
+
+# Web：lint、类型、单测和生产构建
+cd web
+npm run check
+
+# Web：登录、上传、Agent 搜索、生成、无障碍与移动端 E2E
+npm run test:e2e
 
 # 真实 Agent HTTP/JWT/Redis/DB/LLM/Tool/SSE 端到端测试
 python scripts/agent_e2e.py --confirm-test-account

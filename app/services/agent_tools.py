@@ -234,7 +234,11 @@ async def search_photos(
         profile = await get_user_profile(db, user_id)
 
         conds = [Photo.user_id == user_id, Photo.embedding.is_not(None)]
-        if status:
+        if status == "done":
+            # partial_done can still be fully searchable when only a non-index
+            # artifact (for example structured analysis) was degraded.
+            conds.append(Photo.status.in_(("done", "partial_done")))
+        elif status:
             conds.append(Photo.status == status)
         excluded_ids: list[UUID] = []
         for raw_id in exclude_photo_ids or []:
@@ -797,7 +801,7 @@ async def fallback_search(
           "hint": str,
         }
     """
-    # Level 0: 普通语义搜索（status=done）— 可被 start_level 跳过
+    # Level 0: 普通语义搜索（包含已有 embedding 的 partial_done）— 可被 start_level 跳过
     if start_level <= 0:
         res = await search_photos(
             user_id=user_id,

@@ -96,7 +96,7 @@ class Photo(Base):
     @property
     def search_index_status(self) -> str:
         """面向客户端的搜索索引状态，不暴露 embedding 技术细节。"""
-        if self.embedding is not None and self.status == "done":
+        if self.embedding is not None and self.status in {"done", "partial_done"}:
             return "ready"
         if self.status in {"pending", "processing"}:
             return "indexing"

@@ -5,6 +5,7 @@ import { resolveMediaUrl } from './media-url';
 describe('media URL resolution', () => {
   it('resolves mock object-storage paths against the API origin', () => {
     expect(resolveMediaUrl('/_mock/oss/photo.jpg')).toBe(`${API_ORIGIN}/_mock/oss/photo.jpg`);
+    expect(resolveMediaUrl('_mock/oss/photo.jpg')).toBe(`${API_ORIGIN}/_mock/oss/photo.jpg`);
   });
 
   it('keeps absolute signed URLs and handles empty values', () => {

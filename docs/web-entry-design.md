@@ -1,6 +1,6 @@
 # Photo Agent Web 入口方案设计
 
-> 状态：Proposed  
+> 状态：Implemented through Phase 4
 > 日期：2026-08-22  
 > 目标：在保留微信小程序的前提下，新增一个能够覆盖现有主要功能、适合日常开发和联调的浏览器入口。
 
