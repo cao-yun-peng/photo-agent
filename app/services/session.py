@@ -1,4 +1,5 @@
 """Agent 会话持久化：把 AgentState 存到 agent_sessions 表，支撑多轮对话."""
+
 from __future__ import annotations
 
 import logging
@@ -9,7 +10,7 @@ from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.agent_session import AgentSession
-from app.services.agent import AgentState
+from app.services.agent_state import AgentState
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,9 @@ async def save_session(
 ) -> AgentSession:
     """保存或更新 Agent 会话状态。"""
     session = (
-        await db.execute(select(AgentSession).where(AgentSession.id == state.session_id))
+        await db.execute(
+            select(AgentSession).where(AgentSession.id == state.session_id)
+        )
     ).scalar_one_or_none()
 
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=expire_minutes)
