@@ -68,6 +68,13 @@ async def get_index_coverage(db: AsyncSession, user_id: Any) -> dict[str, Any]:
                     Photo.partial_reason.in_(retry_reasons),
                 )
             ),
+            func.count(Photo.id).filter(
+                Photo.photo_type.is_not(None),
+                Photo.is_selfie.is_not(None),
+                Photo.people_count.is_not(None),
+                Photo.ai_analysis["analysis_version"].astext == "v5",
+                Photo.ai_analysis["parse_quality"].astext == "ok",
+            ),
         ).where(Photo.user_id == user_id)
     )
     if not hasattr(result, "one"):
@@ -79,9 +86,15 @@ async def get_index_coverage(db: AsyncSession, user_id: Any) -> dict[str, Any]:
             "coverage_ratio": 1.0,
             "complete": True,
             "message": None,
+            "faceted_photos": 0,
+            "facet_coverage_ratio": 1.0,
+            "semantic_complete": True,
+            "semantic_message": None,
         }
 
-    total, indexed, retrying = (int(value or 0) for value in result.one())
+    values = [int(value or 0) for value in result.one()]
+    total, indexed, retrying = values[:3]
+    faceted = values[3] if len(values) > 3 else 0
     unavailable = max(0, total - indexed - retrying)
     ratio = round(indexed / total, 4) if total else 1.0
     message = None
@@ -92,6 +105,13 @@ async def get_index_coverage(db: AsyncSession, user_id: Any) -> dict[str, Any]:
         if unavailable:
             parts.append(f"{unavailable} 张暂时无法被文字检索")
         message = "；".join(parts) + "，当前结果可能不完整"
+    facet_ratio = round(faceted / total, 4) if total else 1.0
+    semantic_message = None
+    if faceted < total:
+        semantic_message = (
+            f"{total - faceted} 张尚未完成 v5 语义重索引，"
+            "自拍、截图、合照等集合结果可能有遗漏"
+        )
     return {
         "total_photos": total,
         "indexed_photos": indexed,
@@ -100,6 +120,10 @@ async def get_index_coverage(db: AsyncSession, user_id: Any) -> dict[str, Any]:
         "coverage_ratio": ratio,
         "complete": indexed == total,
         "message": message,
+        "faceted_photos": faceted,
+        "facet_coverage_ratio": facet_ratio,
+        "semantic_complete": faceted == total,
+        "semantic_message": semantic_message,
     }
 
 

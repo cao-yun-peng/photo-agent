@@ -15,6 +15,7 @@ VL 之前的可重试错误由 ARQ 重跑整条任务；embedding 失败则保�
 
 启动命令：`arq app.workers.tasks.WorkerSettings`
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -57,6 +58,7 @@ from app.services.quality import (
     summarize_quality_reason,
 )
 from app.services.search_index import retry_delay_after_failure
+from app.services.semantic_facets import apply_semantic_facets, clear_semantic_facets
 from app.workers.gen_tasks import NonRetryableError
 from app.workers.lifecycle_tasks import archive_cold_events, count_events_by_age
 from app.workers.migrate_tasks import migrate_photos_batch
@@ -83,8 +85,7 @@ async def _schedule_embedding_retry(
     scheduled_at: datetime,
 ) -> bool:
     job_id = (
-        f"embedding-retry:{photo_id}:{retry_count}:"
-        f"{int(scheduled_at.timestamp())}"
+        f"embedding-retry:{photo_id}:{retry_count}:" f"{int(scheduled_at.timestamp())}"
     )
     try:
         job = await enqueue_job_with_trace(
@@ -138,9 +139,7 @@ async def retry_photo_embedding(ctx: dict[str, Any], photo_id: str) -> dict[str,
             await db.commit()
             return {"ok": False, "status": "partial_done", "reason": "source_invalid"}
 
-        retrieval_text = ai_service.build_retrieval_text(
-            photo.ai_description, analysis
-        )
+        retrieval_text = ai_service.build_retrieval_text(photo.ai_description, analysis)
         photo.embedding_next_retry_at = None
         photo.embedding_last_attempt_at = now
         await db.commit()
@@ -227,9 +226,7 @@ async def retry_photo_embedding(ctx: dict[str, Any], photo_id: str) -> dict[str,
             photo.ai_description = (
                 None if not decision.store_description else photo.ai_description
             )
-            photo.ai_analysis = (
-                {} if not decision.store_analysis else photo.ai_analysis
-            )
+            photo.ai_analysis = {} if not decision.store_analysis else photo.ai_analysis
             photo.embedding = None
             photo.embedding_next_retry_at = None
             photo.embedding_last_error = summarize_quality_reason(gate.issues)
@@ -301,11 +298,15 @@ async def process_photo(ctx: dict[str, Any], photo_id: str) -> dict[str, Any]:
                 }
 
             # --- 4) EXIF + 缩略图 -----------------------------
-            processed = await asyncio.to_thread(image_service.process, raw, thumb_max=512)
+            processed = await asyncio.to_thread(
+                image_service.process, raw, thumb_max=512
+            )
 
             # --- 5) 上传缩略图 --------------------------------
             thumb_key = thumb_key_of(photo.oss_key)
-            await put_object(thumb_key, processed.thumb_bytes, content_type="image/jpeg")
+            await put_object(
+                thumb_key, processed.thumb_bytes, content_type="image/jpeg"
+            )
 
             # --- 6) 调 VL 生描述 + 结构化分析 ------------------
             # 真模式下 DashScope 要用公网 URL 拉图；mock 模式下 URL 不重要
@@ -323,9 +324,7 @@ async def process_photo(ctx: dict[str, Any], photo_id: str) -> dict[str, Any]:
                 photo.partial_reason = "vl_degraded"
                 await db.commit()
                 metrics.record_photo_status("partial_done")
-                logger.warning(
-                    "process_photo vl degraded | id=%s", photo_id
-                )
+                logger.warning("process_photo vl degraded | id=%s", photo_id)
                 return {
                     "ok": True,
                     "photo_id": photo_id,
@@ -348,9 +347,7 @@ async def process_photo(ctx: dict[str, Any], photo_id: str) -> dict[str, Any]:
                 embedding = None
                 partial_reason = "embedding_service_busy"
                 photo.embedding_last_error = "circuit_open"
-                embedding_retry_delay = max(
-                    1, embedding_breaker.retry_after_seconds()
-                )
+                embedding_retry_delay = max(1, embedding_breaker.retry_after_seconds())
             except Exception as exc:  # noqa: BLE001
                 # 第一次真实调用失败，从失败结束时开始等待 2 秒再补算。
                 embedding = None
@@ -394,8 +391,10 @@ async def process_photo(ctx: dict[str, Any], photo_id: str) -> dict[str, Any]:
 
             if decision.store_analysis:
                 photo.ai_analysis = analysis.model_dump(exclude_none=True)
+                apply_semantic_facets(photo, analysis)
             else:
                 photo.ai_analysis = {}
+                clear_semantic_facets(photo)
 
             if decision.store_embedding:
                 photo.embedding = embedding
@@ -419,9 +418,9 @@ async def process_photo(ctx: dict[str, Any], photo_id: str) -> dict[str, Any]:
                 photo.partial_reason = partial_reason or decision.partial_reason
 
             if embedding_retry_delay is not None:
-                photo.embedding_next_retry_at = datetime.now(
-                    timezone.utc
-                ) + timedelta(seconds=embedding_retry_delay)
+                photo.embedding_next_retry_at = datetime.now(timezone.utc) + timedelta(
+                    seconds=embedding_retry_delay
+                )
 
             await db.commit()
 
@@ -466,7 +465,9 @@ async def process_photo(ctx: dict[str, Any], photo_id: str) -> dict[str, Any]:
             photo.status = "failed"
             await db.commit()
             metrics.record_photo_status("failed")
-            logger.warning("process_photo non-retryable failure | id=%s err=%s", photo_id, exc)
+            logger.warning(
+                "process_photo non-retryable failure | id=%s err=%s", photo_id, exc
+            )
             return {"ok": False, "photo_id": photo_id, "error": str(exc)}
 
         except Exception:  # noqa: BLE001
@@ -511,14 +512,22 @@ async def enqueue_retry_photo_embedding(photo_id) -> bool:
     )
 
 
-async def enqueue_generate_photo(generation_id) -> None:
+async def enqueue_generate_photo(generation_id) -> bool:
     """API 层调用：把 generation 入队让 worker 跑 AI 改造。"""
     from arq import create_pool
 
     global _pool
     if _pool is None:
         _pool = await create_pool(WorkerSettings.redis_settings)
-    await enqueue_job_with_trace(_pool, "generate_photo", str(generation_id))
+    await enqueue_job_with_trace(
+        _pool,
+        "generate_photo",
+        str(generation_id),
+        _job_id=f"generation:{generation_id}",
+    )
+    # ARQ 对已存在的稳定 job_id 返回 None；这代表目标任务已经在队列中，
+    # 对幂等确认而言同样属于成功。
+    return True
 
 
 async def enqueue_profile_update(user_id) -> None:
@@ -574,6 +583,6 @@ class WorkerSettings:
     on_shutdown = worker_shutdown
     redis_settings = RedisSettings.from_dsn(settings.redis_url)
     max_jobs = settings.worker_max_jobs
-    job_timeout = 180         # 生图较慢，给 3 分钟
+    job_timeout = 180  # 生图较慢，给 3 分钟
     keep_result = 600
     max_tries = 2

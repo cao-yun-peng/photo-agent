@@ -15,7 +15,7 @@
       "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "mappings": [], "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 0.02}]}}, "overrides": []},
       "gridPos": {"h": 5, "w": 6, "x": 0, "y": 1}, "id": 2,
       "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "showPercentChange": true, "textMode": "auto", "wideLayout": true},
-      "targets": [{"editorMode": "code", "expr": "sum(rate(traces_spanmetrics_calls_total{status_code=\"STATUS_CODE_ERROR\"}[5m])) / clamp_min(sum(rate(traces_spanmetrics_calls_total[5m])), 1)", "legendFormat": "错误率", "range": true, "refId": "A"}],
+      "targets": [{"editorMode": "code", "expr": "(sum(rate(traces_spanmetrics_calls_total{status_code=\"STATUS_CODE_ERROR\"}[5m])) or vector(0)) / clamp_min(sum(rate(traces_spanmetrics_calls_total[5m])), 1e-9)", "legendFormat": "错误率", "range": true, "refId": "A"}],
       "title": "Trace 错误率", "type": "stat"
     },
     {
@@ -81,6 +81,35 @@
       "options": {"legend": {"calcs": [], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [{"editorMode": "code", "expr": "sum by (span_name, status_code) (rate(traces_spanmetrics_calls_total{service=\"photo-agent-worker\"}[5m]))", "legendFormat": "{{span_name}} / {{status_code}}", "range": true, "refId": "A"}],
       "title": "Worker 任务结果", "type": "timeseries"
+    },
+    {"collapsed": false, "gridPos": {"h": 1, "w": 24, "x": 0, "y": 46}, "id": 16, "panels": [], "title": "6. Agent v2 灰度与质量", "type": "row"},
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 7, "x": 0, "y": 47}, "id": 17,
+      "options": {"legend": {"calcs": [], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"editorMode": "code", "expr": "sum by (variant, route) (rate(agent_route_total[5m]))", "legendFormat": "{{variant}} / {{route}}", "range": true, "refId": "A"}],
+      "title": "路由分布（Control vs v2）", "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 5, "x": 7, "y": 47}, "id": 18,
+      "options": {"legend": {"calcs": ["mean", "p95"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le, variant) (rate(agent_model_calls_per_turn_bucket[5m])))", "legendFormat": "{{variant}} P95", "range": true, "refId": "A"}],
+      "title": "每轮模型调用数 P95", "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "percentunit"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 6, "x": 12, "y": 47}, "id": 19,
+      "options": {"legend": {"calcs": [], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"editorMode": "code", "expr": "sum by (variant) (rate(agent_search_outcome_total{outcome=\"empty\"}[5m])) / clamp_min(sum by (variant) (rate(agent_search_outcome_total[5m])), 1e-9)", "legendFormat": "{{variant}} 空结果率", "range": true, "refId": "A"}],
+      "title": "搜索空结果率", "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 47}, "id": 20,
+      "options": {"legend": {"calcs": [], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"editorMode": "code", "expr": "sum by (variant, outcome) (rate(agent_generation_confirmation_total[5m]))", "legendFormat": "{{variant}} / {{outcome}}", "range": true, "refId": "A"}],
+      "title": "生成确认、拒绝与入队失败", "type": "timeseries"
     }
   ],
   "refresh": "15s",
@@ -90,7 +119,7 @@
     "list": [
       {"current": {"selected": false, "text": ".*", "value": ".*"}, "hide": 0, "label": "Trace ID", "name": "trace_id", "options": [{"selected": true, "text": ".*", "value": ".*"}], "query": ".*", "skipUrlSync": false, "type": "textbox"},
       {"current": {"selected": false, "text": ".*", "value": ".*"}, "hide": 0, "label": "Session ID", "name": "session_id", "options": [{"selected": true, "text": ".*", "value": ".*"}], "query": ".*", "skipUrlSync": false, "type": "textbox"},
-      {"current": {"selected": true, "text": ["ERROR", "WARNING", "CRITICAL"], "value": ["ERROR", "WARNING", "CRITICAL"]}, "hide": 0, "includeAll": true, "label": "日志级别", "multi": true, "name": "level", "options": [{"selected": true, "text": "All", "value": "$__all"}], "query": "ERROR,WARNING,CRITICAL,INFO,NOTICE", "skipUrlSync": false, "type": "custom"}
+      {"allValue": ".*", "current": {"selected": true, "text": "All", "value": "$__all"}, "hide": 0, "includeAll": true, "label": "日志级别", "multi": true, "name": "level", "options": [{"selected": true, "text": "All", "value": "$__all"}], "query": "ERROR,WARNING,CRITICAL,INFO,NOTICE", "skipUrlSync": false, "type": "custom"}
     ]
   },
   "time": {"from": "now-6h", "to": "now"},

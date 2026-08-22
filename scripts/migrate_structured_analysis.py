@@ -1,8 +1,11 @@
 """存量照片结构化分析迁移命令行入口。
 
 用法：
-    # 迁移一批（默认 50 张）
-    python scripts/migrate_structured_analysis.py --batch-size 50
+    # 默认只查看待重索引数量，不调用模型
+    python scripts/migrate_structured_analysis.py
+
+    # 确认后执行
+    python scripts/migrate_structured_analysis.py --apply --batch-size 50
 
     # 限速持续迁移，每次之间 sleep N 秒
     python scripts/migrate_structured_analysis.py --batch-size 20 --interval 12 --max-batches 100
@@ -16,6 +19,7 @@
     --max-batches  最大批次数，默认不限制
     --user-id      只迁移指定用户
 """
+
 from __future__ import annotations
 
 import argparse
@@ -23,8 +27,16 @@ import asyncio
 import logging
 import sys
 import time
+from pathlib import Path
 
-from app.workers.migrate_tasks import migrate_photos_batch
+_PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
+
+from app.workers.migrate_tasks import (  # noqa: E402
+    count_pending_semantic_reindex,
+    migrate_photos_batch,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -32,6 +44,11 @@ logger = logging.getLogger(__name__)
 
 async def main() -> int:
     parser = argparse.ArgumentParser(description="存量照片结构化分析迁移")
+    parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="实际执行 VL + embedding 重索引；省略时仅预览数量",
+    )
     parser.add_argument(
         "--batch-size",
         type=int,
@@ -57,6 +74,14 @@ async def main() -> int:
         help="只迁移指定用户",
     )
     args = parser.parse_args()
+
+    if not args.apply:
+        pending = await count_pending_semantic_reindex(args.user_id)
+        logger.info(
+            "待执行 v5 语义重索引：%s 张。确认模型调用成本后加 --apply 执行。",
+            pending,
+        )
+        return 0
 
     total_processed = 0
     total_upgraded = 0

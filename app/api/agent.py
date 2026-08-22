@@ -15,6 +15,7 @@ from app.database import get_db
 from app.models.user import User
 from app.schemas.agent import AgentRunRequest, AgentRunResponse
 from app.services.agent import AgentState, PhotoAgent
+from app.services.agent_workflow import transition_workflow
 from app.services.lock import AgentLock
 from app.services.session import load_session, save_session
 
@@ -60,6 +61,33 @@ async def _run_agent_with_lock(
                     detail="Session not found or expired",
                 )
             initial_state = AgentState.from_json(session.state, session_id=session.id)
+
+        if payload.selected_photo_id:
+            if initial_state is None:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="选择照片时必须续接产生该候选列表的会话",
+                )
+            selected_id = str(payload.selected_photo_id)
+            candidate_ids = {
+                str(item.get("id"))
+                for item in initial_state.last_search_items
+                if isinstance(item, dict) and item.get("id")
+            }
+            candidate_ids.update(
+                str(photo_id)
+                for photo_id in initial_state.active_search.get(
+                    "shown_photo_ids", []
+                )
+                if photo_id
+            )
+            if selected_id not in candidate_ids:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="所选照片不在当前候选列表中，请重新搜索后选择",
+                )
+            initial_state.confirmed_photo_id = selected_id
+            transition_workflow(initial_state, "selection_confirmed")
 
         agent = PhotoAgent(db=db)
         state, events = await agent.run(
@@ -136,7 +164,8 @@ async def agent_stream(
       data: {"type": "start", "payload": {...}, "step": 0}\n\n
     前端可用 EventSource 接收并渲染：
       - start: 任务开始
-      - think: LLM 思考过程
+      - route: 当前轮次的意图与上下文关系（new/replace/refine/continue）
+      - think: 复杂请求进入 Agent 后的 LLM 思考过程
       - tool_call / tool_result: 工具调用与结果
       - clarify: 需要用户澄清
       - final: 最终回复

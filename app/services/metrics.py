@@ -5,6 +5,7 @@
 - 如果环境安装了 prometheus_client，则自动暴露 Counter/Histogram；
 - 所有指标方法都提供 tags 支持，便于后续按服务/用户维度拆分。
 """
+
 from __future__ import annotations
 
 import logging
@@ -66,7 +67,9 @@ class AgentMetrics:
                 self._histograms[name] = _NoopMetric()
         return self._histograms[name]
 
-    def _log(self, metric_type: str, name: str, value: float, tags: dict[str, str]) -> None:
+    def _log(
+        self, metric_type: str, name: str, value: float, tags: dict[str, str]
+    ) -> None:
         """除了 Prometheus，还写一条结构化日志，便于没有 Prometheus 时排查。"""
         logger.info(
             "metric | type=%s name=%s value=%s tags=%s",
@@ -85,7 +88,9 @@ class AgentMetrics:
             metric = self._counter(name, f"Counter: {name}", list(tags.keys()))
             metric.labels(**tags).inc(1)
 
-    def histogram(self, name: str, value: float, tags: dict[str, str] | None = None) -> None:
+    def histogram(
+        self, name: str, value: float, tags: dict[str, str] | None = None
+    ) -> None:
         """记录一个直方图指标。"""
         tags = tags or {}
         if settings.app_env != "test":
@@ -126,6 +131,61 @@ class AgentMetrics:
         self.counter(
             "agent_tool_call_total",
             tags={"tool": tool_name, "status": "ok" if success else "error"},
+        )
+
+    def record_route(
+        self,
+        *,
+        route: str,
+        variant: str,
+        relation: str = "none",
+    ) -> None:
+        self.counter(
+            "agent_route_total",
+            tags={"route": route, "variant": variant, "relation": relation},
+        )
+
+    def record_search_result(
+        self,
+        *,
+        variant: str,
+        result_count: int,
+        complete: bool,
+        degraded: bool,
+    ) -> None:
+        outcome = "empty" if result_count == 0 else "nonempty"
+        self.counter(
+            "agent_search_outcome_total",
+            tags={
+                "variant": variant,
+                "outcome": outcome,
+                "complete": str(complete).lower(),
+                "degraded": str(degraded).lower(),
+            },
+        )
+        self.histogram(
+            "agent_search_result_count",
+            float(result_count),
+            tags={"variant": variant},
+        )
+
+    def record_model_calls(self, *, variant: str, calls: int) -> None:
+        self.histogram(
+            "agent_model_calls_per_turn",
+            float(calls),
+            tags={"variant": variant},
+        )
+
+    def record_generation_confirmation(self, *, variant: str, outcome: str) -> None:
+        self.counter(
+            "agent_generation_confirmation_total",
+            tags={"variant": variant, "outcome": outcome},
+        )
+
+    def record_generation_idempotency(self, *, outcome: str) -> None:
+        self.counter(
+            "agent_generation_idempotency_total",
+            tags={"outcome": outcome},
         )
 
     def timeit(self, name: str, tags: dict[str, str] | None = None):

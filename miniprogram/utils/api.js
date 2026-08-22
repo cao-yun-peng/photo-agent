@@ -197,10 +197,13 @@ const search = {
   query(payload) {
     return request({ url: '/search', method: 'POST', data: payload });
   },
+  click(payload) {
+    return request({ url: '/search/click', method: 'POST', data: payload });
+  },
 };
 
 const agent = {
-  stream({ query, session_id, onEvent }) {
+  stream({ query, session_id, selected_photo_id, onEvent }) {
     return new Promise((resolve, reject) => {
       const token = _getToken();
       const decoder = _createUtf8StreamDecoder();
@@ -231,7 +234,11 @@ const agent = {
       const task = wx.request({
         url: API_BASE + '/agent/stream',
         method: 'POST',
-        data: { query, ...(session_id ? { session_id } : {}) },
+        data: {
+          query,
+          ...(session_id ? { session_id } : {}),
+          ...(selected_photo_id ? { selected_photo_id } : {}),
+        },
         header: {
           'Content-Type': 'application/json',
           Accept: 'text/event-stream',
@@ -320,6 +327,13 @@ const generations = {
   },
   detail(id) {
     return request({ url: `/generations/${id}` });
+  },
+  confirm(id, confirmationToken) {
+    return request({
+      url: `/generations/${id}/confirm`,
+      method: 'POST',
+      data: { confirmation_token: confirmationToken },
+    });
   },
 };
 

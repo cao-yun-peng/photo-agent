@@ -1,4 +1,5 @@
 """每日限流表：user_id + day 组合主键，记录当天生成次数."""
+
 from datetime import date, datetime
 from uuid import UUID
 
@@ -19,6 +20,9 @@ class RateLimit(Base):
     )
     day: Mapped[date] = mapped_column(Date, primary_key=True)
     gen_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    gen_reserved: Mapped[int] = mapped_column(
+        Integer, default=0, nullable=False, server_default="0"
+    )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

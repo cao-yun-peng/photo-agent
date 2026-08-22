@@ -72,6 +72,9 @@ class Settings(BaseSettings):
     search_rerank_require_match: bool = True
     search_rerank_timeout_seconds: float = 12.0
     search_rerank_cache_ttl_seconds: int = 7 * 24 * 3600
+    # 0 表示默认关闭全局相似度硬阈值。现有离线评测显示单一阈值会明显
+    # 牺牲召回率；可按环境标定后设置 0~1，或由搜索请求显式传入。
+    search_semantic_min_score: float = 0.0
 
     # 二次视觉判定默认关闭；仅在完成 development/validation 对照后显式开启。
     search_visual_verify_enabled: bool = False
@@ -98,6 +101,14 @@ class Settings(BaseSettings):
 
     # 生图限流：每人每天免费额度
     gen_daily_free_quota: int = 3
+    generation_confirmation_ttl_seconds: int = 10 * 60
+    generation_estimated_cost_yuan: float = 0.14
+
+    # Agent v2 灰度：稳定按 user_id 分桶；kill switch 优先级最高。
+    agent_v2_enabled: bool = False
+    agent_v2_rollout_percent: int = 0
+    agent_v2_rollout_salt: str = "photo-agent-v2"
+    agent_v2_kill_switch: bool = False
 
     # Agent 并发锁 TTL（秒）
     agent_lock_ttl: int = 30

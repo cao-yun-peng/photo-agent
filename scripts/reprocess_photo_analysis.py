@@ -1,4 +1,4 @@
-"""安全重算隔离评测用户的 VL v4 分析和 embedding。
+"""安全重算隔离评测用户的 VL v5 分析和 embedding。
 
 默认只打印计划；必须显式传 ``--apply`` 才调用 OSS/DashScope 并写数据库。每张照片在
 描述、结构化分析和 embedding 全部成功后才原子提交，失败不会覆盖旧结果。
@@ -19,7 +19,7 @@ _PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
-_ANALYSIS_VERSION = "v4"
+_ANALYSIS_VERSION = "v5"
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -75,7 +75,9 @@ def _select_records(args: argparse.Namespace) -> tuple[str, list[dict[str, Any]]
     if not selected:
         raise ValueError("筛选后没有待处理照片")
     if requested_ids - {str(row.get("dataset_id")) for row in selected}:
-        missing = sorted(requested_ids - {str(row.get("dataset_id")) for row in selected})
+        missing = sorted(
+            requested_ids - {str(row.get("dataset_id")) for row in selected}
+        )
         raise ValueError(f"import map 中缺少 dataset_id: {missing}")
     return user_id, selected
 
@@ -97,6 +99,7 @@ async def _reprocess_one(
         embed_text,
     )
     from app.services.oss import sign_get_url
+    from app.services.semantic_facets import apply_semantic_facets
 
     dataset_id = str(row["dataset_id"])
     photo_id = UUID(str(row["photo_id"]))
@@ -104,7 +107,9 @@ async def _reprocess_one(
     async with semaphore:
         try:
             async with AsyncSessionLocal() as session:
-                result = await session.execute(select(Photo).where(Photo.id == photo_id))
+                result = await session.execute(
+                    select(Photo).where(Photo.id == photo_id)
+                )
                 photo = result.scalar_one_or_none()
                 if photo is None:
                     raise ValueError("数据库中不存在该 photo_id")
@@ -135,6 +140,7 @@ async def _reprocess_one(
                     raise ValueError("提交前图片哈希校验失败")
                 photo.ai_description = description
                 photo.ai_analysis = analysis.model_dump(exclude_none=True)
+                apply_semantic_facets(photo, analysis)
                 photo.embedding = embedding
                 await session.commit()
             return {
@@ -193,7 +199,9 @@ def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--import-map", type=Path, required=True)
     parser.add_argument(
-        "--manifest", type=Path, default=_PROJECT_ROOT / "tests/eval/photo_manifest.json"
+        "--manifest",
+        type=Path,
+        default=_PROJECT_ROOT / "tests/eval/photo_manifest.json",
     )
     parser.add_argument("--split", choices=["development", "validation", "test"])
     parser.add_argument("--dataset-id", action="append")

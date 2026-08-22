@@ -162,6 +162,7 @@ curl -X POST http://localhost:8000/auth/wechat \
 | 视觉理解 / 向量 / Chat | `DASHSCOPE_API_KEY=sk-xxx` 时使用确定性 Mock | `DASHSCOPE_API_KEY` |
 | 图片生成 | 模型密钥未配置时返回原图完成链路 | DashScope 万相或 `OPENAI_API_KEY` |
 | 二次视觉核验 | 默认关闭 | 评测通过后设置 `SEARCH_VISUAL_VERIFY_ENABLED=true` |
+| v5 集合检索 | 已实现 | 自拍/截图/合照走结构化硬过滤；上线与重索引见 `docs/semantic-search-v5.md` |
 
 不要提交 `.env`。生产环境还应替换 `JWT_SECRET`、收紧 CORS、配置 HTTPS，并将 OSS Bucket CORS 限制为自己的域名。
 

@@ -111,6 +111,20 @@ def _rule_based_parse(text: str) -> ParsedQuery:
         ("这个月", (today.replace(day=1), today)),
         ("上个月", _last_month_range(today)),
         ("今年", (today.replace(month=1, day=1), today)),
+        (
+            "去年",
+            (
+                today.replace(year=today.year - 1, month=1, day=1),
+                today.replace(year=today.year - 1, month=12, day=31),
+            ),
+        ),
+        (
+            "前年",
+            (
+                today.replace(year=today.year - 2, month=1, day=1),
+                today.replace(year=today.year - 2, month=12, day=31),
+            ),
+        ),
     ]
     for kw, rng in patterns:
         if kw in text:
@@ -256,6 +270,12 @@ def resolve_auto_parsed_query(
 # ------------------------------------------------------------------
 # 对外接口
 # ------------------------------------------------------------------
+def parse_query_locally(text: str) -> ParsedQuery:
+    """不调用模型地解析常见时间与地点，供 Agent 普通搜索快路径复用。"""
+
+    return _rule_based_parse(text)
+
+
 async def parse_query(text: str) -> ParsedQuery:
     """把自然语言查询拆成结构化条件。mock 模式走规则，真模式走 qwen-plus。
 

@@ -2,6 +2,8 @@
 const { skills, photos: photosApi, generations, API_BASE } = require('../../utils/api');
 
 Page({
+  _pendingIdempotencyKey: '',
+
   data: {
     skillId: null,
     skill: null,
@@ -55,8 +57,29 @@ Page({
       const g = await generations.create(this.data.selectedPhotoId, {
         skill_id: this.data.skillId || null,
         extra_prompt: this.data.extraPrompt || null,
+        idempotency_key: this._pendingIdempotencyKey || (
+          this._pendingIdempotencyKey = `wx-${Date.now()}-${Math.random().toString(16).slice(2)}`
+        ),
       });
       this.setData({ genId: g.id, genStatus: g.status });
+      if (g.status === 'awaiting_confirmation') {
+        const accepted = await new Promise((resolve) => {
+          wx.showModal({
+            title: '确认开始生成',
+            content: `将使用当前照片和效果，预计费用 ¥${Number(g.estimated_cost_yuan || 0).toFixed(2)}。确认后才会开始生成。`,
+            confirmText: '确认生成',
+            success: (res) => resolve(Boolean(res.confirm)),
+            fail: () => resolve(false),
+          });
+        });
+        if (!accepted) {
+          this.setData({ submitting: false });
+          return;
+        }
+        const confirmed = await generations.confirm(g.id, g.confirmation_token);
+        this.setData({ genStatus: confirmed.status });
+      }
+      this._pendingIdempotencyKey = '';
       this._poll();
     } catch (err) {
       this.setData({ submitting: false });

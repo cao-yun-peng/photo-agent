@@ -18,19 +18,31 @@
   </view>
 
   <view wx:if="{{results.length > 0}}" class="result-summary">
-    {{resultMode === 'best' ? '最佳匹配 · 已从候选中选出 1 张' : 'Agent 找到的相关照片'}}
+    {{resultMode === 'best' ? '最佳匹配 · 已从候选中选出 1 张' : (resultMode === 'select' ? resultTotal + ' 张匹配照片' + (resultSetComplete ? ' · 已完整载入' : ' · 当前可检索结果') + ' · 请你本人选择' : 'Agent 找到的相关照片')}}
+  </view>
+  <view wx:if="{{coverageHint}}" class="coverage-hint">{{coverageHint}}</view>
+
+  <view wx:if="{{hasMoreResults}}" class="result-load-more" bindtap="onLoadMoreResults">
+    再展示 {{resultTotal - results.length > 30 ? 30 : resultTotal - results.length}} 张
   </view>
 
   <view wx:if="{{results.length > 0}}" class="results">
     <block wx:for="{{results}}" wx:key="id">
-      <view class="result card {{resultMode === 'best' ? 'result--best' : ''}}">
-        <image class="result__thumb" src="{{item.thumb_url_full}}" mode="aspectFill" />
+      <view class="result card {{resultMode === 'best' ? 'result--best' : ''}} {{selectedResultId === item.id ? 'result--selected' : ''}}">
+        <view class="result__position">{{index + 1}}</view>
+        <image class="result__thumb" src="{{item.thumb_url_full}}" mode="aspectFill" bindtap="onPreviewResult" data-index="{{index}}" />
         <view class="result__body">
           <view class="result__desc">{{item.ai_description || '（还在处理）'}}</view>
           <view class="result__scores">
             <text class="tag">相关 {{item.score_semantic}}</text>
             <text class="tag">新鲜 {{item.score_recency}}</text>
             <text class="tag tag--brand">综合 {{item.score_final}}</text>
+          </view>
+          <view class="result__actions">
+            <text class="result__preview" bindtap="onPreviewResult" data-index="{{index}}">查看大图</text>
+            <button class="result__select" size="mini" bindtap="onSelectResult" data-index="{{index}}" disabled="{{loading}}">
+              {{selectedResultId === item.id ? '已选择' : '选择这张'}}
+            </button>
           </view>
         </view>
       </view>

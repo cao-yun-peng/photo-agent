@@ -11,6 +11,10 @@ class AgentRunRequest(BaseModel):
 
     query: str = Field(..., min_length=1, max_length=500)
     session_id: UUID | None = Field(default=None, description="续接已有会话 ID")
+    selected_photo_id: UUID | None = Field(
+        default=None,
+        description="用户在当前候选列表中明确点击选择的照片 ID",
+    )
 
 
 class AgentRunResponse(BaseModel):

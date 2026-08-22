@@ -229,6 +229,8 @@ async def test_agent_run_mock() -> None:
 
     event_types = [e["type"] for e in events]
     assert "start" in event_types
-    assert "think" in event_types
+    assert "route" in event_types
+    assert "think" not in event_types
+    assert "tool_call" in event_types
     assert "final" in event_types
-    assert state.step >= 1
+    assert state.step == 0

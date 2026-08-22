@@ -74,9 +74,11 @@ async def test_traced_job_restores_context_after_worker_call() -> None:
 @pytest.mark.asyncio
 async def test_arq_consumer_is_child_of_producer_span() -> None:
     exporter = InMemorySpanExporter()
-    provider = TracerProvider()
+    provider = trace.get_tracer_provider()
+    if not isinstance(provider, TracerProvider):
+        provider = TracerProvider()
+        trace.set_tracer_provider(provider)
     provider.add_span_processor(SimpleSpanProcessor(exporter))
-    trace.set_tracer_provider(provider)
     redis = _FakeRedis()
 
     async def task(ctx, value):

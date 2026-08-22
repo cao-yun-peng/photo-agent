@@ -1,4 +1,5 @@
 """评测器自身的回归测试。"""
+
 from __future__ import annotations
 
 import json
@@ -41,9 +42,33 @@ def test_summary_uses_each_case_threshold() -> None:
     assert summary["failed"] == 1
 
 
+def test_summary_builds_route_confusion_matrix() -> None:
+    correct = _result(score=1.0, threshold=0.8, test_id="TC-R1")
+    correct.expected_route = "search"
+    correct.actual_route = "search"
+    confused = _result(score=1.0, threshold=0.8, test_id="TC-R2")
+    confused.expected_route = "search"
+    confused.actual_route = "complex_agent"
+
+    summary = build_summary(
+        [correct, confused],
+        {"dimensions": {"D1": {"weight": 1.0, "pass_threshold": 0.8}}},
+        mode="real",
+    )
+
+    assert summary["route_confusion_matrix"] == {
+        "search": {"search": 1, "complex_agent": 1}
+    }
+    assert summary["metrics"]["route_accuracy"] == 0.5
+
+
 def test_parameter_rules_validate_values_not_only_presence() -> None:
-    assert _parameter_matches("帮我找狗的照片", {"contains_all": ["狗"], "excludes": ["猫"]})
-    assert not _parameter_matches("帮我找猫和狗", {"contains_all": ["狗"], "excludes": ["猫"]})
+    assert _parameter_matches(
+        "帮我找狗的照片", {"contains_all": ["狗"], "excludes": ["猫"]}
+    )
+    assert not _parameter_matches(
+        "帮我找猫和狗", {"contains_all": ["狗"], "excludes": ["猫"]}
+    )
     assert not _parameter_matches("", {"not_empty": True})
 
 
@@ -136,7 +161,8 @@ async def test_degraded_llm_uses_stub_and_is_counted_as_infra_error() -> None:
         "id": "TC-INFRA",
         "dimension": "D1",
         "priority": "P0",
-        "user_query": "找猫的照片",
+        # 普通找图已由确定性快路径处理；这里用复杂请求专门验证 Agent LLM 熔断。
+        "user_query": "帮我处理一下相册",
         "context": {"photos_available": True},
         "expected": {
             "expected_tools": ["search_photos", "final_answer"],

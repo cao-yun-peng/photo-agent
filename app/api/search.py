@@ -32,12 +32,17 @@ from app.services.search_constraints import (
 from app.services.search_reranker import rerank_scored_candidates
 from app.services.search_index import get_index_coverage
 from app.services.search import (
+    apply_semantic_threshold,
+    build_search_coverage_hint,
     combine,
+    complete_scope_is_reliable,
     decode_cursor,
     get_query_embedding,
     get_user_profile,
+    infer_complete_result_filters,
     personalized_interaction_score,
     recency_score,
+    resolve_semantic_threshold,
     resolve_search_result_limits,
     semantic_score,
     smart_album_fallback,
@@ -46,9 +51,7 @@ from app.services.search import (
 router = APIRouter()
 
 
-async def _get_index_coverage(
-    db: AsyncSession, user_id
-) -> SearchIndexCoverage:
+async def _get_index_coverage(db: AsyncSession, user_id) -> SearchIndexCoverage:
     """兼容现有路由测试，同时复用公共索引覆盖率实现。"""
     coverage = await get_index_coverage(db, user_id)
     coverage.pop("complete", None)
@@ -68,6 +71,7 @@ async def semantic_search(
     output_limit, verification_limit = resolve_search_result_limits(
         payload.result_mode,
         payload.limit,
+        complete_result_set=payload.complete_result_set,
     )
     index_coverage = await _get_index_coverage(db, current_user.id)
     # ---------- 1. 可选：自动解析自然语言条件 ----------
@@ -141,10 +145,78 @@ async def semantic_search(
     if jsonb_conds:
         conds.append(or_(*jsonb_conds))
 
+    inferred_filters = infer_complete_result_filters(payload.q)
+    if payload.complete_result_set and not complete_scope_is_reliable(
+        inferred_filters,
+        tags=payload.tags,
+        scene=payload.scene,
+        objects=payload.objects,
+        text_in_image=payload.text_in_image,
+        mood=payload.mood,
+        colors=payload.colors,
+        photo_types=payload.photo_types,
+        is_selfie=payload.is_selfie,
+        people_count_min=payload.people_count_min,
+        people_count_max=payload.people_count_max,
+    ):
+        return SearchResult(
+            items=[],
+            total=0,
+            total_matches=0,
+            result_mode=payload.result_mode,
+            result_set_complete=False,
+            completeness_reason="semantic_scope_unverified",
+            index_coverage=index_coverage,
+            coverage_hint=(
+                "开放语义类别尚不能保证完整，已停止把全相册作为匹配结果返回"
+            ),
+        )
+    effective_photo_types = list(payload.photo_types or inferred_filters["photo_types"])
+    effective_is_selfie = (
+        payload.is_selfie
+        if payload.is_selfie is not None
+        else inferred_filters["is_selfie"]
+    )
+    effective_people_min = (
+        payload.people_count_min
+        if payload.people_count_min is not None
+        else inferred_filters["people_count_min"]
+    )
+    effective_people_max = (
+        payload.people_count_max
+        if payload.people_count_max is not None
+        else inferred_filters["people_count_max"]
+    )
+    if effective_photo_types:
+        conds.append(Photo.photo_type.in_(effective_photo_types))
+    if effective_is_selfie is not None:
+        conds.append(Photo.is_selfie == effective_is_selfie)
+    if effective_people_min is not None:
+        conds.append(Photo.people_count >= effective_people_min)
+    if effective_people_max is not None:
+        conds.append(Photo.people_count <= effective_people_max)
+    structured_collection = bool(
+        effective_photo_types
+        or effective_is_selfie is not None
+        or effective_people_min is not None
+        or effective_people_max is not None
+    )
+    similarity_threshold, threshold_bypassed_reason = resolve_semantic_threshold(
+        payload.min_semantic_score,
+        structured_collection=structured_collection,
+    )
+
     # ---------- 4. 向量召回（强约束查询扩大候选池后再做证据校验） ----------
-    fetch_n = max(verification_limit * 5, 30) if constraints else verification_limit * 3
+    if verification_limit is None:
+        fetch_n = None
+    else:
+        fetch_n = (
+            max(verification_limit * 5, 30) if constraints else verification_limit * 3
+        )
     dist_col = Photo.embedding.cosine_distance(query_vec).label("dist")
-    stmt = select(Photo, dist_col).where(and_(*conds)).order_by(dist_col).limit(fetch_n)
+    stmt = select(Photo, dist_col).where(and_(*conds)).order_by(dist_col)
+    if fetch_n is not None:
+        stmt = stmt.limit(fetch_n)
     result = await db.execute(stmt)
     rows = result.all()  # [(Photo, dist), ...]
 
@@ -167,6 +239,9 @@ async def semantic_search(
     scored.sort(key=lambda x: x[4], reverse=True)
 
     scored, constraint_summary = validate_scored_candidates(scored, constraints)
+    scored, threshold_filtered_count = apply_semantic_threshold(
+        scored, similarity_threshold
+    )
 
     # ---------- 6. 游标分页 ----------
     if payload.cursor:
@@ -181,14 +256,16 @@ async def semantic_search(
                 or (abs(fin - cur_score) < 1e-9 and str(p.id) > cur_id)
             ]
 
+    # 用户自选模式不能被判同模型删减为少量“最佳”结果；保留向量相似度
+    # 与硬条件过滤后的完整 Top-N，最终选择权属于用户。
     scored, rerank_summary = await rerank_scored_candidates(
         scored,
         payload.q,
-        enabled=payload.verify_semantic,
-        page_limit=verification_limit,
+        enabled=payload.verify_semantic and payload.result_mode != "select",
+        page_limit=verification_limit or len(scored),
     )
 
-    page = scored[:output_limit]
+    page = scored if output_limit is None else scored[:output_limit]
 
     # ---------- 7. 拼接返回 ----------
     items = [
@@ -206,10 +283,59 @@ async def semantic_search(
         for (p, sem, rec, inter, fin) in page
     ]
 
+    embedding_coverage_complete = bool(
+        index_coverage.unavailable_photos == 0
+        and index_coverage.retrying_photos == 0
+        and index_coverage.indexed_photos >= index_coverage.total_photos
+    )
+    coverage_complete = bool(
+        embedding_coverage_complete
+        and (index_coverage.semantic_complete if structured_collection else True)
+    )
+    scope_reliable = complete_scope_is_reliable(
+        inferred_filters,
+        tags=payload.tags,
+        scene=payload.scene,
+        objects=payload.objects,
+        text_in_image=payload.text_in_image,
+        mood=payload.mood,
+        colors=payload.colors,
+        photo_types=payload.photo_types,
+        is_selfie=payload.is_selfie,
+        people_count_min=payload.people_count_min,
+        people_count_max=payload.people_count_max,
+    )
+    result_set_complete = bool(
+        payload.result_mode == "select"
+        and payload.complete_result_set
+        and coverage_complete
+        and scope_reliable
+    )
+    if not payload.complete_result_set:
+        completeness_reason = "not_requested"
+    elif not coverage_complete:
+        completeness_reason = "index_incomplete"
+    elif not scope_reliable:
+        completeness_reason = "semantic_scope_unverified"
+    else:
+        completeness_reason = None
+    coverage_payload = index_coverage.model_dump()
+    coverage_payload["complete"] = embedding_coverage_complete
+    coverage_hint = build_search_coverage_hint(
+        coverage_payload,
+        requires_facets=structured_collection,
+        threshold=similarity_threshold,
+        threshold_filtered_count=threshold_filtered_count,
+    )
+
     return SearchResult(
         items=items,
         total=len(page),
+        total_matches=len(scored) if payload.complete_result_set else len(page),
         result_mode=payload.result_mode,
+        result_set_complete=result_set_complete,
+        completeness_reason=completeness_reason,
+        truncated=len(page) < len(scored),
         next_cursor=None,
         parsed=parsed,
         cache_hit=cache_hit,
@@ -222,6 +348,11 @@ async def semantic_search(
             SearchRerankCheck(**rerank_summary) if rerank_summary is not None else None
         ),
         index_coverage=index_coverage,
+        similarity_threshold=similarity_threshold,
+        threshold_filtered_count=threshold_filtered_count,
+        threshold_bypassed_reason=threshold_bypassed_reason,
+        coverage_hint=coverage_hint,
+        semantic_facets_required=structured_collection,
     )
 
 

@@ -753,7 +753,7 @@ async def test_agent_llm_degraded_fallback_to_browse() -> None:
         )
         state, events = await agent.run(
             user_id=uuid4(),
-            query="找照片",
+            query="你好",
         )
 
     event_types = [e["type"] for e in events]

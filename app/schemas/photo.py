@@ -4,7 +4,7 @@ from datetime import date, datetime
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class UploadUrlRequest(BaseModel):
@@ -96,9 +96,13 @@ class SearchQuery(BaseModel):
     """
 
     q: str = Field(..., min_length=1, max_length=200)
-    limit: int = Field(default=5, ge=1, le=100)
-    # browse=展示最多 5 张供选择；best=在 Top-5 判同重排后只返回最佳 1 张
-    result_mode: Literal["browse", "best"] = "browse"
+    limit: int = Field(default=5, ge=1, le=10000)
+    # browse=最多 5 张；best=系统选最佳 1 张；select=由用户选择，不设业务硬上限
+    result_mode: Literal["browse", "best", "select"] = "browse"
+    complete_result_set: bool = Field(
+        default=False,
+        description="select 模式下扫描并返回全部符合硬条件的已索引照片",
+    )
 
     # 过滤维度
     from_date: date | None = None
@@ -112,6 +116,27 @@ class SearchQuery(BaseModel):
     text_in_image: list[str] | None = None  # 图中文字
     mood: str | None = None  # 氛围
     colors: list[str] | None = None  # 主色调
+    photo_types: (
+        list[
+            Literal[
+                "selfie",
+                "screenshot",
+                "group_photo",
+                "portrait",
+                "document",
+                "food",
+                "scenery",
+                "other",
+            ]
+        ]
+        | None
+    ) = None
+    is_selfie: bool | None = None
+    people_count_min: int | None = Field(default=None, ge=0)
+    people_count_max: int | None = Field(default=None, ge=0)
+
+    # 可选的语义相似度硬阈值。None 使用服务端配置；0 显式关闭。
+    min_semantic_score: float | None = Field(default=None, ge=0, le=1)
 
     # 排序权重（0–1），加起来不必等于 1，程序会归一
     w_semantic: float = Field(default=0.7, ge=0, le=1)
@@ -129,6 +154,18 @@ class SearchQuery(BaseModel):
 
     # 对当前页前 K 个候选执行查询-候选判同；可显式关闭以运行基线对照
     verify_semantic: bool = True
+
+    @model_validator(mode="after")
+    def validate_complete_result_mode(self) -> "SearchQuery":
+        if self.complete_result_set and self.result_mode != "select":
+            raise ValueError("complete_result_set 仅支持 select 模式")
+        if (
+            self.people_count_min is not None
+            and self.people_count_max is not None
+            and self.people_count_min > self.people_count_max
+        ):
+            raise ValueError("people_count_min 不能大于 people_count_max")
+        return self
 
 
 class SearchResultItem(BaseModel):
@@ -204,18 +241,31 @@ class SearchIndexCoverage(BaseModel):
     unavailable_photos: int = 0
     coverage_ratio: float = 1.0
     message: str | None = None
+    faceted_photos: int = 0
+    facet_coverage_ratio: float = 1.0
+    semantic_complete: bool = True
+    semantic_message: str | None = None
 
 
 class SearchResult(BaseModel):
     items: list[SearchResultItem]
     total: int
-    result_mode: Literal["browse", "best"] = "browse"
+    result_mode: Literal["browse", "best", "select"] = "browse"
+    total_matches: int = 0
+    result_set_complete: bool = False
+    completeness_reason: str | None = None
+    truncated: bool = False
     next_cursor: str | None = None
     parsed: ParsedQuery | None = None  # 若 auto_parse=True，返回解析结果给前端展示
     cache_hit: bool = False  # embedding 是否命中缓存
     constraint_check: SearchConstraintCheck | None = None
     rerank_check: SearchRerankCheck | None = None
     index_coverage: SearchIndexCoverage | None = None
+    similarity_threshold: float | None = None
+    threshold_filtered_count: int = 0
+    threshold_bypassed_reason: str | None = None
+    coverage_hint: str | None = None
+    semantic_facets_required: bool = False
 
 
 class AlbumFallbackQuery(BaseModel):

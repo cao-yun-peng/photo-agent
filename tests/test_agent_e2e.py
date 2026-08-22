@@ -55,7 +55,7 @@ def _events() -> list[dict]:
 def test_checked_in_agent_e2e_dataset_is_valid() -> None:
     root = Path(__file__).resolve().parents[1]
     dataset = load_dataset(root / "tests/eval/agent_e2e_dataset.json")
-    assert len(dataset["cases"]) == 9
+    assert len(dataset["cases"]) == 11
     assert dataset["dataset_role"] == "e2e-regression"
 
 

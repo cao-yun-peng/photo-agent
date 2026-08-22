@@ -7,6 +7,7 @@
 当 .env 里 DASHSCOPE_API_KEY 还是 "sk-xxx" 占位符时会走 mock 分支，
 让 D3–D4 联调不受影响；填了真 key 就自动切到真调用。
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -38,12 +39,8 @@ def _stable_mock_seed(text: str) -> int:
 
 
 # ---- API 常量 ---------------------------------------------------------
-_VL_URL = (
-    "https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation"
-)
-_EMB_URL = (
-    "https://dashscope.aliyuncs.com/api/v1/services/embeddings/text-embedding/text-embedding"
-)
+_VL_URL = "https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation"
+_EMB_URL = "https://dashscope.aliyuncs.com/api/v1/services/embeddings/text-embedding/text-embedding"
 
 # 让 worker 有个合理超时；VL 慢一些，Embedding 快
 _VL_TIMEOUT = httpx.Timeout(60.0, connect=5.0)
@@ -56,8 +53,8 @@ _VL_PROMPT = (
     "主体在画面中的位置和朝向；看不清就省略，不要猜测。控制在 100 字以内，不要使用列表或标题。"
 )
 
-# 结构化分析 Prompt：v4 增加细粒度检索判别字段。
-VL_ANALYSIS_PROMPT_VERSION = "v4"
+# 结构化分析 Prompt：v5 增加可用于完整集合扫描的稳定语义字段。
+VL_ANALYSIS_PROMPT_VERSION = "v5"
 _VL_ANALYSIS_PROMPT = """请分析这张图片，并且只返回一个合法 JSON 对象，不要输出解释或 Markdown：
 {
   "scene": "受控场景标签",
@@ -67,6 +64,9 @@ _VL_ANALYSIS_PROMPT = """请分析这张图片，并且只返回一个合法 JSO
     "age_estimate": "可选",
     "expression": "可选"
   },
+  "photo_type": "selfie/screenshot/group_photo/portrait/document/food/scenery/other",
+  "is_selfie": false,
+  "people_count": 0,
   "actions": ["主体正在进行的、画面可见的具体动作"],
   "age_groups": ["儿童/青年/中年/老年"],
   "blur_type": "无明显模糊/运动模糊/失焦/相机抖动/镜头雾化/隔窗模糊/混合模糊/无法判断",
@@ -83,20 +83,21 @@ _VL_ANALYSIS_PROMPT = """请分析这张图片，并且只返回一个合法 JSO
 严格规则：
 1. scene 必须且只能从下列值中选择一个，不得组合、扩写或自造标签：室内、户外、居家、办公室、餐厅、便利店、商店、教室、厨房、卧室、客厅、机场、车内、街道、公园、景区、海边、沙滩、球场、校园、门廊、阳台、婚礼、其他。更具体的自由文本只能写入 scene_detail。
 2. persons.count 只统计主体场景中能清楚辨认为人的真实人物。排除电视/电脑屏幕、海报、照片中的人物，也排除孤立肢体和很小、模糊的背景人影；多人合影要逐个计数。
-3. objects 列出清晰可见且有检索价值的具体实体，通常 5–12 个；优先使用具体名称，避免只写宠物、食物、建筑、交通工具等泛词，但不要猜测看不清的物体。
-4. persons.count 大于 0 时，objects 中加入“人物”；能判断身份时再加入学生、教师、新娘、运动员等角色标签。
-5. text_in_image 检查招牌、屏幕、包装、衣服、票据和手写文字，按可见内容逐条抄录，保留中英文和数字，不要翻译或编造。
-6. actions 只写肉眼可见的动作，例如跑动、拥抱、挥手、端杯、看向左侧；不要把身份、情绪或推测目的写成动作。
-7. age_groups 只能使用儿童、青年、中年、老年；无法可靠判断时返回空数组，不得根据场景或衣着臆测。
-8. blur_type 必须从给定值中选一个。区分主体运动拖影、整体失焦、相机抖动、镜头雾化与隔着玻璃造成的模糊。
-9. capture_context 可使用汽车内、公交车内、火车内、隔窗拍摄、屏幕截图、自拍、俯拍、仰拍、特写、远景、正面拍摄等可见标签；无依据时返回空数组。
-10. spatial_layout 写 1–6 条短语，覆盖左/中/右、前景/背景、面向/侧身/背影以及主体间相对位置；distinctive_details 写可区分相似图的服饰、姿态、局部物体或光线细节。
-11. summary 必须优先综合可见的动作、年龄、模糊、拍摄载体和空间位置；未知信息直接省略。
-12. 所有描述字段使用中文；所有复数字段必须是 JSON 字符串数组；persons.count 必须是整数。"""
+3. photo_type 必须且只能从 selfie、screenshot、group_photo、portrait、document、food、scenery、other 中选择一个。自拍优先标 selfie；手机或电脑界面截图标 screenshot；以两名及以上人物合影为主体标 group_photo；以单人为主体但不是自拍标 portrait。
+4. people_count 必须与 persons.count 完全一致；is_selfie 仅在画面呈现自拍视角、镜面自拍或明显手持前置拍摄时为 true，并同时令 photo_type=selfie、capture_context 包含“自拍”。
+5. objects 列出清晰可见且有检索价值的具体实体，通常 5–12 个；优先使用具体名称，避免只写宠物、食物、建筑、交通工具等泛词，但不要猜测看不清的物体。
+6. persons.count 大于 0 时，objects 中加入“人物”；能判断身份时再加入学生、教师、新娘、运动员等角色标签。
+7. text_in_image 检查招牌、屏幕、包装、衣服、票据和手写文字，按可见内容逐条抄录，保留中英文和数字，不要翻译或编造。
+8. actions 只写肉眼可见的动作，例如跑动、拥抱、挥手、端杯、看向左侧；不要把身份、情绪或推测目的写成动作。
+9. age_groups 只能使用儿童、青年、中年、老年；无法可靠判断时返回空数组，不得根据场景或衣着臆测。
+10. blur_type 必须从给定值中选一个。区分主体运动拖影、整体失焦、相机抖动、镜头雾化与隔着玻璃造成的模糊。
+11. capture_context 可使用汽车内、公交车内、火车内、隔窗拍摄、屏幕截图、自拍、俯拍、仰拍、特写、远景、正面拍摄等可见标签；无依据时返回空数组。
+12. spatial_layout 写 1–6 条短语，覆盖左/中/右、前景/背景、面向/侧身/背影以及主体间相对位置；distinctive_details 写可区分相似图的服饰、姿态、局部物体或光线细节。
+13. summary 必须优先综合可见的动作、年龄、模糊、拍摄载体和空间位置；未知信息直接省略。
+14. 所有描述字段使用中文；所有复数字段必须是 JSON 字符串数组；persons.count 和 people_count 必须是整数。"""
 
 # 从 VL 返回文本中抠 JSON 的兜底正则
 _JSON_BLOCK_RE = re.compile(r"```(?:json)?\s*([\s\S]*?)```", re.IGNORECASE)
-
 
 
 # ---- 是否走 mock ------------------------------------------------------
@@ -161,9 +162,7 @@ async def describe_image(image_url: str) -> str:
             else:
                 description = str(content).strip()
         except (KeyError, IndexError, TypeError) as exc:
-            raise RuntimeError(
-                f"DashScope VL unexpected response: {data}"
-            ) from exc
+            raise RuntimeError(f"DashScope VL unexpected response: {data}") from exc
 
         if not description:
             raise RuntimeError("DashScope VL returned empty description")
@@ -233,7 +232,9 @@ async def analyze_image(image_url: str) -> ImageAnalysis:
             else:
                 raw_text = str(content).strip()
         except (KeyError, IndexError, TypeError) as exc:
-            logger.warning("analyze_image unexpected response | exc=%s data=%s", exc, data)
+            logger.warning(
+                "analyze_image unexpected response | exc=%s data=%s", exc, data
+            )
             return _fallback_analysis("vl_response_malformed")
 
         return parse_vl_response(raw_text)
@@ -284,7 +285,9 @@ def parse_vl_response(raw_text: str) -> ImageAnalysis:
         analysis.analysis_version = VL_ANALYSIS_PROMPT_VERSION
         return analysis
     except (json.JSONDecodeError, ValueError) as exc:
-        logger.info("parse_vl_response JSON decode failed, trying regex fallback | exc=%s", exc)
+        logger.info(
+            "parse_vl_response JSON decode failed, trying regex fallback | exc=%s", exc
+        )
         return _regex_fallback(raw_text)
 
 
@@ -355,6 +358,9 @@ def build_retrieval_text(description: str, analysis: ImageAnalysis) -> str:
             parts.append(value)
 
     scalar_fields = (
+        ("照片类型", analysis.photo_type),
+        ("是否自拍", "是" if analysis.is_selfie else "否"),
+        ("人物数量", str(analysis.people_count)),
         ("场景", analysis.scene if analysis.scene != "unknown" else None),
         ("场景细节", analysis.scene_detail),
         ("模糊类型", analysis.blur_type),

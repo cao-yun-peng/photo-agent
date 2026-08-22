@@ -83,6 +83,8 @@ class TestCaseResult:
     total_tokens: int = 0
     error: str | None = None
     error_type: str | None = None
+    expected_route: str | None = None
+    actual_route: str | None = None
     score_tool_selection: float = 0.0
     score_tool_order: float = 0.0
     score_must_not_call: float = 1.0
@@ -113,6 +115,8 @@ class TestCaseResult:
             "total_tokens": self.total_tokens,
             "error": self.error,
             "error_type": self.error_type,
+            "expected_route": self.expected_route,
+            "actual_route": self.actual_route,
             "scores": {
                 "tool_selection": round(self.score_tool_selection, 4),
                 "tool_order": round(self.score_tool_order, 4),
@@ -568,15 +572,15 @@ def evaluate_test_case(
             content_passed += 1
         else:
             result.evaluation_notes.append(f"结果缺少关键内容: {token}")
-    contains_any = [str(token) for token in expected.get("expected_result_contains_any", [])]
+    contains_any = [
+        str(token) for token in expected.get("expected_result_contains_any", [])
+    ]
     if contains_any:
         content_checks += 1
         if any(token in combined_text for token in contains_any):
             content_passed += 1
         else:
-            result.evaluation_notes.append(
-                f"结果未包含任一允许内容: {contains_any}"
-            )
+            result.evaluation_notes.append(f"结果未包含任一允许内容: {contains_any}")
     hint = expected.get("expected_hint_contains")
     if hint:
         content_checks += 1
@@ -705,6 +709,11 @@ def _collect_result_from_events(
     interceptor: ToolCallInterceptor,
 ) -> None:
     result.tool_calls = list(interceptor.calls)
+    route_events = [event for event in events if event.get("type") == "route"]
+    if route_events:
+        result.actual_route = str(
+            route_events[-1].get("payload", {}).get("intent", "unknown")
+        )
     for event in events:
         if event.get("type") != "tool_call":
             continue
@@ -813,6 +822,7 @@ async def run_single_test(
         dimension=test_case["dimension"],
         priority=test_case.get("priority", "P1"),
         pass_threshold=threshold,
+        expected_route=test_case.get("expected", {}).get("expected_route"),
     )
     logger.info(
         "运行 %s [%s/%s]: %s",
@@ -982,6 +992,19 @@ def build_summary(
         and safety_pass_rate
         >= _dimension_config(scoring_config, "D8").get("pass_threshold", 0.9)
     )
+    route_confusion: dict[str, dict[str, int]] = {}
+    route_cases = [result for result in results if result.expected_route]
+    for result in route_cases:
+        expected_route = str(result.expected_route)
+        actual_route = str(result.actual_route or "missing")
+        row = route_confusion.setdefault(expected_route, {})
+        row[actual_route] = row.get(actual_route, 0) + 1
+    route_accuracy = (
+        sum(result.expected_route == result.actual_route for result in route_cases)
+        / len(route_cases)
+        if route_cases
+        else None
+    )
     return {
         "mode": mode,
         "model_metrics_valid": metrics_valid,
@@ -1013,7 +1036,11 @@ def build_summary(
                 else 0,
                 4,
             ),
+            "route_accuracy": (
+                round(route_accuracy, 4) if route_accuracy is not None else None
+            ),
         },
+        "route_confusion_matrix": route_confusion,
         "by_dimension": by_dimension,
         "by_priority": by_priority,
     }
@@ -1048,9 +1075,7 @@ def validate_dataset(dataset: dict[str, Any]) -> None:
                 raise ValueError(
                     f"{test_case['id']} 必须同时接受结构化澄清和有效自然语言澄清"
                 )
-        for name, rule in (
-            expected.get("parameter_checks", {}).items()
-        ):
+        for name, rule in expected.get("parameter_checks", {}).items():
             if "." not in name:
                 raise ValueError(f"参数断言必须使用 tool.parameter 格式: {name}")
             if isinstance(rule, dict):

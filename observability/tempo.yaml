@@ -39,4 +39,7 @@ metrics_generator:
 overrides:
   defaults:
     metrics_generator:
-      processors: [service-graphs, span-metrics, local-blocks]
+      # 当前看板只依赖 RED span metrics 与 service graph。
+      # local-blocks 需要额外的 traces WAL；未配置时会导致整个
+      # metrics-generator 初始化失败，从而让全部 Prometheus 面板无数据。
+      processors: [service-graphs, span-metrics]

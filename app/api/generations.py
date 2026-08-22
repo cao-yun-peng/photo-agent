@@ -1,5 +1,5 @@
-"""生成相关路由：发起生成 + 生成历史."""
-from datetime import date
+"""生成相关路由：准备、确认、查询生成任务。"""
+
 from typing import Annotated
 from uuid import UUID
 
@@ -7,17 +7,22 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import settings
 from app.core.security import get_current_user
 from app.database import get_db
 from app.models.generation import Generation
-from app.models.photo import Photo
-from app.models.rate_limit import RateLimit
-from app.models.skill import Skill
 from app.models.user import User
-from app.schemas.skill import GenerateRequest, GenerationOut
+from app.schemas.skill import (
+    GenerateRequest,
+    GenerationConfirmRequest,
+    GenerationOut,
+)
+from app.services.generation_service import (
+    GenerationDomainError,
+    confirm_generation,
+    prepare_generation,
+)
 from app.services.oss import sign_get_url
-from app.workers.tasks import enqueue_generate_photo
+from app.services.rollout import agent_variant_for_user
 
 router = APIRouter()
 
@@ -34,8 +39,20 @@ def _to_out(g: Generation) -> GenerationOut:
         error_message=g.error_message,
         model=g.model,
         cost_yuan=g.cost_yuan,
+        estimated_cost_yuan=g.estimated_cost_yuan,
+        confirmation_token=g.confirmation_token,
+        confirmation_expires_at=g.confirmation_expires_at,
+        enqueue_status=g.enqueue_status,
+        attempt_count=g.attempt_count,
         created_at=g.created_at,
     )
+
+
+def _raise_domain_error(exc: GenerationDomainError) -> None:
+    raise HTTPException(
+        status_code=exc.status_code,
+        detail={"code": exc.code, "message": str(exc)},
+    ) from exc
 
 
 @router.post(
@@ -50,66 +67,54 @@ async def create_generation(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> GenerationOut:
-    # 1) 源照片权限校验
-    photo = (
-        await db.execute(
-            select(Photo).where(
-                and_(Photo.id == photo_id, Photo.user_id == current_user.id)
+    try:
+        gen = await prepare_generation(
+            db=db,
+            user_id=current_user.id,
+            photo_id=photo_id,
+            skill_id=payload.skill_id,
+            extra_prompt=payload.extra_prompt,
+            model=payload.model,
+            idempotency_key=payload.idempotency_key,
+        )
+        # 控制组保留旧的一步式体验；v2 灰度组必须显式确认。
+        if agent_variant_for_user(current_user.id) == "control" and gen.status in {
+            "awaiting_confirmation",
+            "queue_failed",
+        }:
+            gen = await confirm_generation(
+                db=db,
+                user_id=current_user.id,
+                generation_id=gen.id,
+                confirmation_token=gen.confirmation_token,
             )
-        )
-    ).scalar_one_or_none()
-    if photo is None:
-        raise HTTPException(status_code=404, detail="Photo not found")
-
-    # 2) Skill 校验
-    skill = None
-    model = payload.model or "wanx2.1-imageedit"
-    if payload.skill_id:
-        skill = (
-            await db.execute(select(Skill).where(Skill.id == payload.skill_id))
-        ).scalar_one_or_none()
-        if skill is None:
-            raise HTTPException(status_code=404, detail="Skill not found")
-        if not (skill.is_official or skill.is_public or skill.owner_id == current_user.id):
-            raise HTTPException(status_code=403, detail="Skill not accessible")
-        model = skill.model
-
-    # 3) 每日配额检查
-    today = date.today()
-    rl = (
-        await db.execute(
-            select(RateLimit).where(
-                and_(RateLimit.user_id == current_user.id, RateLimit.day == today)
-            )
-        )
-    ).scalar_one_or_none()
-    used = rl.gen_count if rl else 0
-    if used >= settings.gen_daily_free_quota:
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=(
-                f"今日免费额度已用完（{used}/{settings.gen_daily_free_quota}），"
-                f"明天再来或订阅解锁。"
-            ),
-        )
-
-    # 4) 落库
-    gen = Generation(
-        user_id=current_user.id,
-        source_photo_id=photo.id,
-        skill_id=skill.id if skill else None,
-        extra_prompt=payload.extra_prompt,
-        model=model,
-        status="pending",
-    )
-    db.add(gen)
-    await db.commit()
-    await db.refresh(gen)
-
-    # 5) 入队
-    await enqueue_generate_photo(gen.id)
-
+    except GenerationDomainError as exc:
+        _raise_domain_error(exc)
     return _to_out(gen)
+
+
+@router.post(
+    "/generations/{generation_id}/confirm",
+    response_model=GenerationOut,
+    status_code=status.HTTP_202_ACCEPTED,
+    summary="确认并入队生成任务（可幂等重试）",
+)
+async def confirm_generation_route(
+    generation_id: UUID,
+    payload: GenerationConfirmRequest,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> GenerationOut:
+    try:
+        generation = await confirm_generation(
+            db=db,
+            user_id=current_user.id,
+            generation_id=generation_id,
+            confirmation_token=payload.confirmation_token,
+        )
+    except GenerationDomainError as exc:
+        _raise_domain_error(exc)
+    return _to_out(generation)
 
 
 @router.get(
@@ -146,7 +151,10 @@ async def get_generation(
     g = (
         await db.execute(
             select(Generation).where(
-                and_(Generation.id == generation_id, Generation.user_id == current_user.id)
+                and_(
+                    Generation.id == generation_id,
+                    Generation.user_id == current_user.id,
+                )
             )
         )
     ).scalar_one_or_none()

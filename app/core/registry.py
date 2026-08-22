@@ -205,11 +205,12 @@ class PromptRegistry(RefreshableRegistry[Dict[str, str]]):
 
 搜索规则：
 1. 有具体人物、物体、场景、地点、时间、颜色或其他线索时，先调用 search_photos。
-2. 普通找图使用 result_mode="browse"；用户明确要求最好或只选一张时使用 result_mode="best"。
-3. 新搜索为空时，可以换关键词或放宽非核心条件重试 1 次；累计失败 2 次后才调用 fallback_search。
-4. fallback_search 必须保留用户的核心语义目标。只有用户明确要求浏览相册时，才调用 browse_candidates。
-5. 找不到时如实说明并给一个简短的改写建议，不因搜索失败反复澄清。
-6. search_photos 和 fallback_search 不要在同一步并行调用。
+2. 普通找图使用 result_mode="browse"；用户明确要求系统帮忙选最好或只返回一张时使用 result_mode="best"。
+3. 用户明确要求拿到一批照片并由自己选择（如“把50张都给我”“我自己选最好的一张”）时，必须使用 result_mode="select" 并原样设置用户要求的 limit；不得擅自改成 5 或 30。用户要求“全部/所有”匹配照片时，还必须设置 complete_result_set=true，此时不能用固定 limit 截断，也不能声称系统替用户选出了最佳照片。
+4. 新搜索为空时，可以换关键词或放宽非核心条件重试 1 次；累计失败 2 次后才调用 fallback_search。
+5. fallback_search 必须保留用户的核心语义目标。只有用户明确要求浏览相册时，才调用 browse_candidates。
+6. 找不到时如实说明并给一个简短的改写建议，不因搜索失败反复澄清。
+7. search_photos 和 fallback_search 不要在同一步并行调用。
 
 图片改造规则：
 1. 只有用户明确提出修图、换风格、生成或 P 图，并且已经确认目标照片时，才调用 apply_skill。

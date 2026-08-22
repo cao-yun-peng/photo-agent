@@ -6,18 +6,22 @@
 - 所有 Tool 调用结果写回 State，便于多轮自我反思；
 - 输出是事件流（dict 列表），后续可对接 SSE。
 """
+
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
+import re
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Any
 from uuid import UUID, uuid4
 
 import httpx
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
@@ -29,6 +33,7 @@ from app.core.telemetry import (
     start_span,
     traced_async,
 )
+from app.models.generation import Generation
 from app.services.agent_tools import (
     _classify_exception,
     apply_skill,
@@ -39,6 +44,9 @@ from app.services.agent_tools import (
     search_photos,
 )
 from app.services.circuit_breaker import ServiceDegradedError, agent_llm_breaker
+from app.services.agent_workflow import transition_workflow
+from app.services.metrics import metrics
+from app.services.rollout import agent_variant_for_user
 from app.services.search_candidate_pool import (
     candidate_pool_key,
     candidate_pool_size,
@@ -49,6 +57,7 @@ from app.services.search_candidate_pool import (
     wait_for_verified_candidate,
 )
 from app.services.search_index import enqueue_index_repairs
+from app.services.turn_resolver import TurnPlan, resolve_turn
 from app.utils.json_parser import (
     extract_json_field_by_regex,
     parse_as_dict,
@@ -74,6 +83,41 @@ _MORE_FOLLOWUP_PHRASES = (
     "别的呢",
     "其他的呢",
 )
+_USER_SELECTION_MARKERS = (
+    "我自己选",
+    "我来选",
+    "让我选",
+    "由我选",
+    "自己选择",
+    "全部给我",
+    "都给我",
+    "全给我",
+    "拿到全部",
+)
+_PHOTO_COUNT_PATTERN = re.compile(r"(?P<count>\d{1,6})\s*张")
+_COMPLETE_RESULT_MARKERS = ("全部", "所有", "全都", "一张不漏", "完整结果")
+_PHOTO_RESULT_MARKERS = ("照片", "图片", "相片", "自拍", "合照", "截图", "候选")
+
+
+def _requested_user_selection_limit(query: str) -> int | None:
+    """识别“给我 N 张、由我自己选”，用于代码级兜底模型参数。"""
+
+    normalized = "".join(str(query).split())
+    if not any(marker in normalized for marker in _USER_SELECTION_MARKERS):
+        return None
+    match = _PHOTO_COUNT_PATTERN.search(normalized)
+    if match is None:
+        return None
+    return max(1, int(match.group("count")))
+
+
+def _requests_complete_result_set(query: str) -> bool:
+    """识别“全部自拍/所有照片”等不允许按固定 N 截断的请求。"""
+
+    normalized = "".join(str(query).split())
+    return any(marker in normalized for marker in _COMPLETE_RESULT_MARKERS) and any(
+        marker in normalized for marker in _PHOTO_RESULT_MARKERS
+    )
 
 
 # ------------------------------------------------------------------
@@ -102,6 +146,8 @@ class AgentState:
     session_id: UUID
     user_id: UUID
     original_query: str
+    workflow_state: str = "idle"
+    agent_variant: str = "control"
 
     step: int = 0
     search_attempts: int = 0
@@ -147,6 +193,8 @@ class AgentState:
             "session_id": str(self.session_id),
             "user_id": str(self.user_id),
             "original_query": self.original_query,
+            "workflow_state": self.workflow_state,
+            "agent_variant": self.agent_variant,
             "step": self.step,
             "search_attempts": self.search_attempts,
             "clarification_attempts": self.clarification_attempts,
@@ -173,6 +221,10 @@ class AgentState:
             session_id=sid,
             user_id=UUID(data["user_id"]),
             original_query=data.get("original_query", ""),
+            workflow_state=data.get("workflow_state", "idle"),
+            agent_variant=data.get(
+                "agent_variant", agent_variant_for_user(data.get("user_id", ""))
+            ),
             step=data.get("step", 0),
             search_attempts=data.get("search_attempts", 0),
             clarification_attempts=data.get("clarification_attempts", 0),
@@ -221,9 +273,7 @@ def _remember_message(state: AgentState, role: str, content: str) -> None:
         for item in archived
         if item.get("content")
     ]
-    combined = "\n".join(
-        part for part in (state.conversation_summary, *lines) if part
-    )
+    combined = "\n".join(part for part in (state.conversation_summary, *lines) if part)
     state.conversation_summary = combined[-_CONVERSATION_SUMMARY_CHAR_LIMIT:]
 
 
@@ -235,6 +285,139 @@ def _search_result_fallback_message(result_count: int) -> str:
         "智能说明暂时不可用，你可以选择照片查看详情，"
         "或说“还有一张”继续搜索。"
     )
+
+
+def _search_coverage_complete(
+    coverage: dict[str, Any] | None,
+    *,
+    requires_semantic_facets: bool = False,
+) -> bool:
+    coverage = coverage or {}
+    return bool(
+        coverage.get("complete", True)
+        and (
+            coverage.get("semantic_complete", True)
+            if requires_semantic_facets
+            else True
+        )
+    )
+
+
+def _fast_search_message(result: dict[str, Any]) -> str:
+    """普通搜索快路径的本地文案，不为一句结果说明再次调用模型。"""
+
+    if result.get("ok") and result.get("items"):
+        if result.get("result_mode") == "select":
+            count = int(result.get("total", len(result["items"])) or 0)
+            if result.get("result_set_complete"):
+                message = f"已完整加载 {count} 张匹配照片，请由你本人选择。"
+            else:
+                message = f"已加载 {count} 张匹配照片，请由你本人选择。"
+        else:
+            message = f"找到 {len(result['items'])} 张符合条件的照片，已为你展示。"
+        if result.get("coverage_hint"):
+            message += str(result["coverage_hint"])
+        return message
+    if result.get("ok"):
+        coverage = result.get("index_coverage") or {}
+        if not _search_coverage_complete(
+            coverage,
+            requires_semantic_facets=bool(result.get("semantic_facets_required")),
+        ):
+            return "当前还没有找到符合条件的照片；相册索引尚未完整，稍后可以再试。"
+        return "暂时没有找到符合条件的照片。你可以换一个更宽泛的描述。"
+    if result.get("error_type") == "timeout":
+        return "搜索照片超时了，请稍后再试。"
+    return "搜索照片时出现问题，请稍后再试。"
+
+
+def _model_tool_content(tool_name: str, result: dict[str, Any]) -> str:
+    """为下一次模型决策构造紧凑且始终合法的 JSON。
+
+    前端仍接收完整工具结果；模型只获得决策所需字段，避免签名 URL、完整
+    图片分析和内部候选池挤占上下文。不能对 JSON 字符串做字符级截断，否则
+    会破坏 Function Calling 消息协议。
+    """
+
+    scalar_keys = (
+        "ok",
+        "error",
+        "error_type",
+        "hint",
+        "message",
+        "needs_clarification",
+        "question",
+        "total",
+        "result_mode",
+        "selection_owner",
+        "complete_result_set",
+        "result_set_complete",
+        "completeness_reason",
+        "total_matches",
+        "truncated",
+        "similarity_threshold",
+        "threshold_filtered_count",
+        "threshold_bypassed_reason",
+        "coverage_hint",
+        "semantic_facets_required",
+        "search_pending",
+        "search_exhausted",
+        "index_repair_queued",
+        "generation_id",
+        "status",
+    )
+    compact: dict[str, Any] = {key: result[key] for key in scalar_keys if key in result}
+    if isinstance(result.get("options"), list):
+        compact["options"] = [str(value)[:120] for value in result["options"][:8]]
+
+    if tool_name in {"search_photos", "fallback_search", "browse_candidates"}:
+        compact_items = []
+        for position, item in enumerate(result.get("items") or [], start=1):
+            if not isinstance(item, dict) or not item.get("id"):
+                continue
+            compact_items.append(
+                {
+                    "position": position,
+                    "id": str(item["id"]),
+                    "description": str(item.get("ai_description") or "")[:160],
+                    "taken_at": item.get("taken_at"),
+                    "status": item.get("status"),
+                    "score_semantic": item.get("score_semantic"),
+                    "score_final": item.get("score_final"),
+                }
+            )
+        compact["items"] = compact_items[:30]
+        compact["returned_count"] = len(compact["items"])
+        compact["tool_result_count"] = len(compact_items)
+
+        parsed = result.get("parsed")
+        if isinstance(parsed, dict):
+            compact["parsed"] = {
+                key: parsed[key]
+                for key in ("semantic", "from_date", "to_date", "place")
+                if parsed.get(key) is not None
+            }
+        coverage = result.get("index_coverage")
+        if isinstance(coverage, dict):
+            compact["index_coverage"] = {
+                key: coverage[key]
+                for key in (
+                    "complete",
+                    "total_photos",
+                    "indexed_photos",
+                    "retrying_photos",
+                    "unavailable_photos",
+                    "coverage_ratio",
+                    "faceted_photos",
+                    "facet_coverage_ratio",
+                    "semantic_complete",
+                    "semantic_message",
+                    "message",
+                )
+                if key in coverage
+            }
+
+    return json.dumps(compact, ensure_ascii=False, default=str)
 
 
 # ------------------------------------------------------------------
@@ -265,7 +448,7 @@ class ToolRegistry:
     def get(self, name: str) -> ToolSpec | None:
         return self._tools.get(name)
 
-    def schemas(self) -> list[dict]:
+    def schemas(self, names: set[str] | None = None) -> list[dict]:
         return [
             {
                 "type": "function",
@@ -276,6 +459,7 @@ class ToolRegistry:
                 },
             }
             for spec in self._tools.values()
+            if names is None or spec.name in names
         ]
 
 
@@ -325,8 +509,54 @@ def _build_registry() -> ToolRegistry:
                     },
                     "result_mode": {
                         "type": "string",
-                        "enum": ["browse", "best"],
-                        "description": "browse=返回最多5张供选择；best=比较Top-5后只返回最佳1张",
+                        "enum": ["browse", "best", "select"],
+                        "description": "browse=返回最多5张；best=系统比较Top-5后返回最佳1张；select=返回用户要求的数量或完整结果集，由用户本人选择",
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "期望返回数量；select 模式必须原样尊重用户要求，不得擅自改成5或30",
+                    },
+                    "complete_result_set": {
+                        "type": "boolean",
+                        "description": "用户要求全部/所有匹配照片时必须为 true；此时 limit 不构成截断",
+                    },
+                    "photo_types": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "selfie",
+                                "screenshot",
+                                "group_photo",
+                                "portrait",
+                                "document",
+                                "food",
+                                "scenery",
+                                "other",
+                            ],
+                        },
+                        "description": "可选的结构化照片类型过滤；通常服务端会从中文查询自动推导",
+                    },
+                    "is_selfie": {
+                        "type": "boolean",
+                        "description": "是否只搜索自拍",
+                    },
+                    "people_count_min": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "最少人物数量",
+                    },
+                    "people_count_max": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "最多人物数量",
+                    },
+                    "min_semantic_score": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1,
+                        "description": "可选相似度阈值；精确集合搜索会自动绕过以防漏图",
                     },
                     "exclude_photo_ids": {
                         "type": "array",
@@ -426,7 +656,7 @@ def _build_registry() -> ToolRegistry:
     registry.register(
         ToolSpec(
             name="apply_skill",
-            description="对指定照片应用 AI 改造 Skill。只有用户明确想要改造时才调用。",
+            description="准备对指定照片应用 AI 改造；灰度版会返回费用摘要并等待用户再次确认后才入队。",
             parameters={
                 "type": "object",
                 "properties": {
@@ -610,7 +840,9 @@ async def _llm_decide(
                 # content为空时，尝试取reasoning_content兜底
                 logger.warning("LLM returned empty choices, returning empty message")
                 return {"role": "assistant", "content": "", "tool_calls": []}, {
-                    "total_tokens": 0, "prompt_tokens": 0, "completion_tokens": 0
+                    "total_tokens": 0,
+                    "prompt_tokens": 0,
+                    "completion_tokens": 0,
                 }
 
             choice = choices[0]
@@ -632,7 +864,9 @@ async def _llm_decide(
                 "completion_tokens": usage.get("completion_tokens", 0),
             }
         except (KeyError, IndexError, TypeError) as exc:
-            raise RuntimeError(f"Agent LLM unexpected response: {str(data)[:500]}") from exc
+            raise RuntimeError(
+                f"Agent LLM unexpected response: {str(data)[:500]}"
+            ) from exc
 
     decision, usage = await agent_llm_breaker.call(_do_call)
     set_current_span_attributes(
@@ -664,6 +898,19 @@ class PhotoAgent:
         self.registry = registry or DEFAULT_REGISTRY
         # 优先使用传入的prompt，否则从热更新注册表获取
         self.system_prompt = system_prompt or prompt_registry.get_agent_system_prompt()
+
+    def _tool_schemas_for_state(self, state: AgentState) -> list[dict]:
+        if state.agent_variant != "v2":
+            return self.registry.schemas()
+        # v2 只向模型暴露业务级动作；浏览、兜底和详情查询仍由代码内部调用。
+        return self.registry.schemas(
+            {
+                "search_photos",
+                "ask_clarification",
+                "apply_skill",
+                "recommend_skills",
+            }
+        )
 
     @traced_async(
         "invoke_agent photo-search",
@@ -703,13 +950,35 @@ class PhotoAgent:
                 session_id=session_id or uuid4(),
                 user_id=user_id,
                 original_query=query,
+                agent_variant=agent_variant_for_user(user_id),
             )
             state.followup_type = None
+        if (
+            state.workflow_state == "awaiting_generation_confirmation"
+            and state.confirmed_generation_id
+        ):
+            try:
+                generation_id = UUID(state.confirmed_generation_id)
+            except (TypeError, ValueError):
+                generation_id = None
+            if generation_id is not None:
+                generation_status = (
+                    await self.db.execute(
+                        select(Generation.status).where(
+                            Generation.id == generation_id,
+                            Generation.user_id == user_id,
+                        )
+                    )
+                ).scalar_one_or_none()
+                if generation_status in {"pending", "processing", "done"}:
+                    transition_workflow(state, "generation_queued")
         set_current_span_attributes(
             {
                 "session.id": str(state.session_id),
                 "user.id_hash": hash_identifier(user_id),
                 "agent.followup_type": state.followup_type or "new",
+                "agent.variant": state.agent_variant,
+                "agent.workflow_state": state.workflow_state,
             }
         )
         events: list[dict] = []
@@ -732,6 +1001,121 @@ class PhotoAgent:
                     logger.warning("Agent event queue is full, dropping event")
 
         emit("start", {"query": query, "session_id": str(state.session_id)})
+
+        turn_plan: TurnPlan = await resolve_turn(
+            query,
+            active_search=state.active_search,
+            recent_messages=state.recent_messages,
+        )
+        state.total_tokens += turn_plan.model_tokens
+        model_calls_this_turn = turn_plan.model_calls
+        if turn_plan.intent == "search_more":
+            state.followup_type = "more_search_results"
+        set_current_span_attributes(
+            {
+                "agent.route.intent": turn_plan.intent,
+                "agent.route.relation": turn_plan.relation,
+                "agent.route.source": turn_plan.source,
+                "agent.route.confidence": turn_plan.confidence,
+                "agent.route.model_calls": turn_plan.model_calls,
+                "agent.route.retrieval_strategy": (
+                    turn_plan.search.retrieval_strategy if turn_plan.search else "none"
+                ),
+            }
+        )
+        metrics.record_route(
+            route=turn_plan.intent,
+            variant=state.agent_variant,
+            relation=turn_plan.relation,
+        )
+
+        # 无法直接执行的模糊搜索由路由层一次性澄清，不启动完整 Agent 循环。
+        if turn_plan.needs_clarification:
+            emit("route", turn_plan.route_payload())
+            question = turn_plan.clarification_question
+            options = turn_plan.clarification_options
+            state.pending_clarification = {"question": question, "options": options}
+            state.clarification_attempts += 1
+            emit("clarify", {"question": question, "options": options})
+            _remember_message(state, "user", query)
+            _remember_message(state, "assistant", question)
+            return state, events
+
+        # 高置信度普通找图直接执行一次搜索，并用本地文案收尾。这里显式关闭
+        # query-parser 与判同文本模型，避免原先 4 次左右的串行模型调用。
+        if turn_plan.can_use_search_fast_path and turn_plan.search is not None:
+            emit("route", turn_plan.route_payload())
+            state.followup_type = None
+            state.rejected_photo_ids.clear()
+            state.confirmed_photo_id = None
+            state.confirmed_generation_id = None
+            state.last_search_items = []
+            state.active_search = {}
+            transition_workflow(state, "searching")
+            arguments: dict[str, Any] = {
+                "query": turn_plan.search.query,
+                "result_mode": turn_plan.search.result_mode,
+                "limit": turn_plan.search.limit,
+                "complete_result_set": turn_plan.search.complete_result_set,
+                "auto_parse": False,
+                "verify_constraints": False,
+                "verify_semantic": False,
+                "include_index_coverage": True,
+            }
+            if turn_plan.search.from_date is not None:
+                arguments["from_date"] = turn_plan.search.from_date.isoformat()
+            if turn_plan.search.to_date is not None:
+                arguments["to_date"] = turn_plan.search.to_date.isoformat()
+            arguments_json = json.dumps(arguments, ensure_ascii=False)
+            emit(
+                "tool_call",
+                {"tool": "search_photos", "arguments": arguments_json},
+            )
+            result = await self._execute_tool(
+                user_id=user_id,
+                tool_name="search_photos",
+                arguments_str=arguments_json,
+                state=state,
+            )
+            result.setdefault(
+                "parsed",
+                {
+                    "semantic": turn_plan.search.query,
+                    "from_date": (
+                        turn_plan.search.from_date.isoformat()
+                        if turn_plan.search.from_date
+                        else None
+                    ),
+                    "to_date": (
+                        turn_plan.search.to_date.isoformat()
+                        if turn_plan.search.to_date
+                        else None
+                    ),
+                    "place": turn_plan.search.place,
+                    "tags": [],
+                },
+            )
+            if result.get("ok"):
+                state.active_search["relation"] = turn_plan.relation
+            metrics.record_model_calls(
+                variant=state.agent_variant, calls=model_calls_this_turn
+            )
+            emit("tool_result", {"tool": "search_photos", "result": result})
+            final_message = _fast_search_message(result)
+            emit(
+                "final",
+                {
+                    "message": final_message,
+                    "fast_path": True,
+                    "route": turn_plan.route_payload(),
+                },
+            )
+            _remember_message(state, "user", query)
+            _remember_message(state, "assistant", final_message)
+            return state, events
+
+        if turn_plan.intent != "search_more":
+            emit("route", turn_plan.route_payload())
 
         # 简单续搜走确定性路径：继承服务端保存的查询并排除已展示结果，
         # 避免模型把“还有一张”误判为新的模糊请求或反复澄清。
@@ -901,11 +1285,13 @@ class PhotoAgent:
                 # ready/exhausted 的池为空代表后台已完整验证过候选，不再重复
                 # 发起昂贵的前台视觉搜索；只有 failed/missing 才走可恢复兜底。
                 coverage = state.active_search.get("index_coverage") or {}
-                coverage_complete = not coverage or coverage.get("complete", True)
-                if (
-                    prefetch_status in {"ready", "exhausted"}
-                    and coverage_complete
-                ):
+                coverage_complete = _search_coverage_complete(
+                    coverage,
+                    requires_semantic_facets=bool(
+                        state.active_search.get("semantic_facets_required")
+                    ),
+                )
+                if prefetch_status in {"ready", "exhausted"} and coverage_complete:
                     state.active_search["prefetch_status"] = "exhausted"
                     state.active_search["candidate_pool_count"] = 0
                     state.active_search["exhausted"] = True
@@ -980,7 +1366,13 @@ class PhotoAgent:
             elif result.get("ok"):
                 coverage = result.get("index_coverage") or {}
                 queued = int(result.get("index_repair_queued", 0) or 0)
-                if not coverage.get("complete", True):
+                if not _search_coverage_complete(
+                    coverage,
+                    requires_semantic_facets=bool(
+                        result.get("semantic_facets_required")
+                        or state.active_search.get("semantic_facets_required")
+                    ),
+                ):
                     suffix = f"，已触发 {queued} 张补索引" if queued else ""
                     final_message = (
                         "当前没有找到下一张，但相册搜索索引尚未完整"
@@ -1043,7 +1435,10 @@ class PhotoAgent:
 
             # 调用 LLM 决策
             try:
-                decision, usage = await _llm_decide(messages, self.registry.schemas())
+                decision, usage = await _llm_decide(
+                    messages, self._tool_schemas_for_state(state)
+                )
+                model_calls_this_turn += 1
             except ServiceDegradedError:
                 if search_result_count_this_run:
                     final_message = _search_result_fallback_message(
@@ -1060,17 +1455,26 @@ class PhotoAgent:
                     )
                     break
                 if state.followup_type == "more_search_results":
-                    final_message = "AI 决策服务暂时不可用，无法安全地继续上一轮搜索，请稍后再试。"
+                    final_message = (
+                        "AI 决策服务暂时不可用，无法安全地继续上一轮搜索，请稍后再试。"
+                    )
                     emit("final", {"message": final_message, "reason": "llm_degraded"})
                     break
-                logger.warning("Agent LLM degraded, falling back to deterministic browse")
+                logger.warning(
+                    "Agent LLM degraded, falling back to deterministic browse"
+                )
                 final_message = "AI 决策服务暂时不可用，已为你打开相册浏览。"
                 browse_result = await browse_candidates(
                     user_id=user_id, db=self.db, limit=30
                 )
                 emit("tool_call", {"tool": "browse_candidates", "arguments": "{}"})
-                emit("tool_result", {"tool": "browse_candidates", "result": browse_result})
-                emit("final", {"message": final_message, "fallback": "browse_candidates"})
+                emit(
+                    "tool_result",
+                    {"tool": "browse_candidates", "result": browse_result},
+                )
+                emit(
+                    "final", {"message": final_message, "fallback": "browse_candidates"}
+                )
                 break
             except Exception as exc:
                 if search_result_count_this_run and isinstance(
@@ -1083,8 +1487,9 @@ class PhotoAgent:
                     await asyncio.sleep(0.25)
                     try:
                         decision, usage = await _llm_decide(
-                            messages, self.registry.schemas()
+                            messages, self._tool_schemas_for_state(state)
                         )
+                        model_calls_this_turn += 1
                     except Exception as retry_exc:  # noqa: BLE001
                         logger.warning(
                             "Post-search LLM retry failed; using local summary | "
@@ -1144,11 +1549,14 @@ class PhotoAgent:
             tokens_used = usage.get("total_tokens", 0)
             state.total_tokens += tokens_used
 
-            emit("think", {
-                "reasoning": reasoning or "（无显式思考）",
-                "tokens_used": tokens_used,
-                "total_tokens": state.total_tokens,
-            })
+            emit(
+                "think",
+                {
+                    "reasoning": reasoning or "（无显式思考）",
+                    "tokens_used": tokens_used,
+                    "total_tokens": state.total_tokens,
+                },
+            )
             state.history.append(
                 {
                     "step": state.step,
@@ -1162,6 +1570,16 @@ class PhotoAgent:
                 final_message = reasoning or "我已尽力处理，但没有进一步操作。"
                 emit("final", {"message": final_message})
                 break
+
+            # 标准 Function Calling 消息链必须先记录发起 tool_calls 的 assistant
+            # 消息，再逐条追加对应 tool 结果，否则部分兼容接口会拒绝后续请求。
+            messages.append(
+                {
+                    "role": "assistant",
+                    "content": reasoning or "",
+                    "tool_calls": tool_calls,
+                }
+            )
 
             # 执行 tool_calls
             for tc in tool_calls:
@@ -1188,13 +1606,8 @@ class PhotoAgent:
                 ):
                     search_result_count_this_run = len(result["items"])
 
-                # 记录到 messages，让 LLM 看到结果
-                # P1-2: 截断时追加标记，让 LLM 知道数据被截断
-                raw_json = json.dumps(result, ensure_ascii=False)
-                if len(raw_json) > 1500:
-                    tool_content = raw_json[:1500] + f"...[truncated, original size: {len(raw_json)} bytes]"
-                else:
-                    tool_content = raw_json
+                # 前端拿完整结果；模型拿无签名 URL、无完整分析的合法紧凑 JSON。
+                tool_content = _model_tool_content(tool_name, result)
                 messages.append(
                     {
                         "role": "tool",
@@ -1230,16 +1643,19 @@ class PhotoAgent:
                 break
 
         if state.step >= self.constraints.max_steps and not final_message:
-            final_message = "操作步骤过多，已暂停。请告诉我更具体的需求，或从候选照片中选择。"
+            final_message = (
+                "操作步骤过多，已暂停。请告诉我更具体的需求，或从候选照片中选择。"
+            )
             emit("final", {"message": final_message})
 
         _remember_message(state, "user", query)
         _remember_message(state, "assistant", final_message)
+        metrics.record_model_calls(
+            variant=state.agent_variant, calls=model_calls_this_turn
+        )
         return state, events
 
-    def _build_context(
-        self, messages: list[dict], state: AgentState
-    ) -> list[dict]:
+    def _build_context(self, messages: list[dict], state: AgentState) -> list[dict]:
         """在已有 messages 后追加当前状态摘要，让 LLM 做 informed 决策。
 
         每步循环移除上一步的上下文摘要（role=system, name=context），
@@ -1253,10 +1669,11 @@ class PhotoAgent:
 
         recent_results = [
             {
+                "position": position,
                 "id": str(item.get("id", "")),
-                "description": str(item.get("ai_description", ""))[:240],
+                "description": str(item.get("ai_description", ""))[:120],
             }
-            for item in state.last_search_items[:5]
+            for position, item in enumerate(state.last_search_items[:30], start=1)
             if isinstance(item, dict) and item.get("id")
         ]
         active_search_for_model = {
@@ -1280,7 +1697,7 @@ class PhotoAgent:
                 "active_intent": state.active_intent,
                 "active_search": active_search_for_model,
                 "followup_type": state.followup_type,
-                "last_search_count": len(recent_results),
+                "last_search_count": len(state.last_search_items),
                 "last_search_items": recent_results,
                 "pending_clarification": state.pending_clarification,
                 # P1-3: 预算信息让 LLM 感知剩余资源
@@ -1334,11 +1751,16 @@ class PhotoAgent:
             if isinstance(args, dict) and args.get("message"):
                 return {"ok": True, "message": str(args.get("message", ""))}
             # JSON解析失败，正则提取message字段
-            msg_by_regex = extract_json_field_by_regex(arguments_str or "", "message", "")
+            msg_by_regex = extract_json_field_by_regex(
+                arguments_str or "", "message", ""
+            )
             if msg_by_regex:
                 return {"ok": True, "message": msg_by_regex}
             # 最终兜底：把整个字符串作为回答内容
-            return {"ok": True, "message": str(arguments_str or "好的，已为你找到相关照片。")}
+            return {
+                "ok": True,
+                "message": str(arguments_str or "好的，已为你找到相关照片。"),
+            }
 
         spec = self.registry.get(tool_name)
         if spec is None:
@@ -1352,7 +1774,8 @@ class PhotoAgent:
         if not args and arguments_str and arguments_str.strip() not in ("{}", ""):
             logger.warning(
                 "tool args parse failed, using empty dict | tool=%s raw=%s",
-                tool_name, arguments_str[:200],
+                tool_name,
+                arguments_str[:200],
             )
             # 尝试用正则提取关键参数
             if tool_name in ("search_photos", "fallback_search"):
@@ -1367,11 +1790,15 @@ class PhotoAgent:
                 pid_regex = extract_json_field_by_regex(arguments_str, "photo_id", "")
                 sid_regex = extract_json_field_by_regex(arguments_str, "skill_id", "")
                 prompt_regex = extract_json_field_by_regex(arguments_str, "prompt", "")
-                args = {k: v for k, v in {
-                    "photo_id": pid_regex,
-                    "skill_id": sid_regex,
-                    "prompt": prompt_regex,
-                }.items() if v}
+                args = {
+                    k: v
+                    for k, v in {
+                        "photo_id": pid_regex,
+                        "skill_id": sid_regex,
+                        "prompt": prompt_regex,
+                    }.items()
+                    if v
+                }
 
         # 注入公共参数
         args.setdefault("user_id", user_id)
@@ -1411,8 +1838,26 @@ class PhotoAgent:
                 except (ValueError, AttributeError):
                     return {"ok": False, "error": f"无效的 {uuid_field}: {val}"}
 
+        # 路由层通过 JSON 传递 ISO 日期；工具签名需要 date 对象。
+        for date_field in ("from_date", "to_date"):
+            val = args.get(date_field)
+            if val is not None and not isinstance(val, date):
+                try:
+                    args[date_field] = date.fromisoformat(str(val))
+                except (TypeError, ValueError):
+                    return {"ok": False, "error": f"无效的 {date_field}: {val}"}
+
         # 特殊业务逻辑：search_photos 次数限制
         if tool_name == "search_photos":
+            transition_workflow(state, "searching")
+            user_selection_limit = _requested_user_selection_limit(state.original_query)
+            complete_result_set = _requests_complete_result_set(state.original_query)
+            if complete_result_set:
+                args["result_mode"] = "select"
+                args["complete_result_set"] = True
+            elif user_selection_limit is not None:
+                args["result_mode"] = "select"
+                args["limit"] = user_selection_limit
             if state.search_attempts >= self.constraints.max_searches:
                 return {
                     "ok": False,
@@ -1444,8 +1889,26 @@ class PhotoAgent:
                 }
             state.clarification_attempts += 1
 
-        # P1-1: 不可逆动作代码级确认 — apply_skill 必须有已选中的照片
+        # v2 不允许模型直接替用户确定照片；控制组继续兼容旧流程。
         if tool_name == "apply_skill":
+            selection_mode = (
+                state.active_search.get("filters", {}).get("result_mode") == "select"
+            )
+            if (
+                state.agent_variant == "v2" or selection_mode
+            ) and not state.confirmed_photo_id:
+                return {
+                    "ok": False,
+                    "error_type": "confirmation_required",
+                    "hint": "这些照片需要由用户本人选择；请等待用户点击“选择这张”，不能替用户决定。",
+                }
+            if state.confirmed_photo_id and args.get("photo_id"):
+                if str(args["photo_id"]) != str(state.confirmed_photo_id):
+                    return {
+                        "ok": False,
+                        "error_type": "selected_photo_mismatch",
+                        "hint": "工具指定的照片不是用户刚刚确认的照片，请使用 confirmed_photo_id。",
+                    }
             if not state.confirmed_photo_id and not state.last_search_items:
                 return {
                     "ok": False,
@@ -1460,10 +1923,31 @@ class PhotoAgent:
                     "hint": f"本会话生成费用已达上限（{self.constraints.max_cost_yuan}元），"
                     "请开启新会话。",
                 }
+            if state.agent_variant == "v2":
+                raw_key = "|".join(
+                    (
+                        str(state.session_id),
+                        str(args.get("photo_id", "")),
+                        str(args.get("skill_id", "")),
+                        str(args.get("extra_prompt", "")),
+                        str(args.get("model", "")),
+                    )
+                )
+                args["idempotency_key"] = hashlib.sha256(
+                    raw_key.encode("utf-8")
+                ).hexdigest()
+                args["require_confirmation"] = True
+            else:
+                args["require_confirmation"] = False
 
         # P0-2: 工具执行超时保护
         tool_timeout = spec.timeout or self.constraints.tool_timeout
-        if tool_name == "search_photos" and state.followup_type == "more_search_results":
+        if tool_name == "search_photos" and args.get("complete_result_set"):
+            tool_timeout = max(float(tool_timeout), 60.0)
+        if (
+            tool_name == "search_photos"
+            and state.followup_type == "more_search_results"
+        ):
             tool_timeout = min(
                 float(tool_timeout), settings.agent_search_turn_budget_seconds
             )
@@ -1490,7 +1974,10 @@ class PhotoAgent:
                 tool_name,
                 tool_timeout,
             )
-            if tool_name == "search_photos" and state.followup_type == "more_search_results":
+            if (
+                tool_name == "search_photos"
+                and state.followup_type == "more_search_results"
+            ):
                 return {
                     "ok": True,
                     "items": [],
@@ -1506,7 +1993,11 @@ class PhotoAgent:
             }
         except Exception as exc:
             logger.exception("Tool execution failed | tool=%s", tool_name)
-            return {"ok": False, "error_type": _classify_exception(exc), "error": str(exc)}
+            return {
+                "ok": False,
+                "error_type": _classify_exception(exc),
+                "error": str(exc),
+            }
 
         candidate_pool_items = list(result.pop("_candidate_pool_items", []) or [])
 
@@ -1528,8 +2019,7 @@ class PhotoAgent:
                 if isinstance(item, dict) and item.get("id")
             }
             excluded = sorted(
-                shown
-                | {str(value) for value in state.rejected_photo_ids if value}
+                shown | {str(value) for value in state.rejected_photo_ids if value}
             )
             query_used = str(args.get("query", state.original_query)).strip()
             prefetch_pool_key = candidate_pool_key(state.session_id)
@@ -1559,7 +2049,11 @@ class PhotoAgent:
             and state.followup_type == "more_search_results"
             and result.get("ok")
             and not result.get("items")
-            and not (result.get("index_coverage") or {}).get("complete", True)
+            and not _search_coverage_complete(
+                result.get("index_coverage"),
+                requires_semantic_facets=bool(result.get("semantic_facets_required")),
+            )
+            and not result.get("semantic_facets_required")
             and settings.agent_search_auto_repair_index
         ):
             try:
@@ -1579,6 +2073,9 @@ class PhotoAgent:
         # 更新 State
         if tool_name in ("search_photos", "fallback_search") and result.get("ok"):
             items = result.get("items", [])
+            if args.get("result_mode") == "select":
+                # 新的用户自选列表尚未产生选择，不能沿用上一轮确认的照片。
+                state.confirmed_photo_id = None
             is_continuation = state.followup_type == "more_search_results"
             shown_ids = (
                 list(state.active_search.get("shown_photo_ids", []))
@@ -1608,8 +2105,22 @@ class PhotoAgent:
             coverage = result.get("index_coverage") or state.active_search.get(
                 "index_coverage"
             )
-            coverage_complete = not coverage or coverage.get("complete", True)
-            state.last_search_items = items
+            semantic_facets_required = bool(
+                result.get("semantic_facets_required")
+                or (
+                    is_continuation
+                    and state.active_search.get("semantic_facets_required")
+                )
+            )
+            coverage_complete = _search_coverage_complete(
+                coverage,
+                requires_semantic_facets=semantic_facets_required,
+            )
+            state.last_search_items = (
+                items[:30]
+                if args.get("result_mode") == "select" and len(items) > 30
+                else items
+            )
             state.active_intent = "search_photos"
             state.active_search = {
                 "raw_query": (
@@ -1620,7 +2131,12 @@ class PhotoAgent:
                 "resolved_query": query_used,
                 "filters": {
                     key: args.get(key)
-                    for key in ("from_date", "to_date", "result_mode")
+                    for key in (
+                        "from_date",
+                        "to_date",
+                        "result_mode",
+                        "complete_result_set",
+                    )
                     if args.get(key) is not None
                 },
                 "shown_photo_ids": shown_ids,
@@ -1643,8 +2159,10 @@ class PhotoAgent:
                     else 0
                 ),
                 "index_coverage": coverage,
+                "semantic_facets_required": semantic_facets_required,
                 "next_cursor": result.get("next_cursor"),
                 "exhausted": bool(result.get("search_exhausted"))
+                or bool(result.get("result_set_complete"))
                 or (
                     is_continuation
                     and not items
@@ -1654,9 +2172,24 @@ class PhotoAgent:
                 ),
             }
             state.fallback_level = result.get("fallback_level", state.fallback_level)
+            target_state = (
+                "awaiting_selection"
+                if args.get("result_mode") == "select"
+                else "results_ready"
+            )
+            transition_workflow(state, target_state)
+            metrics.record_search_result(
+                variant=state.agent_variant,
+                result_count=len(items),
+                complete=bool(result.get("result_set_complete")),
+                degraded=bool(result.get("degraded") or result.get("error_type")),
+            )
         elif tool_name == "apply_skill" and result.get("ok"):
             state.confirmed_generation_id = result.get("generation_id")
-            # P0-1/P1-3: 追踪会话级费用（wanx2.1-imageedit 约 0.14 元/次）
-            state.total_cost += 0.14
+            if result.get("confirmation_required"):
+                transition_workflow(state, "awaiting_generation_confirmation")
+            else:
+                transition_workflow(state, "generation_queued")
+                state.total_cost += float(result.get("estimated_cost_yuan") or 0)
 
         return result

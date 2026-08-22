@@ -34,13 +34,14 @@
       "tags": ["search", "browse", "read-only"],
       "turns": [
         {
-          "query": "帮我找猫的照片，给我几张让我选择。",
+          "query": "帮我找猫的照片。",
           "transport": "run",
           "expected": {
             "http_status": 200,
             "response_status": "completed",
             "session_id_required": true,
-            "required_event_types": ["start", "think", "tool_call", "tool_result", "final"],
+            "required_event_types": ["start", "route", "tool_call", "tool_result", "final"],
+            "forbidden_event_types": ["think", "clarify"],
             "required_tools_ordered": ["search_photos"],
             "forbidden_tools": ["apply_skill"],
             "tool_arguments": {
@@ -100,20 +101,10 @@
             "session_id_required": true,
             "forbidden_tools": ["apply_skill"],
             "final_not_empty": true,
-            "acceptable_outcomes": [
-              {
-                "response_status": "active",
-                "required_event_types": ["start", "think", "clarify"],
-                "required_tools_ordered": ["ask_clarification"]
-              },
-              {
-                "response_status": "completed",
-                "required_event_types": ["start", "think", "final"],
-                "forbidden_event_types": ["clarify"],
-                "max_tool_calls": 0,
-                "final_contains_any": ["时间", "地点", "人物", "宠物", "类型", "场景", "哪一类", "什么样"]
-              }
-            ]
+            "response_status": "active",
+            "required_event_types": ["start", "route", "clarify"],
+            "forbidden_event_types": ["think", "tool_call"],
+            "max_tool_calls": 0
           }
         },
         {
@@ -124,7 +115,8 @@
             "http_status": 200,
             "response_status": "completed",
             "same_session_as_previous": true,
-            "required_event_types": ["start", "think", "tool_call", "tool_result", "final"],
+            "required_event_types": ["start", "route", "tool_call", "tool_result", "final"],
+            "forbidden_event_types": ["think", "clarify"],
             "required_tools_ordered": ["search_photos"],
             "forbidden_tools": ["apply_skill"],
             "tool_arguments": {
@@ -155,6 +147,8 @@
             "http_status": 200,
             "response_status": "completed",
             "session_id_required": true,
+            "required_event_types": ["start", "route", "tool_call", "tool_result", "final"],
+            "forbidden_event_types": ["think", "clarify"],
             "required_tools_ordered": ["search_photos"],
             "tool_results": [
               {"tool": "search_photos", "ok": true, "min_items": 1}
@@ -169,6 +163,8 @@
             "http_status": 200,
             "response_status": "completed",
             "same_session_as_previous": true,
+            "required_event_types": ["start", "route", "tool_call", "tool_result", "final"],
+            "forbidden_event_types": ["think", "clarify"],
             "required_tools_ordered": ["search_photos"],
             "tool_arguments": {
               "search_photos": {
@@ -232,6 +228,96 @@
           "session": "random",
           "expected": {
             "http_status": 404
+          }
+        }
+      ]
+    },
+    {
+      "id": "AE2E-010",
+      "name": "同会话明确新搜索替换上一轮条件",
+      "tags": ["multi-turn", "routing", "replace", "read-only"],
+      "turns": [
+        {
+          "query": "我想要狗的照片。",
+          "transport": "run",
+          "session": "new",
+          "expected": {
+            "http_status": 200,
+            "response_status": "completed",
+            "session_id_required": true,
+            "required_event_types": ["start", "route", "tool_call", "tool_result", "final"],
+            "forbidden_event_types": ["think", "clarify"],
+            "required_tools_ordered": ["search_photos"],
+            "tool_arguments": {
+              "search_photos": {
+                "query": {"contains": "狗"},
+                "result_mode": {"equals": "browse"}
+              }
+            },
+            "tool_results": [
+              {"tool": "search_photos", "ok": true, "min_items": 1, "max_items": 5}
+            ],
+            "final_not_empty": true
+          }
+        },
+        {
+          "query": "我想要金毛的照片。",
+          "transport": "run",
+          "session": "previous",
+          "expected": {
+            "http_status": 200,
+            "response_status": "completed",
+            "same_session_as_previous": true,
+            "required_event_types": ["start", "route", "tool_call", "tool_result", "final"],
+            "forbidden_event_types": ["think", "clarify"],
+            "required_tools_ordered": ["search_photos"],
+            "tool_arguments": {
+              "search_photos": {
+                "query": {"contains": "金毛"},
+                "result_mode": {"equals": "browse"}
+              }
+            },
+            "tool_results": [
+              {"tool": "search_photos", "ok": true, "min_items": 1, "max_items": 5}
+            ],
+            "final_not_empty": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "AE2E-011",
+      "name": "全部自拍首轮交付完整结果集",
+      "tags": ["search", "complete-result-set", "user-selection", "read-only"],
+      "turns": [
+        {
+          "query": "把全部自拍给我，我自己选。",
+          "transport": "run",
+          "session": "new",
+          "expected": {
+            "http_status": 200,
+            "response_status": "completed",
+            "session_id_required": true,
+            "required_event_types": ["start", "route", "tool_call", "tool_result", "final"],
+            "forbidden_event_types": ["think", "clarify"],
+            "required_tools_ordered": ["search_photos"],
+            "tool_arguments": {
+              "search_photos": {
+                "query": {"contains": "自拍"},
+                "result_mode": {"equals": "select"},
+                "complete_result_set": {"equals": true}
+              }
+            },
+            "tool_results": [
+              {
+                "tool": "search_photos",
+                "ok": true,
+                "min_items": 1,
+                "required_fields": ["total_matches", "result_set_complete", "truncated"]
+              }
+            ],
+            "final_contains_any": ["完整", "自拍", "选择", "加载"],
+            "final_not_empty": true
           }
         }
       ]

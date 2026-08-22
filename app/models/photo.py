@@ -1,9 +1,11 @@
 """Photo 表：照片元数据 + 语义向量."""
+
 from datetime import datetime
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
+    Boolean,
     CHAR,
     DateTime,
     ForeignKey,
@@ -25,9 +27,7 @@ EMBEDDING_DIM = 1024
 
 class Photo(Base):
     __tablename__ = "photos"
-    __table_args__ = (
-        UniqueConstraint("user_id", "hash", name="uq_photos_user_hash"),
-    )
+    __table_args__ = (UniqueConstraint("user_id", "hash", name="uq_photos_user_hash"),)
 
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True), primary_key=True, default=uuid4
@@ -62,9 +62,14 @@ class Photo(Base):
 
     # 结构化分析结果：{scene, scene_detail, persons, objects,
     # text_in_image, mood, colors, summary}
-    ai_analysis: Mapped[dict | None] = mapped_column(
-        JSONB, nullable=True, default=dict
+    ai_analysis: Mapped[dict | None] = mapped_column(JSONB, nullable=True, default=dict)
+    # v5 集合检索字段。保留为独立列，确保“全部自拍/截图/合照”可以通过
+    # 硬条件扫描，而不是依赖近似向量召回。
+    photo_type: Mapped[str | None] = mapped_column(
+        String(32), nullable=True, index=True
     )
+    is_selfie: Mapped[bool | None] = mapped_column(Boolean, nullable=True, index=True)
+    people_count: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
 
     # 处理状态：pending / preflight_check / processing /
     # partial_done / skipped / done / failed
@@ -73,9 +78,7 @@ class Photo(Base):
     )
 
     # 部分成功/跳过/失败的原因码（供前端展示和离线统计用）
-    partial_reason: Mapped[str | None] = mapped_column(
-        String(32), nullable=True
-    )
+    partial_reason: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
     # embedding 专项补算状态；不重复调用已经成功的 VL。
     embedding_retry_count: Mapped[int] = mapped_column(
@@ -88,9 +91,7 @@ class Photo(Base):
         DateTime(timezone=True), nullable=True
     )
     # 只保存稳定错误码/异常类型，不保存第三方响应正文或密钥。
-    embedding_last_error: Mapped[str | None] = mapped_column(
-        String(64), nullable=True
-    )
+    embedding_last_error: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     @property
     def search_index_status(self) -> str:

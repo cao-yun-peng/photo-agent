@@ -15,15 +15,17 @@ from uuid import UUID
 from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import settings
 from app.core.telemetry import set_current_span_attributes, traced_async
-from app.models.generation import Generation
 from app.models.photo import Photo
-from app.models.rate_limit import RateLimit
-from app.models.skill import Skill
 from app.models.tag import PhotoTag, Tag
 from app.schemas.photo import ParsedQuery
 from app.services.oss import sign_get_url
+from app.services.generation_service import (
+    GenerationDomainError,
+    confirm_generation,
+    generation_confirmation_payload,
+    prepare_generation,
+)
 from app.services.query_parser import parse_query, resolve_auto_parsed_query
 from app.services.search_constraints import (
     extract_structured_constraints,
@@ -36,16 +38,22 @@ from app.services.search_reranker import (
 )
 from app.services.recommend import recommend_skills
 from app.services.search import (
+    apply_semantic_threshold,
+    build_search_coverage_hint,
     combine,
+    complete_scope_is_reliable,
     decode_cursor,
     encode_cursor,
     get_query_embedding,
     get_user_profile,
+    infer_complete_result_filters,
     personalized_interaction_score,
     recency_score,
+    resolve_semantic_threshold,
     resolve_search_result_limits,
     semantic_score,
 )
+
 logger = logging.getLogger(__name__)
 
 
@@ -143,23 +151,6 @@ def _photo_to_search_item(
     }
 
 
-async def _check_generate_quota(
-    db: AsyncSession, user_id: UUID
-) -> tuple[bool, int, int]:
-    """检查用户今日生成额度。返回 (是否可用, 已用, 总额)."""
-    today = datetime.now(tz=timezone.utc).date()
-    rl = (
-        await db.execute(
-            select(RateLimit).where(
-                and_(RateLimit.user_id == user_id, RateLimit.day == today)
-            )
-        )
-    ).scalar_one_or_none()
-    used = rl.gen_count if rl else 0
-    quota = settings.gen_daily_free_quota
-    return used < quota, used, quota
-
-
 # ------------------------------------------------------------------
 # Tool 1: 搜索照片
 # ------------------------------------------------------------------
@@ -180,6 +171,11 @@ async def search_photos(
     text_in_image: list[str] | None = None,
     mood: str | None = None,
     colors: list[str] | None = None,
+    photo_types: list[str] | None = None,
+    is_selfie: bool | None = None,
+    people_count_min: int | None = None,
+    people_count_max: int | None = None,
+    min_semantic_score: float | None = None,
     status: str | None = "done",
     limit: int = 10,
     cursor: str | None = None,
@@ -188,6 +184,7 @@ async def search_photos(
     verify_constraints: bool = True,
     verify_semantic: bool = True,
     result_mode: str = "browse",
+    complete_result_set: bool = False,
     verified_only: bool = False,
     candidate_pool_size: int = 12,
     force_visual_verify: bool = False,
@@ -212,6 +209,7 @@ async def search_photos(
         output_limit, verification_limit = resolve_search_result_limits(
             result_mode,
             limit,
+            complete_result_set=complete_result_set,
         )
         candidate_pool_size = max(1, min(int(candidate_pool_size), 30))
         if verified_only:
@@ -285,20 +283,87 @@ async def search_photos(
         if jsonb_conds:
             conds.append(or_(*jsonb_conds))
 
-        fetch_n = max(verification_limit * 5, 30) if constraints else verification_limit * 3
-        dist_col = Photo.embedding.cosine_distance(query_vec).label("dist")
-        stmt = (
-            select(Photo, dist_col)
-            .where(and_(*conds))
-            .order_by(dist_col)
-            .limit(fetch_n)
+        inferred_filters = infer_complete_result_filters(query)
+        if complete_result_set and not complete_scope_is_reliable(
+            inferred_filters,
+            tags=tags,
+            scene=scene,
+            objects=objects,
+            text_in_image=text_in_image,
+            mood=mood,
+            colors=colors,
+            photo_types=photo_types,
+            is_selfie=is_selfie,
+            people_count_min=people_count_min,
+            people_count_max=people_count_max,
+        ):
+            return {
+                "ok": True,
+                "items": [],
+                "total": 0,
+                "total_matches": 0,
+                "result_mode": result_mode,
+                "complete_result_set": True,
+                "result_set_complete": False,
+                "completeness_reason": "semantic_scope_unverified",
+                "retrieval_strategy": "exhaustive_semantic_required",
+                "hint": (
+                    "这个‘全部’请求属于开放语义类别，当前不能用一次向量搜索"
+                    "保证完整；已停止返回全相册，需进入完整语义检索。"
+                ),
+            }
+        effective_photo_types = list(photo_types or inferred_filters["photo_types"])
+        effective_is_selfie = (
+            is_selfie if is_selfie is not None else inferred_filters["is_selfie"]
         )
+        effective_people_min = (
+            people_count_min
+            if people_count_min is not None
+            else inferred_filters["people_count_min"]
+        )
+        effective_people_max = (
+            people_count_max
+            if people_count_max is not None
+            else inferred_filters["people_count_max"]
+        )
+        if effective_photo_types:
+            conds.append(Photo.photo_type.in_(effective_photo_types))
+        if effective_is_selfie is not None:
+            conds.append(Photo.is_selfie == effective_is_selfie)
+        if effective_people_min is not None:
+            conds.append(Photo.people_count >= effective_people_min)
+        if effective_people_max is not None:
+            conds.append(Photo.people_count <= effective_people_max)
+        structured_collection = bool(
+            effective_photo_types
+            or effective_is_selfie is not None
+            or effective_people_min is not None
+            or effective_people_max is not None
+        )
+        similarity_threshold, threshold_bypassed_reason = resolve_semantic_threshold(
+            min_semantic_score,
+            structured_collection=structured_collection,
+        )
+
+        if verification_limit is None:
+            fetch_n = None
+        else:
+            fetch_n = (
+                max(verification_limit * 5, 30)
+                if constraints
+                else verification_limit * 3
+            )
+        dist_col = Photo.embedding.cosine_distance(query_vec).label("dist")
+        stmt = select(Photo, dist_col).where(and_(*conds)).order_by(dist_col)
+        if fetch_n is not None:
+            stmt = stmt.limit(fetch_n)
         result = await db.execute(stmt)
         rows = result.all()
         set_current_span_attributes(
             {
                 "search.fetch_count": len(rows),
-                "search.fetch_limit": fetch_n,
+                "search.fetch_limit": fetch_n if fetch_n is not None else -1,
+                "search.complete_result_set": complete_result_set,
                 "search.constraint_count": len(constraints),
                 "search.verified_only": verified_only,
             }
@@ -315,6 +380,9 @@ async def search_photos(
         scored.sort(key=lambda x: x[4], reverse=True)
 
         scored, constraint_summary = validate_scored_candidates(scored, constraints)
+        scored, threshold_filtered_count = apply_semantic_threshold(
+            scored, similarity_threshold
+        )
 
         if cursor:
             parsed_cursor = decode_cursor(cursor)
@@ -340,29 +408,76 @@ async def search_photos(
             scored, rerank_summary = await rerank_scored_candidates(
                 scored,
                 query,
-                enabled=verify_semantic,
-                page_limit=verification_limit,
+                # select 是“召回给用户自己选”，不可由判同模型删减候选。
+                enabled=verify_semantic and result_mode != "select",
+                page_limit=verification_limit or len(scored),
             )
 
-        page = scored[:output_limit]
+        page = scored if output_limit is None else scored[:output_limit]
         items = [
             _photo_to_search_item(p, sem, rec, inter, fin)
             for (p, sem, rec, inter, fin) in page
         ]
         parsed_dict = parsed_obj.model_dump() if parsed_obj else None
-        hint = (
-            (
-                "已从 Top-5 候选中选出最佳照片"
-                if result_mode == "best"
-                else f"找到 {len(items)} 张相关照片供你选择"
-            )
-            if items
-            else "未找到匹配照片，建议尝试更宽泛的描述或时间范围"
-        )
+        if not items:
+            hint = "未找到匹配照片，建议尝试更宽泛的描述或时间范围"
+        elif result_mode == "best":
+            hint = "已从 Top-5 候选中选出最佳照片"
+        elif result_mode == "select":
+            hint = f"找到 {len(items)} 张相似照片，请由你选择最满意的一张"
+        else:
+            hint = f"找到 {len(items)} 张相关照片供你选择"
 
         index_coverage = (
-            await get_index_coverage(db, user_id) if include_index_coverage else None
+            await get_index_coverage(db, user_id)
+            if include_index_coverage or structured_collection or complete_result_set
+            else None
         )
+        coverage_complete = not index_coverage or bool(
+            index_coverage.get("complete", True)
+            and (
+                index_coverage.get("semantic_complete", True)
+                if structured_collection
+                else True
+            )
+        )
+        total_matches = len(scored) if complete_result_set else len(page)
+        scope_reliable = complete_scope_is_reliable(
+            inferred_filters,
+            tags=tags,
+            scene=scene,
+            objects=objects,
+            text_in_image=text_in_image,
+            mood=mood,
+            colors=colors,
+            photo_types=photo_types,
+            is_selfie=is_selfie,
+            people_count_min=people_count_min,
+            people_count_max=people_count_max,
+        )
+        result_set_complete = bool(
+            result_mode == "select"
+            and complete_result_set
+            and coverage_complete
+            and scope_reliable
+        )
+        if not complete_result_set:
+            completeness_reason = "not_requested"
+        elif not coverage_complete:
+            completeness_reason = "index_incomplete"
+        elif not scope_reliable:
+            completeness_reason = "semantic_scope_unverified"
+        else:
+            completeness_reason = None
+        truncated = len(page) < len(scored)
+        coverage_hint = build_search_coverage_hint(
+            index_coverage,
+            requires_facets=structured_collection,
+            threshold=similarity_threshold,
+            threshold_filtered_count=threshold_filtered_count,
+        )
+        if coverage_hint:
+            hint = f"{hint}。{coverage_hint}"
         remaining_items = (
             [
                 _photo_to_search_item(p, sem, rec, inter, fin)
@@ -376,7 +491,12 @@ async def search_photos(
             {
                 "search.constraint_pass_count": len(scored),
                 "search.result_count": len(items),
+                "search.total_matches": total_matches,
+                "search.result_set_complete": result_set_complete,
                 "search.candidate_pool_count": len(remaining_items),
+                "search.similarity_threshold": similarity_threshold or 0.0,
+                "search.threshold_filtered_count": threshold_filtered_count,
+                "search.semantic_facets_required": structured_collection,
                 "search.rerank_applied": bool(rerank_trace.get("applied")),
                 "search.rerank_degraded": bool(rerank_trace.get("degraded")),
                 "search.rerank_match_count": int(
@@ -397,10 +517,22 @@ async def search_photos(
             "parsed": parsed_dict,
             "next_cursor": None,
             "total": len(items),
+            "total_matches": total_matches,
             "result_mode": result_mode,
+            "complete_result_set": complete_result_set,
+            "result_set_complete": result_set_complete,
+            "completeness_reason": completeness_reason,
+            "truncated": truncated,
+            "inferred_filters": inferred_filters,
+            "selection_owner": "system" if result_mode == "best" else "user",
             "constraint_check": constraint_summary,
             "rerank_check": rerank_summary,
             "index_coverage": index_coverage,
+            "similarity_threshold": similarity_threshold,
+            "threshold_filtered_count": threshold_filtered_count,
+            "threshold_bypassed_reason": threshold_bypassed_reason,
+            "coverage_hint": coverage_hint,
+            "semantic_facets_required": structured_collection,
             "hint": hint,
         }
 
@@ -516,8 +648,10 @@ async def apply_skill(
     skill_id: UUID | None = None,
     extra_prompt: str | None = None,
     model: str | None = None,
+    idempotency_key: str | None = None,
+    require_confirmation: bool = True,
 ) -> dict:
-    """Agent 生图 Tool：校验权限和额度后创建生成任务并入队。
+    """准备生成任务；灰度组确认后才会预占额度并入队。
 
     返回：
         {
@@ -528,82 +662,52 @@ async def apply_skill(
         }
     """
     try:
-        # 1. 校验源照片
-        photo = (
-            await db.execute(
-                select(Photo).where(
-                    and_(Photo.id == photo_id, Photo.user_id == user_id)
-                )
-            )
-        ).scalar_one_or_none()
-        if photo is None:
-            return {
-                "ok": False,
-                "generation_id": None,
-                "status": "not_found",
-                "hint": "未找到这张照片，可能是权限不足或 ID 错误",
-            }
-
-        # 2. 校验 Skill
-        selected_model = model or "wanx2.1-imageedit"
-        skill: Skill | None = None
-        if skill_id:
-            skill = (
-                await db.execute(select(Skill).where(Skill.id == skill_id))
-            ).scalar_one_or_none()
-            if skill is None:
-                return {
-                    "ok": False,
-                    "generation_id": None,
-                    "status": "skill_not_found",
-                    "hint": "未找到指定的 Skill",
-                }
-            if not (skill.is_official or skill.is_public or skill.owner_id == user_id):
-                return {
-                    "ok": False,
-                    "generation_id": None,
-                    "status": "skill_forbidden",
-                    "hint": "没有权限使用这个 Skill",
-                }
-            selected_model = skill.model
-
-        # 3. 额度检查
-        ok, used, quota = await _check_generate_quota(db, user_id)
-        if not ok:
-            return {
-                "ok": False,
-                "generation_id": None,
-                "status": "quota_exceeded",
-                "hint": (
-                    f"今日免费额度已用完（{used}/{quota}），" "明天再来或订阅解锁。"
-                ),
-            }
-
-        # 4. 落库并入队
-        gen = Generation(
+        gen = await prepare_generation(
+            db=db,
             user_id=user_id,
-            source_photo_id=photo.id,
-            skill_id=skill.id if skill else None,
+            photo_id=photo_id,
+            skill_id=skill_id,
             extra_prompt=extra_prompt,
-            model=selected_model,
-            status="pending",
+            model=model,
+            idempotency_key=idempotency_key,
         )
-        db.add(gen)
-        await db.commit()
-        await db.refresh(gen)
-        # 延迟导入，避免 Worker 注册搜索预取任务时形成
-        # tasks -> search_tasks -> agent_tools -> tasks 的循环依赖。
-        from app.workers.tasks import enqueue_generate_photo
+        if not require_confirmation and gen.status in {
+            "awaiting_confirmation",
+            "queue_failed",
+        }:
+            gen = await confirm_generation(
+                db=db,
+                user_id=user_id,
+                generation_id=gen.id,
+                confirmation_token=gen.confirmation_token,
+            )
 
-        await enqueue_generate_photo(gen.id)
+        confirmation_required = gen.status == "awaiting_confirmation"
 
         return {
             "ok": True,
             "generation_id": str(gen.id),
             "status": gen.status,
-            "hint": "生成任务已提交，稍后可在生成历史中查看结果",
+            "confirmation_required": confirmation_required,
+            "confirmation": (
+                generation_confirmation_payload(gen) if confirmation_required else None
+            ),
+            "estimated_cost_yuan": float(gen.estimated_cost_yuan or 0),
+            "hint": (
+                "请用户确认本次照片、效果和预计费用后再开始生成"
+                if confirmation_required
+                else "生成任务已提交，稍后可在生成历史中查看结果"
+            ),
         }
 
+    except GenerationDomainError as exc:
+        return {
+            "ok": False,
+            "error_type": exc.code,
+            "generation_id": None,
+            "status": "error",
+            "hint": str(exc),
+        }
     except Exception as exc:
         logger.exception(
             "apply_skill failed | user=%s photo=%s skill=%s",
