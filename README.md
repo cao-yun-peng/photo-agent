@@ -31,7 +31,7 @@ Photo Agent 让用户直接上传手机照片，由异步 Worker 自动完成 EX
 | 禁返图片命中率 | 0.00% | **0.00%** | 明确冲突图片进入结果的比例，越低越好 |
 | 质量门禁 | PASS | **PASS** | 冻结阈值下的统一门禁 |
 
-两组共 28 条查询，文本判同冷调用 P50/P95 为 7.078 s / 9.688 s；二次视觉核验只触发 7/28（25%），其冷调用 P50/P95 为 1.812 s / 3.141 s。完整口径、失败分析和产物哈希见 [细粒度视觉检索 v4 实验记录](docs/visual-retrieval-v4-results-2026-08-15.md)。
+两组共 28 条查询，文本判同冷调用 P50/P95 为 7.078 s / 9.688 s；二次视觉核验只触发 7/28（25%），其冷调用 P50/P95 为 1.812 s / 3.141 s。原始实验报告已不在当前工作区，因此这些数字只能视为历史快照，不能作为当前代码的可复现发布门禁；新的评测要求见 [测试与评测](docs/10-testing-and-evaluation.md)。
 
 > 指标边界：Validation 仅含 7 条查询（5 条正查询、2 条负查询），且现有 Test 已被查看，不能视为新的盲测。这些数字适合说明当前工程验证结果，不应外推为线上泛化表现。
 
@@ -82,7 +82,7 @@ flowchart LR
 - **精细拒识**：文本 Top-K 判同过滤冲突候选，只在必要时查看原图做二次视觉判定。
 - **Photo Agent**：普通与 SSE 流式接口，支持搜索、澄清、选图、应用 Skill，并限制时间、Token、费用和工具调用预算。
 - **AI 二创**：官方与用户自定义 Skill、公开广场、每日额度、异步生成历史；支持通义万相与 OpenAI Images，未配置时自动走 Mock。
-- **工程保障**：数据库迁移、重试与补算、熔断器、OpenTelemetry 全链路 Trace、结构化日志联查、liveness/readiness 和评测产物留档。部署、看板和验收口径见 [全链路可观测性方案](docs/observability.md)。
+- **工程保障**：数据库迁移、重试与补算、熔断器、OpenTelemetry 全链路 Trace、结构化日志联查、liveness/readiness 和评测产物留档。部署、看板和验收口径见 [可观测性与安全](docs/09-observability-and-security.md)。
 
 ## 三分钟运行
 
@@ -137,7 +137,7 @@ if (-not (Test-Path .env.local)) { Copy-Item .env.example .env.local }
 npm run dev
 ```
 
-打开 <http://localhost:3001/login>。完整的 Web 开发、Playwright 测试与 Docker/Nginx 交付步骤见 [Web 开发手册](docs/web-development.md)。
+打开 <http://localhost:3001/login>。完整的 Web 开发、Playwright 测试与 Docker/Nginx 交付步骤见 [客户端文档](docs/07-clients.md) 与 [配置和部署](docs/08-configuration-and-deployment.md)。
 
 开发环境可用任意非空 `code` 登录：
 
@@ -175,7 +175,7 @@ curl -X POST http://localhost:8000/auth/wechat \
 | 视觉理解 / 向量 / Chat | `DASHSCOPE_API_KEY=sk-xxx` 时使用确定性 Mock | `DASHSCOPE_API_KEY` |
 | 图片生成 | 模型密钥未配置时返回原图完成链路 | DashScope 万相或 `OPENAI_API_KEY` |
 | 二次视觉核验 | 默认关闭 | 评测通过后设置 `SEARCH_VISUAL_VERIFY_ENABLED=true` |
-| v5 集合检索 | 已实现 | 自拍/截图/合照走结构化硬过滤；上线与重索引见 `docs/semantic-search-v5.md` |
+| 集合检索 | 已实现 | 自拍/截图/合照走结构化硬过滤；设计与重索引边界见 [照片处理与检索](docs/05-photo-processing-and-search.md) |
 
 不要提交 `.env`。生产环境还应替换 `JWT_SECRET`、收紧 CORS、配置 HTTPS，并将 OSS Bucket CORS 限制为自己的域名。
 
@@ -193,10 +193,9 @@ photo-agent/
 ├── alembic/                 # 数据库迁移
 ├── miniprogram/             # 微信小程序：时间线、上传、搜索、Skill 广场
 ├── web/                     # React/Vinext Web：完整照片、Agent、Skill 与生成闭环
-├── scripts/                 # E2E、评测、审计、校准与补算脚本
-├── tests/                   # 单元、集成与评测数据
-├── artifacts/               # 可追溯的评测原始结果
-├── docs/                    # 设计、实验与审计报告
+├── scripts/                 # 当前保留的 Agent/VL 评测和真实 E2E 脚本
+├── tests/                   # 当前保留的 Python 测试与评测数据
+├── docs/                    # 稳定设计、客户端、部署与运维文档
 └── docker-compose.yml       # API、Worker、pgvector、Redis
 ```
 
@@ -210,12 +209,6 @@ pytest -q
 # 不消耗模型额度，只验证 Agent 评测管线和评分器
 python scripts/agent_eval.py --mode replay
 
-# 上传、AI 处理、搜索和图片生成闭环
-./scripts/e2e_upload.sh
-./scripts/e2e_ai.sh
-./scripts/e2e_search.sh
-./scripts/e2e_generate.sh
-
 # Web：lint、类型、单测和生产构建
 cd web
 npm run check
@@ -227,15 +220,7 @@ npm run test:e2e
 python scripts/agent_e2e.py --confirm-test-account
 ```
 
-真实模型评测、检索 A/B 和数据切分不能与 Mock 回放混为一谈。进一步阅读：
-
-- [视觉检索 v4 设计](docs/visual-retrieval-v4.md)
-- [视觉检索 v4 结果](docs/visual-retrieval-v4-results-2026-08-15.md)
-- [搜索重排设计](docs/search-reranker.md)
-- [Agent 评测说明](docs/agent-evaluation.md)
-- [Agent 真实端到端测试](docs/agent-e2e.md)
-- [质量门禁](docs/quality-gates.md)
-- [安全审计](docs/security-audit-2026-08-15.md)
+真实模型评测、检索 A/B 和数据切分不能与 Mock 回放混为一谈。进一步阅读从 [文档中心](docs/README.md) 开始；其中包含架构、数据库、API、Agent、检索、生成、客户端、部署、安全、评测和运维手册。
 
 ## 当前边界
 

@@ -14,7 +14,8 @@ on:
       - "Dockerfile"
       - ".env.example"
       - "README.md"
-      - "docs/web-development.md"
+      - "docs/07-clients.md"
+      - "docs/08-configuration-and-deployment.md"
       - ".github/workflows/web-ci.yml"
   push:
     paths:
@@ -29,7 +30,8 @@ on:
       - "Dockerfile"
       - ".env.example"
       - "README.md"
-      - "docs/web-development.md"
+      - "docs/07-clients.md"
+      - "docs/08-configuration-and-deployment.md"
       - ".github/workflows/web-ci.yml"
 
 jobs:

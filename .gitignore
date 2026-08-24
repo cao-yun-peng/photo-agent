@@ -40,6 +40,10 @@ logs/
 htmlcov/
 artifacts/
 agent_eval_result.json
+miniprogram/
+
+# Local code knowledge graph and dashboard runtime
+.understand-anything/
 
 # Alembic
 # 保留 versions/ 目录本身
