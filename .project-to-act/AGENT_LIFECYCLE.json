@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "projectId": "photo-agent",
+  "projectName": "Photo Agent",
+  "revision": 4,
+  "projectStatus": "active",
+  "currentStage": "6",
+  "updatedAt": "2026-08-28T13:15:48.206Z",
+  "historicalLimitations": [
+    "既有仓库已有产品、架构、实现、评测和运维资产，但早期阶段缺少按本生命周期保存的新鲜 Gate 证据；阶段 0 至 5 标记为 legacy_unverified，当前从阶段 6 评测、安全测试与调优继续。"
+  ],
+  "stages": [
+    {
+      "id": "0",
+      "name": "立项与风险分级",
+      "status": "legacy_unverified",
+      "expectedArtifacts": [
+        "项目简报",
+        "风险等级",
+        "责任人与停止条件"
+      ],
+      "taskIds": [],
+      "evidenceIds": [],
+      "artifacts": [],
+      "decisions": [],
+      "startedAt": null,
+      "updatedAt": "2026-08-26T12:59:04.562Z"
+    },
+    {
+      "id": "1",
+      "name": "需求调研与问题定义",
+      "status": "legacy_unverified",
+      "expectedArtifacts": [
+        "用户旅程",
+        "任务样本",
+        "现状基线与成功指标"
+      ],
+      "taskIds": [],
+      "evidenceIds": [],
+      "artifacts": [],
+      "decisions": [],
+      "startedAt": null,
+      "updatedAt": "2026-08-26T12:59:04.562Z"
+    },
+    {
+      "id": "2",
+      "name": "AI 能力边界与成功标准",
+      "status": "legacy_unverified",
+      "expectedArtifacts": [
+        "能力边界矩阵",
+        "权限表",
+        "评测计划"
+      ],
+      "taskIds": [],
+      "evidenceIds": [],
+      "artifacts": [],
+      "decisions": [],
+      "startedAt": null,
+      "updatedAt": "2026-08-26T12:59:04.562Z"
+    },
+    {
+      "id": "3",
+      "name": "技术栈选型与可行性试验",
+      "status": "legacy_unverified",
+      "expectedArtifacts": [
+        "技术尖峰",
+        "候选对比",
+        "最小可行原型"
+      ],
+      "taskIds": [],
+      "evidenceIds": [],
+      "artifacts": [],
+      "decisions": [],
+      "startedAt": null,
+      "updatedAt": "2026-08-26T12:59:04.562Z"
+    },
+    {
+      "id": "4",
+      "name": "架构与契约设计",
+      "status": "legacy_unverified",
+      "expectedArtifacts": [
+        "架构与数据流",
+        "Schema 与状态机",
+        "威胁模型与 ADR"
+      ],
+      "taskIds": [],
+      "evidenceIds": [],
+      "artifacts": [],
+      "decisions": [],
+      "startedAt": null,
+      "updatedAt": "2026-08-26T12:59:04.562Z"
+    },
+    {
+      "id": "5",
+      "name": "具体功能与纵向切片开发",
+      "status": "legacy_unverified",
+      "expectedArtifacts": [
+        "Task Contract",
+        "纵向切片",
+        "自动测试与运行手册"
+      ],
+      "taskIds": [],
+      "evidenceIds": [],
+      "artifacts": [],
+      "decisions": [],
+      "startedAt": null,
+      "updatedAt": "2026-08-26T12:59:04.562Z"
+    },
+    {
+      "id": "6",
+      "name": "评测、安全测试与调优",
+      "status": "in_progress",
+      "expectedArtifacts": [
+        "分切片评测",
+        "红队报告",
+        "错误分类与回归集"
+      ],
+      "taskIds": [
+        "GOV-20260826-001",
+        "S6-EVAL-001",
+        "S6-EVAL-002"
+      ],
+      "evidenceIds": [
+        "E-S6-EVAL-001"
+      ],
+      "artifacts": [
+        ".project-to-act/tasks/S6-EVAL-001/evidence/E-S6-EVAL-001.md",
+        ".project-to-act/tasks/S6-EVAL-001/agent-eval-d9-replay.json",
+        ".project-to-act/tasks/S6-EVAL-001/agent-eval-full-replay.json"
+      ],
+      "decisions": [
+        {
+          "at": "2026-08-26T16:39:18.757Z",
+          "decision": "blocked",
+          "evidenceIds": [
+            "E-S6-EVAL-001"
+          ],
+          "artifacts": [
+            ".project-to-act/tasks/S6-EVAL-001/evidence/E-S6-EVAL-001.md",
+            ".project-to-act/tasks/S6-EVAL-001/agent-eval-d9-replay.json",
+            ".project-to-act/tasks/S6-EVAL-001/agent-eval-full-replay.json"
+          ],
+          "summary": "反馈体验切片 D9 评测通过，但全量 Replay 35/52 且完整安全与真实 E2E 证据不足，阶段 6 不晋级",
+          "nextStage": null
+        }
+      ],
+      "startedAt": "2026-08-26T16:09:02.557Z",
+      "updatedAt": "2026-08-28T13:15:48.206Z"
+    },
+    {
+      "id": "7",
+      "name": "定型发布与产品化",
+      "status": "pending",
+      "expectedArtifacts": [
+        "版本与发布清单",
+        "SLO 与监控",
+        "灰度、停止和回滚方案"
+      ],
+      "taskIds": [],
+      "evidenceIds": [],
+      "artifacts": [],
+      "decisions": [],
+      "startedAt": null,
+      "updatedAt": null
+    },
+    {
+      "id": "8",
+      "name": "运营、学习与退役",
+      "status": "pending",
+      "expectedArtifacts": [
+        "线上健康与漂移报告",
+        "失败回灌与迭代队列",
+        "迁移或退役计划"
+      ],
+      "taskIds": [],
+      "evidenceIds": [],
+      "artifacts": [],
+      "decisions": [],
+      "startedAt": null,
+      "updatedAt": null
+    }
+  ],
+  "transitions": [
+    {
+      "at": "2026-08-26T12:59:04.562Z",
+      "action": "adopt",
+      "fromStage": "legacy",
+      "toStage": "6",
+      "taskId": "GOV-20260826-001",
+      "decision": "legacy_unverified",
+      "evidenceIds": [
+        "E-GOV-20260826-001"
+      ],
+      "artifacts": [],
+      "summary": "既有仓库已有产品、架构、实现、评测和运维资产，但早期阶段缺少按本生命周期保存的新鲜 Gate 证据；阶段 0 至 5 标记为 legacy_unverified，当前从阶段 6 评测、安全测试与调优继续。",
+      "revision": 1
+    },
+    {
+      "at": "2026-08-26T16:09:02.557Z",
+      "action": "start",
+      "fromStage": "6",
+      "toStage": "6",
+      "fromStatus": "ready",
+      "toStatus": "in_progress",
+      "taskId": "S6-EVAL-001",
+      "decision": null,
+      "evidenceIds": [],
+      "artifacts": [],
+      "summary": "启动搜索结果反馈、候选集生命周期与脱敏失败回灌的阶段 6 体验优化任务；先做错误分类，再实现低风险确定性改进。",
+      "revision": 2
+    },
+    {
+      "at": "2026-08-26T16:39:18.757Z",
+      "action": "decision",
+      "fromStage": "6",
+      "toStage": "6",
+      "taskId": "S6-EVAL-001",
+      "decision": "blocked",
+      "evidenceIds": [
+        "E-S6-EVAL-001"
+      ],
+      "artifacts": [
+        ".project-to-act/tasks/S6-EVAL-001/evidence/E-S6-EVAL-001.md",
+        ".project-to-act/tasks/S6-EVAL-001/agent-eval-d9-replay.json",
+        ".project-to-act/tasks/S6-EVAL-001/agent-eval-full-replay.json"
+      ],
+      "summary": "反馈体验切片 D9 评测通过，但全量 Replay 35/52 且完整安全与真实 E2E 证据不足，阶段 6 不晋级",
+      "revision": 3
+    },
+    {
+      "at": "2026-08-28T13:15:48.206Z",
+      "action": "start",
+      "fromStage": "6",
+      "toStage": "6",
+      "fromStatus": "blocked",
+      "toStatus": "in_progress",
+      "taskId": "S6-EVAL-002",
+      "decision": null,
+      "evidenceIds": [],
+      "artifacts": [],
+      "summary": "启动阶段 6 评测体系重建：先冻结路由、Agent 工具轨迹、检索和真实 Trace 的数据契约与评分边界，再分层实现和校准 Gate。",
+      "revision": 4
+    }
+  ]
+}

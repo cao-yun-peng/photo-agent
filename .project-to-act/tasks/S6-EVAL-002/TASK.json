@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "S6-EVAL-002",
+  "title": "重新设计阶段 6 评测体系",
+  "status": "in_progress",
+  "owner": "project owner with Codex",
+  "created_at": "2026-08-28T21:12:10+08:00",
+  "updated_at": "2026-08-28T21:47:36+08:00",
+  "stage": 6,
+  "risk_level": "L2",
+  "objective": "建立可定位、可复现、可分层执行的 Photo Agent 评测体系，覆盖路由、工具轨迹、检索、真实 Trace 以及横向安全、可靠性、延迟和成本 Gate。",
+  "problem_slices": [
+    "前置语义判断同时包含确定性规则与上下文模型判断，不能混为一个准确率",
+    "Agent 工具使用需要与真实后端波动解耦，并对轨迹、参数、状态和副作用评分",
+    "检索质量是独立能力层，不能由 Agent 最终回复替代",
+    "真实 HTTP/SSE E2E 需要 Trace 级断言和隔离数据环境"
+  ],
+  "acceptance": [
+    "冻结分层评测对象、数据契约、评分器边界、切分策略和实施顺序",
+    "实现路由、Agent 轨迹、检索和真实 Trace 的可复现评测器与首版数据集",
+    "以 Development 建立基线并在 Validation 冻结质量、安全、可靠性、延迟和成本 Gate",
+    "保存版本、原始结构化结果、失败分类与脱敏证据",
+    "独立 Test 运行完成前不声明阶段 6 通过"
+  ],
+  "evidence_ids": [
+    "E-S6-EVAL-CLEANUP-001",
+    "E-S6-ROUTING-DATASET-001"
+  ]
+}

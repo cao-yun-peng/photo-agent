@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "S6-EVAL-001",
+  "captured_at": "2026-08-27T00:07:36+08:00",
+  "git_head": "39fdb587e368730895ecbb3b92ba50ae2722690e",
+  "project_root": "E:/project/agent/photo-agent",
+  "lifecycle_revision_at_start": 1,
+  "source_hashes": {
+    "app/services/agent_state.py": "e5a78328b9537c299e2dccb07c154c76c9273ad30c95815c849473e9fae6d75e",
+    "app/services/agent_runtime.py": "48d3b62d26c3e21325ec9758af277c4953580d67855126092bf467d59f2789da",
+    "app/services/agent_execution.py": "b96517336df6065d5103dfac0bc0454ba76e38291296d6826666230051cb5cfb",
+    "app/services/turn_resolver.py": "b8bf65e41bba21d2f674f9fe811fc83e0b17e4beeecdea63c11587e6abd512db",
+    "app/services/agent_messages.py": "947cd4cd253a81cac7ca424f114d4a9c098f52cb14b13bda7cfba0fc65d65d03",
+    "app/services/agent_tools.py": "7fe3da7fd43831178a2fd1d3e7330ad405e36e69ebf4ecda61422b7c6d92c612",
+    "tests/eval/agent_eval_dataset.json": "f6746e9d147d80317904385e5d4622544592c6bdd66ffec8c6f3ccaa25d754ce"
+  },
+  "known_facts": [
+    "系统已有 rejected_photo_ids、active_search、候选池和多轮意图解析",
+    "评测集中已有‘不要这张，找别的’和新主题搜索场景",
+    "用户反馈指出多结果中的错误项处理和新旧结果展示边界仍不稳定"
+  ],
+  "assumptions": [
+    "本轮优先修复低风险确定性体验问题，不升级为多 Agent",
+    "跨会话长期偏好学习需要独立的数据保留、删除和审计设计，本轮不默认启用",
+    "真实模型和完整 HTTP E2E 若缺少环境或密钥则记录为未运行"
+  ]
+}

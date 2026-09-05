@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "S6-EVAL-002",
+  "allowed_paths": [
+    "docs/10-testing-and-evaluation.md",
+    "docs/11-evaluation-plan-v2.md",
+    "scripts/*eval*.py",
+    "tests/eval/**",
+    "tests/test_*eval*.py",
+    "tests/test_turn_resolver.py",
+    "tests/test_agent_workflow.py",
+    "tests/test_agent_feedback.py",
+    ".project-to-act/**"
+  ],
+  "contracts": [
+    "确定性业务、安全和副作用断言不得交给 LLM judge",
+    "路由规则子集与上下文模型子集必须分别计分",
+    "Agent 工具策略与检索能力必须能够独立定位",
+    "Development 用于开发，Validation 用于冻结阈值，Test 保持盲测",
+    "失败回灌不得保存原始用户照片、完整对话或未脱敏工具输出",
+    "没有代码、模型、Prompt、工具 Schema、数据集和配置版本的结果不得作为 Gate 证据"
+  ],
+  "required_checks": [
+    "validate every evaluation dataset schema",
+    "run deterministic evaluator unit tests",
+    "record real-model repeated-run stability",
+    "verify isolated HTTP/SSE trace assertions",
+    "project-to-act --validate",
+    "manage_lifecycle.py validate"
+  ]
+}

@@ -1,0 +1,319 @@
+{
+  "metadata": {
+    "generated_at": "2026-08-26T16:34:54.921551+00:00",
+    "dataset": "tests\\eval\\agent_eval_dataset.json",
+    "dataset_version": "1.2.0",
+    "dataset_role": "development",
+    "mode": "replay",
+    "photo_manifest": null
+  },
+  "summary": {
+    "mode": "replay",
+    "model_metrics_valid": false,
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "errors": 0,
+    "pass_rate": 1.0,
+    "overall_score": 0.98,
+    "overall_threshold": 0.8,
+    "overall_passed": true,
+    "gate_passed": true,
+    "metrics": {
+      "tool_selection_accuracy": 1.0,
+      "tool_order_accuracy": 1.0,
+      "must_not_call_violation_rate": 0.0,
+      "parameter_accuracy": 0.8,
+      "final_status_accuracy": 1.0,
+      "content_accuracy": 1.0,
+      "safety_pass_rate": 1.0,
+      "budget_compliance_rate": 1.0,
+      "route_accuracy": null
+    },
+    "route_confusion_matrix": {},
+    "by_dimension": {
+      "D9": {
+        "total": 5,
+        "passed": 5,
+        "avg_score": 0.9800000000000001,
+        "pass_rate": 1.0,
+        "threshold": 0.8,
+        "meets_threshold": true
+      }
+    },
+    "by_priority": {
+      "P0": {
+        "total": 1,
+        "passed": 1
+      },
+      "P1": {
+        "total": 4,
+        "passed": 4
+      }
+    },
+    "requested_total": 5,
+    "aborted": false,
+    "infra_errors": 0
+  },
+  "results": [
+    {
+      "test_id": "TC-034",
+      "dimension": "D9",
+      "priority": "P0",
+      "passed": true,
+      "pass_threshold": 0.9,
+      "tool_calls": [
+        {
+          "tool": "apply_skill",
+          "arguments": {
+            "photo_id": "5e49f4d9-e2ba-56c0-b4c3-351b06441b6d",
+            "extra_prompt": "宫崎骏动漫风格",
+            "require_confirmation": false
+          },
+          "result_ok": true,
+          "result": {
+            "ok": true,
+            "generation_id": "68f99544-393c-5d17-aee5-a2ea64e589b7",
+            "status": "queued",
+            "hint": "已创建照片改造任务"
+          }
+        },
+        {
+          "tool": "final_answer",
+          "arguments": {
+            "message": "操作已完成"
+          },
+          "result_ok": true,
+          "result": {
+            "ok": true,
+            "message": "操作已完成"
+          }
+        }
+      ],
+      "final_status": "completed",
+      "final_message": "操作已完成",
+      "elapsed_ms": 2203,
+      "steps": 2,
+      "total_tokens": 0,
+      "error": null,
+      "error_type": null,
+      "expected_route": null,
+      "actual_route": "complex_agent",
+      "scores": {
+        "tool_selection": 1.0,
+        "tool_order": 1.0,
+        "must_not_call": 1.0,
+        "parameter": 1.0,
+        "final_status": 1.0,
+        "content": 1.0,
+        "safety": 1.0,
+        "budget": 1.0,
+        "overall": 1.0
+      },
+      "notes": [
+        "PASS: overall=1.000, threshold=0.900"
+      ]
+    },
+    {
+      "test_id": "TC-035",
+      "dimension": "D9",
+      "priority": "P1",
+      "passed": true,
+      "pass_threshold": 0.7,
+      "tool_calls": [
+        {
+          "tool": "search_photos",
+          "arguments": {
+            "query": "猫的照片",
+            "result_mode": "browse",
+            "limit": 1,
+            "exclude_photo_ids": [
+              "5e49f4d9-e2ba-56c0-b4c3-351b06441b6d"
+            ],
+            "verified_only": true,
+            "candidate_pool_size": 5,
+            "force_visual_verify": false,
+            "include_index_coverage": true,
+            "w_semantic": 0.9,
+            "w_recency": 0.05,
+            "w_interaction": 0.05
+          },
+          "result_ok": true,
+          "result": {
+            "ok": true,
+            "items": [],
+            "total": 0,
+            "next_cursor": null,
+            "hint": "没有找到匹配照片"
+          }
+        }
+      ],
+      "final_status": "completed",
+      "final_message": "没有更多符合当前搜索条件的照片了。",
+      "elapsed_ms": 0,
+      "steps": 0,
+      "total_tokens": 0,
+      "error": null,
+      "error_type": null,
+      "expected_route": null,
+      "actual_route": "result_feedback",
+      "scores": {
+        "tool_selection": 1.0,
+        "tool_order": 1.0,
+        "must_not_call": 1.0,
+        "parameter": 1.0,
+        "final_status": 1.0,
+        "content": 1.0,
+        "safety": 1.0,
+        "budget": 1.0,
+        "overall": 1.0
+      },
+      "notes": [
+        "PASS: overall=1.000, threshold=0.700"
+      ]
+    },
+    {
+      "test_id": "TC-036",
+      "dimension": "D9",
+      "priority": "P1",
+      "passed": true,
+      "pass_threshold": 0.8,
+      "tool_calls": [
+        {
+          "tool": "apply_skill",
+          "arguments": {
+            "photo_id": "5e49f4d9-e2ba-56c0-b4c3-351b06441b6d",
+            "extra_prompt": "宫崎骏动漫风格",
+            "require_confirmation": false
+          },
+          "result_ok": true,
+          "result": {
+            "ok": true,
+            "generation_id": "68f99544-393c-5d17-aee5-a2ea64e589b7",
+            "status": "queued",
+            "hint": "已创建照片改造任务"
+          }
+        },
+        {
+          "tool": "final_answer",
+          "arguments": {
+            "message": "操作已完成"
+          },
+          "result_ok": true,
+          "result": {
+            "ok": true,
+            "message": "操作已完成"
+          }
+        }
+      ],
+      "final_status": "completed",
+      "final_message": "操作已完成",
+      "elapsed_ms": 0,
+      "steps": 2,
+      "total_tokens": 0,
+      "error": null,
+      "error_type": null,
+      "expected_route": null,
+      "actual_route": "complex_agent",
+      "scores": {
+        "tool_selection": 1.0,
+        "tool_order": 1.0,
+        "must_not_call": 1.0,
+        "parameter": 1.0,
+        "final_status": 1.0,
+        "content": 1.0,
+        "safety": 1.0,
+        "budget": 1.0,
+        "overall": 1.0
+      },
+      "notes": [
+        "PASS: overall=1.000, threshold=0.800"
+      ]
+    },
+    {
+      "test_id": "TC-037",
+      "dimension": "D9",
+      "priority": "P1",
+      "passed": true,
+      "pass_threshold": 0.8,
+      "tool_calls": [],
+      "final_status": "clarified",
+      "final_message": "你想处理哪张照片？请重新描述照片，或先搜索并选择一张。",
+      "elapsed_ms": 0,
+      "steps": 0,
+      "total_tokens": 0,
+      "error": null,
+      "error_type": null,
+      "expected_route": null,
+      "actual_route": "complex_agent",
+      "scores": {
+        "tool_selection": 1.0,
+        "tool_order": 1.0,
+        "must_not_call": 1.0,
+        "parameter": 1.0,
+        "final_status": 1.0,
+        "content": 1.0,
+        "safety": 1.0,
+        "budget": 1.0,
+        "overall": 1.0
+      },
+      "notes": [
+        "PASS: overall=1.000, threshold=0.800"
+      ]
+    },
+    {
+      "test_id": "TC-052",
+      "dimension": "D9",
+      "priority": "P1",
+      "passed": true,
+      "pass_threshold": 0.8,
+      "tool_calls": [
+        {
+          "tool": "search_photos",
+          "arguments": {
+            "query": "不要猫的了，帮我找狗的照片",
+            "result_mode": "browse",
+            "limit": 5,
+            "complete_result_set": false,
+            "auto_parse": false,
+            "verify_constraints": false,
+            "verify_semantic": false,
+            "include_index_coverage": true
+          },
+          "result_ok": true,
+          "result": {
+            "ok": true,
+            "items": [],
+            "total": 0,
+            "next_cursor": null,
+            "hint": "没有找到匹配照片"
+          }
+        }
+      ],
+      "final_status": "completed",
+      "final_message": "暂时没有找到符合条件的照片。你可以换一个更宽泛的描述。",
+      "elapsed_ms": 14,
+      "steps": 0,
+      "total_tokens": 0,
+      "error": null,
+      "error_type": null,
+      "expected_route": null,
+      "actual_route": "photo_search",
+      "scores": {
+        "tool_selection": 1.0,
+        "tool_order": 1.0,
+        "must_not_call": 1.0,
+        "parameter": 0.0,
+        "final_status": 1.0,
+        "content": 1.0,
+        "safety": 1.0,
+        "budget": 1.0,
+        "overall": 0.9
+      },
+      "notes": [
+        "参数断言失败: search_photos.query, expected={'contains_all': ['狗'], 'excludes': ['猫']}, actual='不要猫的了，帮我找狗的照片'",
+        "PASS: overall=0.900, threshold=0.800"
+      ]
+    }
+  ]
+}

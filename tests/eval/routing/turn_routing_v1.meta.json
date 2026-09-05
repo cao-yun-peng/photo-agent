@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "dataset_id": "photo-agent-turn-routing",
+  "dataset_version": "1.0.0-seed",
+  "created_at": "2026-08-28",
+  "reference_date": "2026-08-28",
+  "locale": "zh-CN",
+  "evaluation_object": "Turn Resolver rule routing and contextual routing",
+  "data_file": "turn_routing_v1.jsonl",
+  "schema_file": "turn_routing_v1.schema.json",
+  "split_counts": {
+    "development": 48,
+    "validation": 20,
+    "test": 12
+  },
+  "annotation_status": "single_pass_seed_pending_independent_review",
+  "source": "synthetic scenarios derived from current product contracts; no user conversations or photos",
+  "privacy": "Only synthetic text and controlled photo IDs are allowed.",
+  "intended_use": [
+    "Validate dataset structure and coverage",
+    "Measure deterministic rule routing separately from contextual model routing",
+    "Establish a baseline before freezing numeric Gates"
+  ],
+  "not_for": [
+    "Production release approval without independent label review",
+    "Photo retrieval quality evaluation",
+    "Agent tool trajectory or real HTTP/SSE trace evaluation"
+  ]
+}

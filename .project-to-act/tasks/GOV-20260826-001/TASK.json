@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "GOV-20260826-001",
+  "title": "采用 Project-to-Act 与 Agent 生命周期治理",
+  "status": "completed",
+  "owner": "project owner with Codex",
+  "created_at": "2026-08-26T20:54:58+08:00",
+  "updated_at": "2026-08-26T20:59:55+08:00",
+  "objective": "为既有 Photo Agent 仓库建立唯一项目事实源，并以不伪造历史 Gate 的方式采用 Agent 九阶段生命周期。",
+  "current_behavior": "项目有产品、架构、测试、安全和运维文档，但没有规范项目账本、任务 revision 或生命周期状态。",
+  "expected_behavior": "Managed 账本和 Agent 生命周期均可验证，当前阶段、风险、阻塞、下一 Gate 与证据边界可从文件恢复。",
+  "acceptance": [
+    "Project-to-Act validate 通过",
+    "Agent lifecycle validate 通过",
+    "生命周期采用阶段 6，早期阶段标记 legacy_unverified",
+    "项目文档不把历史指标或未运行测试声明为当前通过",
+    "本任务包含可复核证据和交接记录"
+  ],
+  "evidence_ids": [
+    "E-GOV-20260826-001"
+  ]
+}

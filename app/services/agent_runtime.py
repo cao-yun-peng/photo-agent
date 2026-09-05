@@ -6,6 +6,7 @@ The public compatibility surface remains in :mod:`app.services.agent`.
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import time
 from collections.abc import Awaitable, Callable
@@ -36,6 +37,7 @@ from app.services.agent_messages import (
 from app.services.agent_state import AgentState
 from app.services.agent_workflow import transition_workflow
 from app.services.circuit_breaker import ServiceDegradedError
+from app.services.events import log_event
 from app.services.metrics import metrics
 from app.services.rollout import agent_variant_for_user
 from app.services.turn_resolver import TurnPlan, resolve_turn
@@ -81,6 +83,9 @@ async def _initialize_state(
             agent_variant=agent_variant_for_user(user_id),
         )
         state.followup_type = None
+    # 兼容旧会话：已保存明确选图但尚未持久化工作流状态时，恢复可信状态。
+    if state.confirmed_photo_id and state.workflow_state == "idle":
+        transition_workflow(state, "selection_confirmed")
     if (
         state.workflow_state == "awaiting_generation_confirmation"
         and state.confirmed_generation_id
@@ -111,6 +116,8 @@ async def _resolve_turn_plan(
         query,
         active_search=state.active_search,
         recent_messages=state.recent_messages,
+        last_search_items=state.last_search_items,
+        confirmed_photo_id=state.confirmed_photo_id,
     )
     state.total_tokens += turn_plan.model_tokens
     model_calls_this_turn = turn_plan.model_calls
@@ -231,6 +238,149 @@ async def _run_routed_fast_path(
         _remember_message(state, "assistant", final_message)
         return state, events
     return None
+
+
+def _apply_result_feedback_to_state(
+    state: AgentState,
+    photo_ids: list[str],
+) -> list[str]:
+    """Apply only feedback IDs that belong to the current trusted result state."""
+
+    visible_ids = {
+        str(item.get("id"))
+        for item in state.last_search_items
+        if isinstance(item, dict) and item.get("id")
+    }
+    known_ids = set(visible_ids)
+    known_ids.update(
+        str(value)
+        for value in state.active_search.get("shown_photo_ids", [])
+        if value
+    )
+    if state.confirmed_photo_id:
+        known_ids.add(str(state.confirmed_photo_id))
+    applied = sorted({str(value) for value in photo_ids if str(value) in known_ids})
+    if not applied:
+        return []
+
+    rejected = set(applied)
+    state.rejected_photo_ids.update(rejected)
+    state.last_search_items = [
+        item
+        for item in state.last_search_items
+        if not isinstance(item, dict) or str(item.get("id", "")) not in rejected
+    ]
+    candidate_pool = [
+        item
+        for item in state.active_search.get("candidate_pool_items", [])
+        if not isinstance(item, dict) or str(item.get("id", "")) not in rejected
+    ]
+    state.active_search["candidate_pool_items"] = candidate_pool
+    state.active_search["candidate_pool_count"] = len(candidate_pool)
+    state.active_search["rejected_photo_ids"] = sorted(state.rejected_photo_ids)
+    shown_ids = {
+        str(value)
+        for value in state.active_search.get("shown_photo_ids", [])
+        if value
+    }
+    state.active_search["shown_photo_ids"] = sorted(shown_ids | visible_ids)
+    if state.confirmed_photo_id in rejected:
+        state.confirmed_photo_id = None
+    return applied
+
+
+async def _record_result_feedback(
+    *,
+    db: Any,
+    user_id: UUID,
+    state: AgentState,
+    photo_ids: list[str],
+    continue_search: bool,
+) -> None:
+    """Persist a redacted feedback trace without retaining the user's raw message."""
+
+    if not hasattr(db, "add"):
+        return
+
+    resolved_query = str(state.active_search.get("resolved_query", "")).strip()
+    query_fingerprint = (
+        hashlib.sha256(resolved_query.encode("utf-8")).hexdigest()[:16]
+        if resolved_query
+        else None
+    )
+    try:
+        await log_event(
+            user_id,
+            "agent_feedback",
+            {
+                "feedback_type": "search_result_rejected",
+                "session_id": str(state.session_id),
+                "photo_ids": photo_ids,
+                "rejected_count": len(photo_ids),
+                "remaining_visible_count": len(state.last_search_items),
+                "continue_search": continue_search,
+                "query_fingerprint": query_fingerprint,
+            },
+            db=db,
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("agent feedback trace write failed: %s", type(exc).__name__)
+
+
+async def _run_result_feedback(
+    agent: Any,
+    dependencies: AgentRuntimeDependencies,
+    user_id: UUID,
+    query: str,
+    state: AgentState,
+    events: list[dict],
+    emit: Callable[[str, dict], None],
+    turn_plan: TurnPlan,
+) -> tuple[AgentState, list[dict]]:
+    emit("route", turn_plan.route_payload())
+    feedback = turn_plan.feedback
+    applied = _apply_result_feedback_to_state(
+        state,
+        feedback.photo_ids if feedback else [],
+    )
+    if not applied:
+        question = "我没能确定你指的是哪张照片，请告诉我结果序号。"
+        state.pending_clarification = {"question": question, "options": []}
+        emit("clarify", {"question": question, "options": []})
+        _remember_message(state, "user", query)
+        _remember_message(state, "assistant", question)
+        return state, events
+
+    continue_search = bool(feedback and feedback.continue_search)
+    emit(
+        "feedback",
+        {
+            "kind": "search_result_rejected",
+            "removed_photo_ids": applied,
+            "remaining_count": len(state.last_search_items),
+            "continue_search": continue_search,
+        },
+    )
+    await _record_result_feedback(
+        db=agent.db,
+        user_id=user_id,
+        state=state,
+        photo_ids=applied,
+        continue_search=continue_search,
+    )
+    if continue_search:
+        if not state.active_search.get("resolved_query") and feedback:
+            state.active_search["resolved_query"] = feedback.search_query or ""
+        state.followup_type = "more_search_results"
+        return await _run_search_continuation(
+            agent, dependencies, user_id, query, state, events, emit
+        )
+
+    final_message = f"已从当前结果中移除 {len(applied)} 张照片，后续继续查找时也会排除。"
+    emit("final", {"message": final_message, "feedback_applied": True})
+    _remember_message(state, "user", query)
+    _remember_message(state, "assistant", final_message)
+    return state, events
 
 
 async def _run_search_continuation(
@@ -833,6 +983,18 @@ async def run_agent(
     )
     if routed_result is not None:
         return routed_result
+
+    if turn_plan.intent == "result_feedback":
+        return await _run_result_feedback(
+            agent,
+            dependencies,
+            user_id,
+            query,
+            state,
+            events,
+            emit,
+            turn_plan,
+        )
 
     if turn_plan.intent != "search_more":
         emit("route", turn_plan.route_payload())

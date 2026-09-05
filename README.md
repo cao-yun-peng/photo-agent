@@ -193,8 +193,8 @@ photo-agent/
 ├── alembic/                 # 数据库迁移
 ├── miniprogram/             # 微信小程序：时间线、上传、搜索、Skill 广场
 ├── web/                     # React/Vinext Web：完整照片、Agent、Skill 与生成闭环
-├── scripts/                 # 当前保留的 Agent/VL 评测和真实 E2E 脚本
-├── tests/                   # 当前保留的 Python 测试与评测数据
+├── scripts/                 # VL 离线评测与 Prompt 实验脚本
+├── tests/                   # 产品回归测试与 VL 评测数据
 ├── docs/                    # 稳定设计、客户端、部署与运维文档
 └── docker-compose.yml       # API、Worker、pgvector、Redis
 ```
@@ -206,8 +206,8 @@ photo-agent/
 ruff check app tests scripts
 pytest -q
 
-# 不消耗模型额度，只验证 Agent 评测管线和评分器
-python scripts/agent_eval.py --mode replay
+# 校验 VL 评测集文件、哈希、尺寸和标注结构
+python scripts/offline_eval.py --validate-only
 
 # Web：lint、类型、单测和生产构建
 cd web
@@ -216,11 +216,9 @@ npm run check
 # Web：登录、上传、Agent 搜索、生成、无障碍与移动端 E2E
 npm run test:e2e
 
-# 真实 Agent HTTP/JWT/Redis/DB/LLM/Tool/SSE 端到端测试
-python scripts/agent_e2e.py --confirm-test-account
 ```
 
-真实模型评测、检索 A/B 和数据切分不能与 Mock 回放混为一谈。进一步阅读从 [文档中心](docs/README.md) 开始；其中包含架构、数据库、API、Agent、检索、生成、客户端、部署、安全、评测和运维手册。
+当前只保留 VL 离线评测与 Prompt 实验资产；旧 Agent、检索和 Agent E2E 评测体系已退役，后续按新的评测设计重新建立。进一步阅读从 [文档中心](docs/README.md) 开始；其中包含架构、数据库、API、Agent、检索、生成、客户端、部署、安全、评测和运维手册。
 
 ## 当前边界
 

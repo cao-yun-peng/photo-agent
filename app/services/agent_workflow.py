@@ -35,6 +35,7 @@ _TRANSITIONS = {
     "selection_confirmed": {
         "searching",
         "awaiting_generation_confirmation",
+        "generation_queued",
         "failed",
     },
     "awaiting_generation_confirmation": {

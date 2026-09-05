@@ -34,6 +34,7 @@ logger = get_logger(__name__)
 TurnIntent = Literal[
     "photo_search",
     "search_more",
+    "result_feedback",
     "complex_agent",
     "unknown",
 ]
@@ -47,6 +48,7 @@ _MORE_PHRASES = (
     "下一张",
     "还有吗",
     "还有没有",
+    "有没有别的",
     "更多",
     "别的呢",
     "其他的呢",
@@ -121,6 +123,46 @@ _TRIM_PREFIX = re.compile(
     r"^(?:请|麻烦)?(?:帮我|给我|我想要|我想找|我想看)?"
     r"(?:找(?:\d+|一|几)?张|找一下|找找|查找|搜索一下|搜索|搜一下|搜搜|看看|看一下)?"
 )
+_NEGATIVE_RESULT_MARKERS = (
+    "不要",
+    "不需要",
+    "不想要",
+    "不对",
+    "错了",
+    "不符合",
+    "不相关",
+    "多余",
+    "去掉",
+    "排除",
+)
+_RESULT_REFERENCES = (
+    "这张",
+    "那张",
+    "上一张",
+    "刚才这张",
+    "刚才那张",
+    "这些照片",
+    "这些图片",
+    "结果里",
+    "结果中",
+    "你给的",
+    "你给我",
+    "有些",
+    "有一张",
+)
+_POSITION_RE = re.compile(r"第(?P<position>\d+|[一二三四五六七八九十]+)张")
+_CN_DIGITS = {
+    "一": 1,
+    "二": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+    "九": 9,
+    "十": 10,
+}
 
 
 @dataclass(slots=True)
@@ -152,6 +194,15 @@ class SearchTurn:
 
 
 @dataclass(slots=True)
+class ResultFeedback:
+    """对当前结果集的显式负反馈。"""
+
+    photo_ids: list[str] = field(default_factory=list)
+    continue_search: bool = False
+    search_query: str | None = None
+
+
+@dataclass(slots=True)
 class TurnPlan:
     """Turn Resolver 的稳定输出契约。"""
 
@@ -160,6 +211,7 @@ class TurnPlan:
     confidence: float
     source: str
     search: SearchTurn | None = None
+    feedback: ResultFeedback | None = None
     needs_clarification: bool = False
     clarification_question: str = ""
     clarification_options: list[str] = field(default_factory=list)
@@ -192,6 +244,113 @@ def _normalized(text: str) -> str:
 
 def _has_active_search(active_search: dict[str, Any] | None) -> bool:
     return bool((active_search or {}).get("resolved_query"))
+
+
+def _position_value(value: str) -> int | None:
+    if value.isdigit():
+        return int(value)
+    if value in _CN_DIGITS:
+        return _CN_DIGITS[value]
+    if value.startswith("十"):
+        return 10 + _CN_DIGITS.get(value[1:], 0)
+    if value.endswith("十"):
+        return _CN_DIGITS.get(value[:-1], 0) * 10
+    if "十" in value:
+        tens, ones = value.split("十", 1)
+        return _CN_DIGITS.get(tens, 0) * 10 + _CN_DIGITS.get(ones, 0)
+    return None
+
+
+def _feedback_clarification(items: list[dict[str, Any]]) -> TurnPlan:
+    options = [
+        f"第 {position} 张不需要"
+        for position, item in enumerate(items[:5], start=1)
+        if isinstance(item, dict) and item.get("id")
+    ]
+    return TurnPlan(
+        "result_feedback",
+        "refine",
+        0.99,
+        "rule",
+        needs_clarification=True,
+        clarification_question="你指的是哪一张？请告诉我序号，我会把它从当前结果和后续续搜中排除。",
+        clarification_options=options,
+    )
+
+
+def _feedback_followup_query(query: str) -> str | None:
+    text = _normalized(query)
+    text = re.sub(r"^(?:不要|不需要|不想要)(?:刚才)?(?:这|那|上一)张", "", text)
+    for phrase in _MORE_PHRASES:
+        text = text.replace(phrase, "")
+    text = text.strip("，。！？!?、 ")
+    return _clean_search_query(text) if text else None
+
+
+def _result_feedback_plan(
+    query: str,
+    *,
+    active_search: dict[str, Any] | None,
+    last_search_items: list[dict[str, Any]] | None,
+    confirmed_photo_id: str | None,
+) -> TurnPlan | None:
+    """只解析有明确结果指代的负反馈，避免把“不要猫了”误判为拒图。"""
+
+    text = _normalized(query)
+    items = [
+        item
+        for item in (last_search_items or [])
+        if isinstance(item, dict) and item.get("id")
+    ]
+    if not (items or confirmed_photo_id) or not any(
+        marker in text for marker in _NEGATIVE_RESULT_MARKERS
+    ):
+        return None
+
+    position_match = _POSITION_RE.search(text)
+    has_reference = bool(position_match) or "最后一张" in text or any(
+        marker in text for marker in _RESULT_REFERENCES
+    )
+    if not has_reference:
+        return None
+
+    continue_search = any(phrase in text for phrase in _MORE_PHRASES)
+    target_id: str | None = None
+    if position_match:
+        position = _position_value(position_match.group("position"))
+        if position and position <= len(items):
+            target_id = str(items[position - 1]["id"])
+        else:
+            return _feedback_clarification(items)
+    elif "最后一张" in text or "上一张" in text:
+        if items:
+            target_id = str(items[-1]["id"])
+    elif confirmed_photo_id and any(
+        marker in text for marker in ("这张", "那张", "刚才这张", "刚才那张")
+    ):
+        target_id = str(confirmed_photo_id)
+    elif len(items) == 1:
+        target_id = str(items[0]["id"])
+    else:
+        return _feedback_clarification(items)
+
+    if not target_id:
+        return _feedback_clarification(items)
+    return TurnPlan(
+        "result_feedback",
+        "continue" if continue_search else "refine",
+        1.0,
+        "rule",
+        feedback=ResultFeedback(
+            photo_ids=[target_id],
+            continue_search=continue_search,
+            search_query=(
+                None
+                if _has_active_search(active_search)
+                else _feedback_followup_query(query)
+            ),
+        ),
+    )
 
 
 def _is_complex_or_non_search(text: str) -> bool:
@@ -289,6 +448,8 @@ def resolve_turn_by_rule(
     query: str,
     *,
     active_search: dict[str, Any] | None = None,
+    last_search_items: list[dict[str, Any]] | None = None,
+    confirmed_photo_id: str | None = None,
 ) -> TurnPlan | None:
     """返回高置信度规则结果；None 表示需要一次上下文解析。"""
 
@@ -296,6 +457,30 @@ def resolve_turn_by_rule(
     active = _has_active_search(active_search)
     if not text:
         return TurnPlan("unknown", "none", 0.0, "rule")
+    feedback_plan = _result_feedback_plan(
+        query,
+        active_search=active_search,
+        last_search_items=last_search_items,
+        confirmed_photo_id=confirmed_photo_id,
+    )
+    if feedback_plan is not None:
+        return feedback_plan
+    lost_photo_reference = (
+        not last_search_items
+        and not confirmed_photo_id
+        and any(reference in text for reference in ("这张照片", "那张照片"))
+        and any(action in text for action in ("处理", "改造", "编辑", "修改", "修图"))
+    )
+    if lost_photo_reference:
+        return TurnPlan(
+            "complex_agent",
+            "none",
+            1.0,
+            "rule",
+            needs_clarification=True,
+            clarification_question="你想处理哪张照片？请重新描述照片，或先搜索并选择一张。",
+            clarification_options=["先搜索照片", "重新描述照片"],
+        )
     if active and len(text) <= 24 and any(phrase in text for phrase in _MORE_PHRASES):
         return TurnPlan("search_more", "continue", 1.0, "rule")
     if selection_search := _selection_search_turn(query):
@@ -416,10 +601,17 @@ async def resolve_turn(
     *,
     active_search: dict[str, Any] | None = None,
     recent_messages: list[dict[str, Any]] | None = None,
+    last_search_items: list[dict[str, Any]] | None = None,
+    confirmed_photo_id: str | None = None,
 ) -> TurnPlan:
     """解析每轮输入；失败时安全回退到现有完整 Agent。"""
 
-    rule_plan = resolve_turn_by_rule(query, active_search=active_search)
+    rule_plan = resolve_turn_by_rule(
+        query,
+        active_search=active_search,
+        last_search_items=last_search_items,
+        confirmed_photo_id=confirmed_photo_id,
+    )
     if rule_plan is not None:
         return rule_plan
 

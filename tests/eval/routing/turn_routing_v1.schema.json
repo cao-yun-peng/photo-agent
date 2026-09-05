@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:photo-agent:eval:routing:v1",
+  "title": "Photo Agent turn routing evaluation case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "split",
+    "reference_date",
+    "context",
+    "user_input",
+    "expected",
+    "tags",
+    "risk"
+  ],
+  "properties": {
+    "id": {"type": "string", "pattern": "^route-(dev|val|test)-[0-9]{3}$"},
+    "split": {"enum": ["development", "validation", "test"]},
+    "reference_date": {"type": "string", "format": "date"},
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["active_search", "recent_messages", "last_search_items", "confirmed_photo_id"],
+      "properties": {
+        "active_search": {"type": "object"},
+        "recent_messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "content"],
+            "properties": {
+              "role": {"enum": ["user", "assistant"]},
+              "content": {"type": "string"}
+            }
+          }
+        },
+        "last_search_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {"id": {"type": "string"}}
+          }
+        },
+        "confirmed_photo_id": {"type": ["string", "null"]}
+      }
+    },
+    "user_input": {"type": "string"},
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_outcome", "intent", "relation", "allowed_sources", "needs_clarification"],
+      "properties": {
+        "rule_outcome": {"enum": ["plan", "defer"]},
+        "intent": {"enum": ["photo_search", "search_more", "result_feedback", "complex_agent", "unknown"]},
+        "relation": {"enum": ["new", "replace", "refine", "continue", "none"]},
+        "allowed_sources": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["rule", "llm"]}
+        },
+        "needs_clarification": {"type": "boolean"},
+        "search": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "query_all_terms": {"type": "array", "items": {"type": "string"}},
+            "query_any_terms": {"type": "array", "items": {"type": "string"}},
+            "query_forbidden_terms": {"type": "array", "items": {"type": "string"}},
+            "from_date": {"type": ["string", "null"], "format": "date"},
+            "to_date": {"type": ["string", "null"], "format": "date"},
+            "place": {"type": ["string", "null"]},
+            "result_mode": {"enum": ["browse", "select"]},
+            "limit": {"type": "integer", "minimum": 1},
+            "complete_result_set": {"type": "boolean"},
+            "retrieval_strategy": {"enum": ["vector_fast", "structured_complete", "exhaustive_semantic"]}
+          }
+        },
+        "feedback": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "photo_ids": {"type": "array", "items": {"type": "string"}},
+            "continue_search": {"type": "boolean"},
+            "search_query_all_terms": {"type": "array", "items": {"type": "string"}}
+          }
+        },
+        "clarification": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "question_all_terms": {"type": "array", "items": {"type": "string"}},
+            "minimum_options": {"type": "integer", "minimum": 0}
+          }
+        }
+      }
+    },
+    "tags": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "risk": {"enum": ["normal", "safety_critical"]},
+    "notes": {"type": "string"}
+  }
+}

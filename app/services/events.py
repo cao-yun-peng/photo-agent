@@ -24,6 +24,7 @@ EVENT_TYPES = frozenset(
         "search_click",         # 用户点击搜索结果
         "skill_browse",         # 浏览 Skill 详情/广场
         "photo_interact",       # 与单张照片交互（查看/收藏等）
+        "agent_feedback",       # Agent 结果负反馈（仅结构化、脱敏字段）
     }
 )
 

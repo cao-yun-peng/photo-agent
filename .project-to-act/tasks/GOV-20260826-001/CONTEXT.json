@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "GOV-20260826-001",
+  "captured_at": "2026-08-26T20:54:58+08:00",
+  "git_head": "39fdb587e368730895ecbb3b92ba50ae2722690e",
+  "project_root": "E:/project/agent/photo-agent",
+  "lifecycle_revision_at_start": null,
+  "source_hashes": {
+    "README.md": "2537a17eb3497328159825eac0e4299389d89a0c114874130d61040682dfe3fb",
+    "docs/00-project-overview.md": "9a8e8ed489f340fddb808a0ecfe986c819b17a42dc1467ee044abbd9ebbfa973",
+    "docs/04-agent-system.md": "632a1f440df02b2fb13bd585092f2775205d203a0f640b530ecd94bf5446d43b",
+    "docs/09-observability-and-security.md": "e501a7b3a2617ea1bb15578fda80c9d0df012714a83c08d862174098d967a7a4",
+    "docs/10-testing-and-evaluation.md": "d93ca4eba48102ef1550ce688e33df925943de3e56741ed870dc30e5c784470c"
+  },
+  "known_facts": [
+    "仓库实现了用户可见的照片管理、Agent 搜索和图像生成闭环",
+    "已有离线评测、真实 E2E、Web E2E、可观测性和运维资产",
+    "文档明确记录生产阻塞风险和历史指标不可直接作为当前发布证据"
+  ],
+  "assumptions": [
+    "项目将继续长期迭代并以对外产品为目标",
+    "当前最诚实的采用阶段为 6：评测、安全测试与调优",
+    "项目负责人和最终发布批准人仍需用户指定"
+  ]
+}

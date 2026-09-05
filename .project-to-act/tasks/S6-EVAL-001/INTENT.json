@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "task_id": "S6-EVAL-001",
+  "allowed_paths": [
+    "app/services/agent_state.py",
+    "app/services/agent_runtime.py",
+    "app/services/agent_execution.py",
+    "app/services/turn_resolver.py",
+    "app/services/agent_messages.py",
+    "app/services/agent_tools.py",
+    "app/services/agent_workflow.py",
+    "app/services/events.py",
+    "app/core/registry.py",
+    "web/features/search/search-page.tsx",
+    "web/features/search/search-page.test.tsx",
+    "tests/test_turn_resolver.py",
+    "tests/test_agent_feedback.py",
+    "tests/test_agent_workflow.py",
+    "tests/test_agent_eval.py",
+    "tests/test_agent_e2e.py",
+    "tests/eval/agent_eval_dataset.json",
+    "docs/04-agent-system.md",
+    "docs/10-testing-and-evaluation.md",
+    ".project-to-act/**"
+  ],
+  "contracts": [
+    "用户反馈不能隐式删除照片或触发付费生成",
+    "明确拒绝的照片 ID 在当前搜索意图内不得再次返回",
+    "对象不明确的负反馈优先澄清，不猜测用户指的是哪一张",
+    "新搜索结果集与旧结果集必须有清晰边界，持久化状态可恢复",
+    "失败反馈只保存结构化类别、受控 ID 和脱敏摘要",
+    "优先确定性规则与状态修复，Prompt 只处理语义歧义"
+  ],
+  "required_checks": [
+    "ruff check affected Python files",
+    "pytest targeted Agent tests",
+    "python scripts/agent_eval.py --mode replay",
+    "project-to-act --validate",
+    "manage_lifecycle.py validate"
+  ]
+}

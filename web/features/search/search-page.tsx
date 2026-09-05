@@ -84,6 +84,7 @@ function routeProgress(payload: Record<string, unknown>): string {
   return ({
     photo_search: '正在搜索相册…',
     search_more: '正在继续查找…',
+    result_feedback: '正在更新当前结果…',
     complex_agent: '正在规划处理方式…',
   } as Record<string, string>)[intent] || '正在理解你的需求…';
 }
@@ -163,6 +164,17 @@ export function SearchWorkspace() {
       return;
     }
     if (event.type === 'route') {
+      const relation = textValue(payload.relation);
+      if (relation === 'new' || relation === 'replace') {
+        setResults([]);
+        setVisibleCount(RESULT_BATCH);
+        setResultMode('browse');
+        setResultTotal(0);
+        setResultComplete(false);
+        setCoverageHint('');
+        setSelectedPhotoId(null);
+        setPreview(null);
+      }
       setProgress(routeProgress(payload));
       return;
     }
@@ -204,6 +216,21 @@ export function SearchWorkspace() {
         setCoverageHint(textValue(result.coverage_hint, textValue(result.hint)));
         setSelectedPhotoId(null);
       }
+      return;
+    }
+    if (event.type === 'feedback') {
+      const removedIds = new Set(
+        Array.isArray(payload.removed_photo_ids)
+          ? payload.removed_photo_ids.filter((value): value is string => typeof value === 'string')
+          : [],
+      );
+      if (removedIds.size) {
+        setResults((current) => current.filter((item) => !removedIds.has(item.id)));
+        setResultTotal((current) => Math.max(0, current - removedIds.size));
+        setSelectedPhotoId((current) => (current && removedIds.has(current) ? null : current));
+        setPreview((current) => (current && removedIds.has(current.id) ? null : current));
+      }
+      setProgress(Boolean(payload.continue_search) ? '正在继续查找…' : '已更新当前结果');
       return;
     }
     if (event.type === 'clarify') {

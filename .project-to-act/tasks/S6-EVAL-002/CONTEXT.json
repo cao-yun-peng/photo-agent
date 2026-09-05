@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "S6-EVAL-002",
+  "captured_at": "2026-08-28T21:12:10+08:00",
+  "git_head": "39fdb587e368730895ecbb3b92ba50ae2722690e",
+  "project_root": "E:/project/agent/photo-agent",
+  "lifecycle_revision_at_start": 3,
+  "known_facts": [
+    "旧 Agent、检索和真实 E2E 评测体系已退役，当前只保留 VL 评测基线",
+    "Turn Resolver 先运行确定性规则，只在上下文歧义子集调用模型",
+    "Agent Runtime 已产生 route、tool_call、tool_result、final、error 等事件并受步数、时间、Token 和成本预算约束",
+    "Agent 工具包含照片搜索、候选浏览、回退搜索、澄清、照片详情、技能推荐、技能应用和最终回答",
+    "项目已有 OpenTelemetry Span 与 Agent、路由、工具、检索、生成相关指标"
+  ],
+  "assumptions": [
+    "首版评测优先覆盖当前单 Agent 架构，不引入多 Agent 评测",
+    "真实模型与真实 E2E 运行需要可用密钥、隔离账号、固定相册和基础设施",
+    "数值 Gate 在 Development 建立基线并经 Validation 校准前不视为冻结",
+    "本设计任务不授权改变产品功能"
+  ]
+}
