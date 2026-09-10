@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "dataset_id": "photo-agent-recall-test-user",
+  "version": "1.0.0-development",
+  "created_at": "2026-09-07",
+  "account_label": "Photo Eval Dataset v2",
+  "account_user_id": "0ba7ad31-c0eb-4483-8ede-037833819759",
+  "corpus_size": 137,
+  "query_count": 217,
+  "primary_slice_counts": {
+    "visual_semantic": 137,
+    "colloquial": 20,
+    "ocr": 30,
+    "multi_positive_or_exclusion": 20,
+    "zero_result": 10
+  },
+  "positive_photo_coverage": 137,
+  "split_counts": {
+    "development": 217,
+    "validation": 0,
+    "test": 0
+  },
+  "annotation_status": "Codex视觉复核草案；继承旧VL标注作为辅助，未将其人工复核状态转授新查询标签。",
+  "corpus_scope": "137张合成照片，包括25张拟真困难图；不代表真实个人相册分布。",
+  "excluded_evaluations": [
+    "拍摄日期/地理位置过滤：所有对应元数据为空",
+    "跨用户隔离：另由安全测试覆盖"
+  ],
+  "release_gate_eligible": false,
+  "leakage_policy": "全部Development。原VL split只留作来源，不继承为L3盲测。近重复图、同义问法与共享图片的查询须成组划分后才建立独立Validation/Test。",
+  "source_sha256": {
+    "tests/eval/photo_manifest.json": "354eb0df9900c0cc520e8b8ceb800160f9bd251e0754061bc71cd248f63c97d8",
+    "account_snapshot.json": "f54357516c507c95c818620c6fd8ae6255915732f929d3d7964f0e74b487477d",
+    "visual_queries.tsv": "e3acdafe3a02c6bf2cb6aae59b7d45abeb0d557b4cbeefafcaa07e7bb5d344a6",
+    "challenge_queries.json": "bce26d1f1cd30895ee61c0e51fc702c1b053dda60c786f53cd9d845c6df0a826"
+  },
+  "artifact_sha256": {
+    "corpus.json": "96e313c778da2a629897697e2295fba59c020b5cbd75025fef93a04bd053c4be",
+    "queries.jsonl": "70ebbd648dafa05b8c40613117cb2140babd8a90a54bd2356ac84da4533c87d8",
+    "qrels.tsv": "992113dc0df1d3e7fff81eee1c1033970b3aaa16d6ba7af50f796509a45e7e46",
+    "queries.csv": "d698a32d6c8aecbd8fb909e0a9f229f6d8110887a5d2ab329ac04edfb25dba3d"
+  }
+}

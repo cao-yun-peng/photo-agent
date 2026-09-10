@@ -19,6 +19,16 @@ from app.models.rate_limit import RateLimit
 from app.models.skill import Skill
 from app.services.metrics import metrics
 from app.services.rollout import agent_variant_for_user
+from app.schemas.creative_plan import PackageOptions
+from app.services.package_execution import (
+    PackageExecutionError,
+    build_snapshot,
+    digest,
+    request_digest,
+    validate_execution,
+)
+from app.models.generation import GenerationInput
+from app.models.user import User
 
 
 class GenerationDomainError(Exception):
@@ -37,8 +47,11 @@ async def prepare_generation(
     extra_prompt: str | None = None,
     model: str | None = None,
     idempotency_key: str | None = None,
+    package_options: PackageOptions | None = None,
 ) -> Generation:
     """创建待确认任务；同一用户的幂等键重复提交返回原任务。"""
+
+    package_options = PackageOptions.model_validate(package_options or {})
 
     if idempotency_key:
         existing = (
@@ -50,6 +63,19 @@ async def prepare_generation(
             )
         ).scalar_one_or_none()
         if existing is not None:
+            if existing.execution_snapshot:
+                if existing.status == "superseded" or existing.execution_snapshot[
+                    "request_digest"
+                ] != request_digest(
+                    photo_id,
+                    skill_id,
+                    extra_prompt,
+                    model,
+                    package_options or PackageOptions(),
+                ):
+                    raise GenerationDomainError(
+                        "idempotency_conflict", "请求已变化，请使用新的任务标识", 409
+                    )
             metrics.record_generation_idempotency(outcome="hit")
             return existing
 
@@ -75,6 +101,62 @@ async def prepare_generation(
             )
         selected_model = skill.model
 
+    snapshot, frozen_inputs = None, []
+    if skill is not None and getattr(skill, "kind", "template") == "package":
+        try:
+            snapshot, frozen_inputs = await build_snapshot(
+                db,
+                photo,
+                skill,
+                extra_prompt,
+                model,
+                package_options or PackageOptions(),
+                planning_key=idempotency_key,
+            )
+        except GenerationDomainError:
+            raise
+        except Exception as exc:
+            message = (
+                str(exc)
+                if isinstance(exc, PackageExecutionError)
+                else "创作方案生成失败，请稍后重试"
+            )
+            raise GenerationDomainError("package_plan_failed", message, 422) from exc
+        selected_model = snapshot["model"]
+        # Same owner serializes prepare/confirm; only unconfirmed prior plans expire.
+        await db.execute(select(User.id).where(User.id == user_id).with_for_update())
+        if idempotency_key:
+            concurrent = (
+                await db.execute(
+                    select(Generation).where(
+                        Generation.user_id == user_id,
+                        Generation.idempotency_key == idempotency_key,
+                    )
+                )
+            ).scalar_one_or_none()
+            if concurrent is not None:
+                if (
+                    concurrent.execution_snapshot
+                    and concurrent.execution_snapshot["request_digest"]
+                    == snapshot["request_digest"]
+                    and concurrent.status != "superseded"
+                ):
+                    return concurrent
+                raise GenerationDomainError(
+                    "idempotency_conflict", "请求已变化，请使用新的任务标识", 409
+                )
+        await db.execute(
+            update(Generation)
+            .where(
+                Generation.user_id == user_id,
+                Generation.source_photo_id == photo_id,
+                Generation.skill_id == skill_id,
+                Generation.status == "awaiting_confirmation",
+                Generation.execution_snapshot.is_not(None),
+            )
+            .values(status="superseded", confirmation_token=None)
+        )
+
     now = datetime.now(timezone.utc)
     generation = Generation(
         user_id=user_id,
@@ -84,6 +166,8 @@ async def prepare_generation(
         model=selected_model,
         status="awaiting_confirmation",
         estimated_cost_yuan=Decimal(str(settings.generation_estimated_cost_yuan)),
+        execution_snapshot=snapshot,
+        execution_digest=digest(snapshot) if snapshot else None,
         idempotency_key=idempotency_key,
         confirmation_token=uuid4(),
         confirmation_expires_at=now
@@ -91,6 +175,18 @@ async def prepare_generation(
         enqueue_status="not_queued",
     )
     db.add(generation)
+    if snapshot:
+        generation.estimated_cost_yuan = Decimal(str(snapshot["estimated_cost_yuan"]))
+        await db.flush()
+        for position, content in enumerate(frozen_inputs):
+            db.add(
+                GenerationInput(
+                    generation_id=generation.id,
+                    position=position,
+                    content=content,
+                    media_type="image/png",
+                )
+            )
     try:
         await db.commit()
     except IntegrityError:
@@ -189,9 +285,11 @@ async def confirm_generation(
     user_id: UUID,
     generation_id: UUID,
     confirmation_token: UUID,
+    execution_digest: str | None = None,
 ) -> Generation:
     """一次性确认并入队；重复确认返回同一任务，入队失败可安全重试。"""
 
+    await db.execute(select(User.id).where(User.id == user_id).with_for_update())
     generation = (
         await db.execute(
             select(Generation)
@@ -208,12 +306,24 @@ async def confirm_generation(
         raise GenerationDomainError("generation_not_found", "生成任务不存在", 404)
     if generation.confirmation_token != confirmation_token:
         raise GenerationDomainError("confirmation_invalid", "生成确认已失效", 409)
+    if (
+        generation.execution_snapshot
+        and execution_digest != generation.execution_digest
+    ):
+        raise GenerationDomainError(
+            "snapshot_confirmation_required", "请核对当前创作方案后确认", 409
+        )
     if generation.status in {"processing", "done"} or (
         generation.status == "pending" and generation.enqueue_status == "queued"
     ):
         return generation
 
     if generation.status == "awaiting_confirmation":
+        if generation.execution_snapshot:
+            try:
+                await validate_execution(db, generation)
+            except PackageExecutionError as exc:
+                raise GenerationDomainError("snapshot_changed", str(exc), 409) from exc
         expires_at = generation.confirmation_expires_at
         if expires_at is not None:
             if expires_at.tzinfo is None:
@@ -242,6 +352,7 @@ async def confirm_generation(
             generation.quota_reserved = True
             generation.quota_reserved_day = date.today()
         generation.status = "pending"
+        generation.progress_stage = "queued"
 
     if generation.status not in {"pending", "queue_failed"}:
         raise GenerationDomainError(
@@ -258,6 +369,7 @@ async def confirm_generation(
         generation.last_error_code = type(exc).__name__[:64]
     generation.enqueue_status = "queued" if queued else "failed"
     generation.status = "pending" if queued else "queue_failed"
+    generation.progress_stage = "queued" if queued else "queue_failed"
     await db.commit()
     if not queued:
         metrics.record_generation_confirmation(
@@ -276,6 +388,8 @@ async def confirm_generation(
 
 def generation_confirmation_payload(generation: Generation) -> dict[str, Any]:
     return {
+        "execution_digest": generation.execution_digest,
+        "execution_snapshot": generation.execution_snapshot,
         "generation_id": str(generation.id),
         "confirmation_id": str(generation.confirmation_token),
         "photo_id": str(generation.source_photo_id),

@@ -7,6 +7,7 @@
 - 标签亲和度：从生成源照片、点击/交互的照片中提取 objects / tags；
 - 风格分布：对生成/点击/交互过的照片 embedding 做加权平均，与搜索向量对齐。
 """
+
 from __future__ import annotations
 
 import logging
@@ -60,20 +61,29 @@ async def build_user_profile(
     since = now - timedelta(days=lookback_days)
 
     events = (
-        await db.execute(
-            select(UserEvent)
-            .where(
-                and_(
-                    UserEvent.user_id == user_id,
-                    UserEvent.created_at >= since,
-                    UserEvent.event_type.in_(
-                        ["generation_complete", "search_click", "skill_browse", "photo_interact"]
-                    ),
+        (
+            await db.execute(
+                select(UserEvent)
+                .where(
+                    and_(
+                        UserEvent.user_id == user_id,
+                        UserEvent.created_at >= since,
+                        UserEvent.event_type.in_(
+                            [
+                                "generation_complete",
+                                "search_click",
+                                "skill_browse",
+                                "photo_interact",
+                            ]
+                        ),
+                    )
                 )
+                .order_by(UserEvent.created_at)
             )
-            .order_by(UserEvent.created_at)
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
 
     skill_scores: dict[str, float] = defaultdict(float)
     tag_scores: dict[str, float] = defaultdict(float)
@@ -147,9 +157,7 @@ async def build_user_profile(
 
     # upsert UserProfile
     profile = (
-        await db.execute(
-            select(UserProfile).where(UserProfile.user_id == user_id)
-        )
+        await db.execute(select(UserProfile).where(UserProfile.user_id == user_id))
     ).scalar_one_or_none()
     if profile is None:
         profile = UserProfile(user_id=user_id)
@@ -187,16 +195,20 @@ async def _enrich_tag_scores(
 
     # AI 分析出的 objects
     photos = (
-        await db.execute(
-            select(Photo).where(
-                and_(
-                    Photo.id.in_(photo_ids),
-                    Photo.user_id == user_id,
-                    Photo.ai_analysis.is_not(None),
+        (
+            await db.execute(
+                select(Photo).where(
+                    and_(
+                        Photo.id.in_(photo_ids),
+                        Photo.user_id == user_id,
+                        Photo.ai_analysis.is_not(None),
+                    )
                 )
             )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
 
     for photo in photos:
         w = photo_weights.get(photo.id, 0.0)
@@ -242,8 +254,7 @@ async def _build_style_vector(
     photo_ids = list(photo_weights.keys())
     rows = (
         await db.execute(
-            select(Photo.id, Photo.embedding)
-            .where(
+            select(Photo.id, Photo.embedding).where(
                 and_(
                     Photo.id.in_(photo_ids),
                     Photo.user_id == user_id,

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Any, Iterable, Sequence, TypeVar
 
 from app.models.photo import Photo
+from app.services.query_parser import is_visible_date
 
 
 @dataclass(frozen=True)
@@ -34,18 +35,14 @@ _Scored = TypeVar("_Scored", bound=tuple[Any, ...])
 
 _WRITTEN_TEXT_RE = re.compile(r"写着(?P<value>.+?)的")
 _WRITTEN_TARGET_RE = re.compile(r"写着.+?的(?P<value>[^的]{1,16})$")
-_PRINTED_TEXT_RE = re.compile(
-    r"印着(?P<value>.+?)(?:标志|字样|图案)?的", re.IGNORECASE
-)
+_PRINTED_TEXT_RE = re.compile(r"印着(?P<value>.+?)(?:标志|字样|图案)?的", re.IGNORECASE)
 _PRINTED_TARGET_RE = re.compile(r"印着.+?的(?P<value>[^的]{1,16})$", re.IGNORECASE)
 _BOOK_TITLE_RE = re.compile(r"《(?P<value>[^》]{1,40})》")
 _PRICE_RE = re.compile(
     r"(?:价格|售价)(?:是|为)?\s*[¥￥]?\s*(?P<value>\d+(?:\.\d+)?)\s*元?",
     re.IGNORECASE,
 )
-_SEAT_RE = re.compile(
-    r"座位(?:号|是|为)?\s*(?P<value>[A-Z0-9-]{1,8})", re.IGNORECASE
-)
+_SEAT_RE = re.compile(r"座位(?:号|是|为)?\s*(?P<value>[A-Z0-9-]{1,8})", re.IGNORECASE)
 _TIME_RE = re.compile(
     r"(?:锁屏)?时间(?:是|为)?\s*(?P<hour>[零〇一二两三四五六七八九十百\d]+)点"
     r"(?P<minute>[零〇一二两三四五六七八九十百\d]+)?分?"
@@ -67,8 +64,7 @@ _ENTITY_PATTERNS = (
         re.IGNORECASE,
     ),
     re.compile(
-        r"^(?P<value>[\u4e00-\u9fffA-Za-z0-9·' -]{2,16})"
-        r"便利店(?:的)?招牌$",
+        r"^(?P<value>[\u4e00-\u9fffA-Za-z0-9·' -]{2,16})" r"便利店(?:的)?招牌$",
         re.IGNORECASE,
     ),
     re.compile(
@@ -99,8 +95,25 @@ _OBJECT_ALIASES = {
     "书籍封面": ("书籍封面", "书籍", "图书", "封面"),
     "交通标志": ("交通标志", "交通牌", "路牌", "标志"),
     "衣服标签": ("衣服标签", "价格标签", "衣物", "标签"),
+    "停车牌": ("停车牌", "停车标志", "停车标志牌", "停车指示牌"),
+    "限速标志": ("限速标志", "限速牌", "限速标志牌"),
+    "门店招牌": ("门店招牌", "店铺招牌", "店面招牌", "商店招牌"),
 }
-_OBJECT_PREFIXES = ("蓝色", "红色", "白色", "黑色", "绿色", "黄色")
+_OBJECT_COLOR_RE = re.compile(
+    r"^(?:深|浅)?(?:蓝|红|白|黑|绿|黄|棕|褐|灰|紫|粉|橙|米|金|银)色"
+)
+_GENERIC_CARRIERS = {"照片", "图片", "相片", "图像", "图"}
+_REQUEST_PREFIX_RE = re.compile(
+    r"^(?:请)?(?:帮我)?(?:找一下|找一找|找出|寻找|查找|搜索|找)"
+)
+_ENTITY_CLAUSE_RE = re.compile(
+    r"[的在上里着，。！？、]|(?:不要|不是|没有|排除|有|包含)"
+)
+_VISUAL_TEXT_PART_RE = re.compile(
+    r"^(?:(?:深|浅)?(?:蓝|红|白|黑|绿|黄|棕|褐|灰|紫|粉|橙|米|金|银)色)?"
+    r"(?:爱心|心形)(?:符号|图案)?$"
+)
+_QUOTE_PAIRS = (('"', '"'), ("'", "'"), ("“", "”"), ("‘", "’"), ("「", "」"))
 
 
 def _cn_number(value: str) -> int | None:
@@ -126,6 +139,54 @@ def _clean_value(value: str) -> str:
     return value.strip(" \t\r\n，。！？、:：;；'\"").removesuffix("的").strip()
 
 
+def _visible_text_parts(value: str) -> list[str]:
+    """Keep literal text separate from lists and visual descriptions.
+
+    Quoted phrases remain literal. Chinese conjunctions are only split in a
+    mixed/ASCII list; an unquoted Chinese name such as 和平 is not tokenized.
+    Disjunctions and symbolic descriptions need semantic verification instead.
+    """
+    value = value.strip()
+    for opening, closing in _QUOTE_PAIRS:
+        interior = value[len(opening) : -len(closing)]
+        if (
+            value.startswith(opening)
+            and value.endswith(closing)
+            and opening not in interior
+            and closing not in interior
+        ):
+            return [interior]
+    if re.search(r"或者|或", value):
+        return []
+    parts = []
+    for piece in re.split(r"[、，,]", value):
+        pieces = (
+            re.split(r"以及|和|及|与", piece)
+            if re.search(r"[A-Za-z0-9]", piece)
+            else [piece]
+        )
+        for part in pieces:
+            cleaned = _clean_value(part)
+            if cleaned and not _VISUAL_TEXT_PART_RE.fullmatch(cleaned):
+                parts.append(cleaned)
+    return parts
+
+
+def _text_carrier(value: str) -> str | None:
+    # The tail may contain additional instructions, which are not object names.
+    cleaned = re.split(r"[，。！？,;；]", value, maxsplit=1)[0].strip()
+    cleaned = _OBJECT_COLOR_RE.sub("", cleaned, count=1)
+    if cleaned in _GENERIC_CARRIERS:
+        return None
+    for suffix in ("的照片", "的图片", "照片", "图片", "相片"):
+        if cleaned.endswith(suffix):
+            cleaned = cleaned[: -len(suffix)]
+            break
+    if not cleaned or re.search(r"[的着]|(?:不要|必须|包含|或者)", cleaned):
+        return None
+    return cleaned
+
+
 def extract_structured_constraints(query: str) -> list[StructuredConstraint]:
     """Extract only constraints that are explicit enough for evidence gating."""
 
@@ -146,14 +207,19 @@ def extract_structured_constraints(query: str) -> list[StructuredConstraint]:
         (_NOTE_RE, "便签内容"),
     ):
         for match in pattern.finditer(query):
-            add("visible_text", match.group("value"), source)
+            if pattern in (_WRITTEN_TEXT_RE, _PRINTED_TEXT_RE):
+                for value in _visible_text_parts(match.group("value")):
+                    add("visible_text", value, source)
+            else:
+                add("visible_text", match.group("value"), source)
 
     for pattern, source in (
         (_WRITTEN_TARGET_RE, "文字承载物"),
         (_PRINTED_TARGET_RE, "文字承载物"),
     ):
         if match := pattern.search(query):
-            add("object", match.group("value"), source)
+            if carrier := _text_carrier(match.group("value")):
+                add("object", carrier, source)
 
     if _BOOK_TITLE_RE.search(query):
         add("object", "书籍封面", "书名承载物")
@@ -165,12 +231,24 @@ def extract_structured_constraints(query: str) -> list[StructuredConstraint]:
     if match := _TIME_RE.search(query):
         hour = _cn_number(match.group("hour"))
         minute = _cn_number(match.group("minute") or "零")
-        if hour is not None and minute is not None and 0 <= hour <= 23 and 0 <= minute <= 59:
+        if (
+            hour is not None
+            and minute is not None
+            and 0 <= hour <= 23
+            and 0 <= minute <= 59
+        ):
             add("time", f"{hour:02d}:{minute:02d}", "锁屏时间")
-    if match := _DATE_RE.search(query):
+    for match in _DATE_RE.finditer(query):
+        if not is_visible_date(query, *match.span()):
+            continue
         month = _cn_number(match.group("month"))
         day = _cn_number(match.group("day"))
-        if month is not None and day is not None and 1 <= month <= 12 and 1 <= day <= 31:
+        if (
+            month is not None
+            and day is not None
+            and 1 <= month <= 12
+            and 1 <= day <= 31
+        ):
             add(
                 "calendar_date",
                 f"{int(match.group('year')):04d}-{month:02d}-{day:02d}",
@@ -183,10 +261,14 @@ def extract_structured_constraints(query: str) -> list[StructuredConstraint]:
             add("route", f"{origin}→{destination}", "起终点")
 
     if not any(item.kind == "visible_text" for item in found):
-        stripped = query.strip()
+        stripped = _REQUEST_PREFIX_RE.sub("", query.strip(), count=1)
         for pattern in _ENTITY_PATTERNS:
             if match := pattern.match(stripped):
-                add("entity", match.group("value"), "品牌或专名")
+                entity = _clean_value(match.group("value"))
+                # A relation/request clause is not a high-confidence proper name.
+                # Leave it to semantic verification rather than excluding all rows.
+                if not _ENTITY_CLAUSE_RE.search(entity):
+                    add("entity", entity, "品牌或专名")
                 break
 
     return found
@@ -211,7 +293,9 @@ def _number_tokens(fragments: Iterable[str]) -> set[str]:
     return {
         token
         for fragment in fragments
-        for token in re.findall(r"(?<![A-Za-z0-9])\d+(?:\.\d+)?(?![A-Za-z0-9])", fragment)
+        for token in re.findall(
+            r"(?<![A-Za-z0-9])\d+(?:\.\d+)?(?![A-Za-z0-9])", fragment
+        )
     }
 
 
@@ -219,7 +303,9 @@ def _seat_tokens(fragments: Iterable[str]) -> set[str]:
     return {
         token.casefold()
         for fragment in fragments
-        for token in re.findall(r"(?<![A-Za-z0-9])(?:\d+[A-Za-z]|[A-Za-z]\d+)(?![A-Za-z0-9])", fragment)
+        for token in re.findall(
+            r"(?<![A-Za-z0-9])(?:\d+[A-Za-z]|[A-Za-z]\d+)(?![A-Za-z0-9])", fragment
+        )
     }
 
 
@@ -252,10 +338,9 @@ def _route_matches(value: str, fragments: Sequence[str]) -> bool:
     if match := route_pattern.search(combined):
         candidate_origin = _clean_station(match.group("origin"))
         candidate_destination = _clean_station(match.group("destination"))
-        return (
-            _normalize(candidate_origin) == _normalize(origin)
-            and _normalize(candidate_destination) == _normalize(destination)
-        )
+        return _normalize(candidate_origin) == _normalize(origin) and _normalize(
+            candidate_destination
+        ) == _normalize(destination)
 
     normalized = _normalize(combined)
     origin_index = normalized.find(_normalize(origin))
@@ -283,13 +368,50 @@ def _calendar_date_matches(
     return year in combined and month_present and day_present
 
 
-def _object_matches(value: str, analysis: dict[str, Any], fragments: Sequence[str]) -> bool:
-    cleaned = value
-    for prefix in _OBJECT_PREFIXES:
-        cleaned = cleaned.removeprefix(prefix)
+def _object_matches(
+    value: str, analysis: dict[str, Any], fragments: Sequence[str]
+) -> bool:
+    cleaned = _OBJECT_COLOR_RE.sub("", value, count=1)
     aliases = _OBJECT_ALIASES.get(cleaned, (cleaned,))
     corpus = _normalize(" ".join(fragments))
-    return any(_normalize(alias) in corpus for alias in aliases)
+    if any(_normalize(alias) in corpus for alias in aliases):
+        return True
+    if cleaned == "限速标志":
+        # A number may intervene: 限速50的交通标志牌. Generic traffic signs
+        # alone are not sufficient evidence that the carrier is a speed sign.
+        return any(
+            re.search(r"限速\s*\d+(?:\.\d+)?\s*(?:的)?(?:交通)?(?:标志|牌)", fragment)
+            for fragment in fragments
+        )
+    if cleaned == "门店招牌":
+        # A billboard/logo can represent a storefront sign only when the same
+        # fragment places it at a store/restaurant exterior; no brand allowlist.
+        return any(
+            re.search(
+                r"(?:门店|店铺|商店|餐厅|咖啡店)(?:的)?(?:外观|外部|门口|门面)",
+                fragment,
+            )
+            and re.search(r"广告牌|招牌|标志", fragment)
+            for fragment in fragments
+        )
+    return False
+
+
+def _visible_text_matches(value: str, fragments: Sequence[str]) -> bool:
+    normalized = _normalize(value)
+    if not normalized:
+        return False
+    # Ignore punctuation/spacing, but never join unrelated evidence fields or
+    # accept 50 inside 150, 2 hours inside 12 hours, or I inside FIRST.
+    pattern = r"[\W_]*".join(re.escape(char) for char in normalized)
+    if normalized[0].isascii():
+        pattern = r"(?<![a-z0-9])" + pattern
+    if normalized[-1].isascii():
+        pattern += r"(?![a-z0-9])"
+    return any(
+        re.search(pattern, unicodedata.normalize("NFKC", fragment).casefold())
+        for fragment in fragments
+    )
 
 
 def evaluate_candidate_constraints(
@@ -311,7 +433,9 @@ def evaluate_candidate_constraints(
 
     for constraint in constraints:
         expected = constraint.value
-        if constraint.kind in {"visible_text", "entity"}:
+        if constraint.kind == "visible_text":
+            matched = _visible_text_matches(expected, fragments)
+        elif constraint.kind == "entity":
             matched = _normalize(expected) in normalized_corpus
         elif constraint.kind == "price":
             matched = expected in numbers

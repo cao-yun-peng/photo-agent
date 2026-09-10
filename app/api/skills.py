@@ -1,4 +1,5 @@
 """Skill 增删改查 + 广场."""
+
 from datetime import date
 from typing import Annotated
 from uuid import UUID
@@ -21,13 +22,17 @@ from app.schemas.skill import (
 )
 from app.services.events import log_event
 from app.services.oss import sign_get_url
+from app.api.skill_packages import router as package_router
 
 router = APIRouter()
+router.include_router(package_router)
 
 
 def _to_out(sk: Skill) -> SkillOut:
     return SkillOut(
         id=sk.id,
+        kind=sk.kind or "template",
+        current_version_id=sk.current_version_id,
         owner_id=sk.owner_id,
         name=sk.name,
         description=sk.description,
@@ -80,7 +85,9 @@ async def plaza(
     stmt = (
         select(Skill)
         .where(or_(Skill.is_official.is_(True), Skill.is_public.is_(True)))
-        .order_by(desc(Skill.is_official), desc(Skill.use_count), desc(Skill.created_at))
+        .order_by(
+            desc(Skill.is_official), desc(Skill.use_count), desc(Skill.created_at)
+        )
         .limit(limit)
         .offset(offset)
     )
@@ -98,7 +105,9 @@ async def get_skill(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> SkillOut:
-    sk = (await db.execute(select(Skill).where(Skill.id == skill_id))).scalar_one_or_none()
+    sk = (
+        await db.execute(select(Skill).where(Skill.id == skill_id))
+    ).scalar_one_or_none()
     if sk is None:
         raise HTTPException(status_code=404, detail="Skill not found")
     # 权限：官方 or 公开 or 自己的
@@ -162,13 +171,20 @@ async def update_skill(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> SkillOut:
-    sk = (await db.execute(select(Skill).where(Skill.id == skill_id))).scalar_one_or_none()
+    sk = (
+        await db.execute(select(Skill).where(Skill.id == skill_id))
+    ).scalar_one_or_none()
     if sk is None:
         raise HTTPException(status_code=404, detail="Skill not found")
     if sk.is_official or sk.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="Cannot modify this skill")
 
     for field, value in payload.model_dump(exclude_unset=True).items():
+        if sk.kind == "package":
+            raise HTTPException(
+                status_code=409,
+                detail="流程包不可直接修改，请上传新版本；流程包保持私有",
+            )
         setattr(sk, field, value)
     await db.commit()
     await db.refresh(sk)
@@ -185,7 +201,9 @@ async def delete_skill(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> None:
-    sk = (await db.execute(select(Skill).where(Skill.id == skill_id))).scalar_one_or_none()
+    sk = (
+        await db.execute(select(Skill).where(Skill.id == skill_id))
+    ).scalar_one_or_none()
     if sk is None:
         raise HTTPException(status_code=404, detail="Skill not found")
     if sk.is_official or sk.owner_id != current_user.id:

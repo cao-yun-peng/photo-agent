@@ -1,0 +1,123 @@
+{
+  "concept": "orange_fruit",
+  "slot": 12,
+  "rank": 1,
+  "search": "intitle:oranges fruit filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Mandarin_Oranges_%28Citrus_Reticulata%29.jpg/1280px-Mandarin_Oranges_%28Citrus_Reticulata%29.jpg",
+  "commons_page": {
+    "pageid": 18365873,
+    "ns": 6,
+    "title": "File:Mandarin Oranges (Citrus Reticulata).jpg",
+    "index": 1,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 1362580,
+        "width": 2986,
+        "height": 1991,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Mandarin_Oranges_%28Citrus_Reticulata%29.jpg/1280px-Mandarin_Oranges_%28Citrus_Reticulata%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 853,
+        "responsiveUrls": {
+          "2": "https://upload.wikimedia.org/wikipedia/commons/4/49/Mandarin_Oranges_%28Citrus_Reticulata%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Mandarin_Oranges_%28Citrus_Reticulata%29.jpg/1280px-Mandarin_Oranges_%28Citrus_Reticulata%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 853,
+          "srcset": "https://upload.wikimedia.org/wikipedia/commons/4/49/Mandarin_Oranges_%28Citrus_Reticulata%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/49/Mandarin_Oranges_%28Citrus_Reticulata%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Mandarin_Oranges_(Citrus_Reticulata).jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=18365873",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2017-06-09 00:35:21",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Mandarin Oranges (Citrus Reticulata)",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Taken with Nikon D90|Location not applicable|Taken with AF-S DX NIKKOR 18-105 mm f/3.5-5.6G ED VR|Self-published work|Commons featured desktop backgrounds|Green and orange|Photographs by User:Jovianeye|Featured pictures of fruit|Featured pictures on Wikipedia, Persian|Featured pictures on Wikipedia, Malay|Mandarin oranges|Citrus reticulata (fruit)|Citrus fruits on white background",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "quality|featured|potd",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Mandarin oranges (Citrus Reticulata).",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2012-01-30•“[[: File   :]]”",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a href=\"//commons.wikimedia.org/wiki/User:Jovianeye\" title=\"User:Jovianeye\">Joe Ravi</a>",
+            "source": "commons-desc-page"
+          },
+          "Permission": {
+            "value": "<table style=\"margin: 1.5 em auto; width:100%; background-color:gainsboro;\" cellspacing=\"2\">\n<tbody><tr>\n<td align=\"center\">\n</td>\n<td>\n<ul><li>If you are using this image under the Creative Commons Share-Alike License then please attribute this image to the author, <b>Joe Ravi</b>, and include the acronym of the license <b>CC-BY-SA 3.0</b> in a prominent location near the image.</li>\n<li>If you want to use this image under a different Commercial License, then please <a class=\"external text\" data-mw-original-href=\"http://commons.wikimedia.org/wiki/Special:EmailUser/Jovianeye\" href=\"https://commons.wikimedia.org/wiki/Special:EmailUser/Jovianeye\">email me</a> (Wikimedia Commons account required) otherwise you can <a class=\"external text\" data-mw-original-href=\"http://commons.wikimedia.org/w/index.php?title=User_talk:Jovianeye&amp;action=edit&amp;section=new\" href=\"https://commons.wikimedia.org/w/index.php?title=User_talk:Jovianeye&amp;action=edit&amp;section=new\">leave a message on my talk page</a>.</li></ul>\n</td></tr></tbody></table>",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 3.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 3.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Attribution": {
+            "value": "<a href=\"//commons.wikimedia.org/wiki/User:Jovianeye\" title=\"User:Jovianeye\">Joe Ravi</a>",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/3.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-3.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

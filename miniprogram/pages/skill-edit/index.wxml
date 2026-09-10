@@ -39,7 +39,7 @@
     <view class="field__label">使用模型</view>
     <radio-group bindchange="onModelChange">
       <label class="radio">
-        <radio value="wanx-v1" checked="{{model === 'wanx-v1'}}"/>通义万相
+        <radio value="wanx2.1-imageedit" checked="{{model === 'wanx2.1-imageedit'}}"/>通义万相
       </label>
       <label class="radio">
         <radio value="gpt-image-2" checked="{{model === 'gpt-image-2'}}"/>GPT-Image-2

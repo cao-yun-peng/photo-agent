@@ -37,6 +37,7 @@ TurnIntent = Literal[
     "result_feedback",
     "complex_agent",
     "unknown",
+    "browse_album",
 ]
 TurnRelation = Literal["new", "replace", "refine", "continue", "none"]
 
@@ -107,6 +108,8 @@ _VAGUE_SEARCHES = {
     "搜照片",
     "搜图片",
     "看看照片",
+    "帮我找照片",
+    "帮我找图片",
 }
 _QUICK_SEARCH_TERMS = {
     "最近一周",
@@ -131,6 +134,7 @@ _NEGATIVE_RESULT_MARKERS = (
     "错了",
     "不符合",
     "不相关",
+    "不满意",
     "多余",
     "去掉",
     "排除",
@@ -200,6 +204,7 @@ class ResultFeedback:
     photo_ids: list[str] = field(default_factory=list)
     continue_search: bool = False
     search_query: str | None = None
+    kind: str = "reject_item"
 
 
 @dataclass(slots=True)
@@ -308,13 +313,15 @@ def _result_feedback_plan(
         return None
 
     position_match = _POSITION_RE.search(text)
-    has_reference = bool(position_match) or "最后一张" in text or any(
-        marker in text for marker in _RESULT_REFERENCES
+    has_reference = (
+        bool(position_match)
+        or "最后一张" in text
+        or any(marker in text for marker in _RESULT_REFERENCES)
     )
     if not has_reference:
         return None
 
-    continue_search = any(phrase in text for phrase in _MORE_PHRASES)
+    continue_search = any(phrase in text for phrase in _MORE_PHRASES) or "再找" in text
     target_id: str | None = None
     if position_match:
         position = _position_value(position_match.group("position"))
@@ -457,6 +464,105 @@ def resolve_turn_by_rule(
     active = _has_active_search(active_search)
     if not text:
         return TurnPlan("unknown", "none", 0.0, "rule")
+    # “改成狗狗的” can refine a search; explicit image transformations are actions.
+    edit_transform = any(word in text for word in ("改成", "变成")) and (
+        bool(confirmed_photo_id)
+        or any(
+            word in text
+            for word in ("选中", "这张", "那张", "风格", "油画", "针织", "动漫")
+        )
+    )
+    # Explicit actions outrank collection words such as “全部”.
+    if edit_transform or any(
+        word in text
+        for word in (
+            "删除",
+            "生成",
+            "编辑",
+            "改造",
+            "修图",
+            "上传",
+            "分享",
+            "导出",
+        )
+    ):
+        if not (
+            not last_search_items
+            and not confirmed_photo_id
+            and any(ref in text for ref in ("这张照片", "那张照片"))
+        ):
+            return TurnPlan("complex_agent", "none", 0.99, "rule")
+    if re.sub(r"[，,。\s]", "", text) in {
+        "浏览全部相册",
+        "查看全部相册",
+        "打开全部相册",
+        "直接看全部照片",
+        "把全部照片给我我自己找",
+        "直接把全部照片给我我自己找",
+    }:
+        return TurnPlan("browse_album", "none", 1.0, "rule")
+    replacement = re.search(r"(?:改找|改为找|换成找|换找)(.+)$", text) or re.search(
+        r"^(?:不要|不找).+?了[，,](?:帮我)?找(.+)$", text
+    )
+    if active and replacement:
+        return TurnPlan(
+            "photo_search",
+            "replace",
+            0.99,
+            "rule",
+            search=_search_from_parsed(replacement.group(1)),
+        )
+    if (
+        active
+        and last_search_items
+        and (
+            _POSITION_RE.search(text)
+            or any(ref in text for ref in ("这张", "那张", "上一张"))
+        )
+    ):
+        single = _result_feedback_plan(
+            query,
+            active_search=active_search,
+            last_search_items=last_search_items,
+            confirmed_photo_id=confirmed_photo_id,
+        )
+        if single:
+            return single
+    if active and last_search_items:
+        if text in {"这些都对", "这批可以", "满意", "找到了", "就是这些"}:
+            return TurnPlan(
+                "result_feedback",
+                "none",
+                1.0,
+                "rule",
+                feedback=ResultFeedback(kind="satisfied"),
+            )
+        if text in {"不满意", "不对", "还是不满意"} or any(
+            text.removeprefix("你找的").removeprefix("你给的").startswith(phrase)
+            for phrase in (
+                "这些都不对",
+                "这批都不对",
+                "都不是我要的",
+                "还是不对",
+                "完全没找到我要的",
+                "这些都不要",
+                "都不相关",
+                "这批不满意",
+                "这些照片都不对",
+                "都不对",
+            )
+        ):
+            return TurnPlan(
+                "result_feedback",
+                "continue",
+                0.99,
+                "rule",
+                feedback=ResultFeedback(kind="reject_batch", continue_search=True),
+            )
+        if text in {"不够多", "数量不够", "太少了"}:
+            return TurnPlan("search_more", "continue", 1.0, "rule")
+    if active and any(word in text for word in ("整理成", "长期相册")):
+        return TurnPlan("complex_agent", "none", 0.98, "rule")
     feedback_plan = _result_feedback_plan(
         query,
         active_search=active_search,
@@ -537,7 +643,9 @@ async def _resolve_contextual_with_llm(
 
     system = (
         "你是照片助手的单轮路由器。根据当前搜索状态和用户新输入，只输出 JSON。"
-        "intent 只能是 photo_search 或 complex_agent；relation 只能是 refine、replace、none。"
+        "intent 只能是 photo_search、result_feedback 或 complex_agent；relation 只能是 refine、replace、none。"
+        "仅当 has_current_results=true 且用户明确评价当前整批搜索结果时，允许 result_feedback；"
+        "feedback_kind 只能是 reject_batch、satisfied、insufficient。无法确定反馈对象时输出 complex_agent。"
         "若用户在上一轮条件上增加或修改条件，输出 photo_search/refine，并让 query 是合并后的完整搜索句。"
         "若用户转向编辑、生成、选择、上传、删除、能力问答或闲聊，输出 complex_agent/none。"
         "搜索 JSON 字段：intent, relation, query, from_date, to_date, place, confidence。"
@@ -550,6 +658,7 @@ async def _resolve_contextual_with_llm(
         },
         "recent_messages": recent_messages[-4:],
         "user_input": query,
+        "has_current_results": bool(active_search.get("_has_current_results")),
     }
 
     async def _call() -> tuple[dict[str, Any], int]:
@@ -630,7 +739,10 @@ async def resolve_turn(
     try:
         raw, tokens = await _resolve_contextual_with_llm(
             query,
-            active_search=active_search,
+            active_search={
+                **active_search,
+                "_has_current_results": bool(last_search_items),
+            },
             recent_messages=recent_messages or [],
         )
     except Exception as exc:  # noqa: BLE001
@@ -644,6 +756,29 @@ async def resolve_turn(
         confidence = min(1.0, max(0.0, float(confidence_value)))
     except (TypeError, ValueError):
         confidence = 0.0
+    if intent == "result_feedback" and confidence >= 0.85 and last_search_items:
+        kind = raw.get("feedback_kind")
+        if kind == "insufficient":
+            return TurnPlan(
+                "search_more",
+                "continue",
+                confidence,
+                "llm",
+                model_calls=1,
+                model_tokens=tokens,
+            )
+        if kind in {"reject_batch", "satisfied"}:
+            return TurnPlan(
+                "result_feedback",
+                "continue" if kind == "reject_batch" else "none",
+                confidence,
+                "llm",
+                feedback=ResultFeedback(
+                    kind=kind, continue_search=kind == "reject_batch"
+                ),
+                model_calls=1,
+                model_tokens=tokens,
+            )
     if intent != "photo_search" or relation not in {"refine", "replace"}:
         return TurnPlan(
             "complex_agent",

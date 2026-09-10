@@ -1,0 +1,16 @@
+{
+  "normalized_exact_query_duplicates": [],
+  "license_counts": {
+    "CC BY-SA 4.0": 15,
+    "CC BY 3.0": 1,
+    "CC0": 5,
+    "CC BY 2.0": 2,
+    "CC BY 4.0": 2,
+    "CC BY-SA 2.0": 7,
+    "Public domain": 3,
+    "CC BY-SA 3.0": 5
+  },
+  "minimum_cross_phash_hamming": 18,
+  "image_total_bytes": 13285045,
+  "freeze_sha256": "af727cefa4a696f1e387c3a72cf82d36dc011dbed537752d804cd65dba55c535"
+}

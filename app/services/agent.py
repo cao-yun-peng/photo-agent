@@ -1,6 +1,6 @@
 """PhotoAgent 编排与兼容入口。
 
-负责会话状态、确定性快路径、LLM 决策、工具调度与事件输出。
+负责会话状态、LLM 决策、工具调度与事件输出。
 具体业务工具位于 ``agent_tools``，工作流状态转换位于 ``agent_workflow``。
 """
 
@@ -12,6 +12,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.registry import prompt_registry
+from app.services.agent_contract import model_tools
 from app.core.telemetry import traced_async
 from app.services.agent_tools import (
     _classify_exception,
@@ -43,11 +44,7 @@ from app.services.agent_runtime import (
     run_agent,
 )
 
-from app.services.agent_intent import (
-    _detect_followup_type,
-    _requested_user_selection_limit,
-    _requests_complete_result_set,
-)
+
 from app.services.agent_llm import _is_mock_llm, _llm_decide
 from app.services.agent_messages import (
     _fast_search_message,
@@ -76,9 +73,6 @@ __all__ = [
     "_build_registry",
     "_is_mock_llm",
     "_llm_decide",
-    "_detect_followup_type",
-    "_requested_user_selection_limit",
-    "_requests_complete_result_set",
     "_fast_search_message",
     "_model_tool_content",
     "_remember_message",
@@ -119,17 +113,7 @@ class PhotoAgent:
         self.system_prompt = system_prompt or prompt_registry.get_agent_system_prompt()
 
     def _tool_schemas_for_state(self, state: AgentState) -> list[dict]:
-        if state.agent_variant != "v2":
-            return self.registry.schemas()
-        # v2 只向模型暴露业务级动作；浏览、兜底和详情查询仍由代码内部调用。
-        return self.registry.schemas(
-            {
-                "search_photos",
-                "ask_clarification",
-                "apply_skill",
-                "recommend_skills",
-            }
-        )
+        return model_tools(self.registry, state)
 
     @traced_async(
         "invoke_agent photo-search",

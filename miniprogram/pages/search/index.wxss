@@ -91,6 +91,8 @@
 }
 .result__actions {
   display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
   align-items: center;
   justify-content: space-between;
   margin-top: 14rpx;

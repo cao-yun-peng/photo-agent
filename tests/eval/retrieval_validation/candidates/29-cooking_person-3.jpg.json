@@ -1,0 +1,114 @@
+{
+  "concept": "cooking_person",
+  "slot": 29,
+  "rank": 3,
+  "search": "intitle:cooking kitchen person filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg/1280px-Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg",
+  "commons_page": {
+    "pageid": 65458244,
+    "ns": 6,
+    "title": "File:Woman Cooking in a Kitchen. (3904009814).jpg",
+    "index": 3,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 475901,
+        "width": 3000,
+        "height": 2273,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg/1280px-Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 970,
+        "responsiveUrls": {
+          "2": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg/1280px-Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 970,
+          "srcset": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Woman_Cooking_in_a_Kitchen._(3904009814).jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=65458244",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2018-01-12 18:32:41",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Woman Cooking in a Kitchen. (3904009814)",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "PD US Government|20th-century women of the United States|Files from Flickr's 'The Commons'|Historical kitchens in the United States|CC-PD-Mark|Women at work in the United States|Files uploaded by Artix Kreiger|Flickr images reviewed by FlickreviewR 2|White kitchen cabinets|Images from the National Archives and Records Administration flickr stream",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "<p><b>Note:</b> No Original Caption. [Woman Cooking in a Kitchen.]\n</p><p><b>U.S. National Archives’ Local Identifier:</b> NWDNS-33-S-12790\n</p>\n<pre><b>From: </b> Series: Extension and Home Demonstration Activities (Record Group 33) \n</pre>\n<p><b>Created by:</b> Department of Agriculture. Extension Service, (06/17/1981 - 1995 )\n</p><p><b>Coverage Dates:</b> 1920 - 1954\n</p><p><b>Subjects:</b>\nLabor\nWomen\n</p><p><b>Persistent URL:</b><a rel=\"nofollow\" class=\"external text\" href=\"https://catalog.archives.gov/id/513406\">catalog.archives.gov/id/513406</a>\n</p><p><b>Repository: </b> Still Picture Records Section, Special Media Archives Services Division (NWCS-S), National Archives at College Park, 8601 Adelphi Road, College Park, MD, 20740-6001. \n</p><p>For information about ordering reproductions of photographs held by the Still Picture Unit, visit: <a rel=\"nofollow\" class=\"external text\" href=\"https://www.archives.gov/research/order/still-pictures.html\">www.archives.gov/research/order/still-pictures.html</a>\n</p><p>Reproductions may be ordered via an independent vendor. NARA maintains a list of vendors at <a rel=\"nofollow\" class=\"external text\" href=\"https://www.archives.gov/research/order/vendors-photos-maps-dc.html\">www.archives.gov/research/order/vendors-photos-maps-dc.html</a> \n</p><p><br> \n</p><p>Access Restrictions: Unrestricted\n</p>\nUse Restrictions: Unrestricted",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "1920-01-01 00:00",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/photos/usnationalarchives/3904009814/\">Woman Cooking in a Kitchen.</a>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/35740357@N03\">The U.S. National Archives</a>",
+            "source": "commons-desc-page"
+          },
+          "Permission": {
+            "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.archives.gov/social-media/flickr-faqs.html#9\">The U.S. National Archives @ Flickr Commons</a>",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseShortName": {
+            "value": "Public domain",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Public domain",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "false",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Copyrighted": {
+            "value": "False",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "pd",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

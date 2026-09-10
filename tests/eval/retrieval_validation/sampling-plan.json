@@ -1,0 +1,219 @@
+{
+  "version": "1.0.0",
+  "created_utc": "2026-09-08T14:24:03.222753+00:00",
+  "development_outcomes_observed": false,
+  "target_images": 40,
+  "target_queries": 80,
+  "strata": [
+    {
+      "slot": 1,
+      "concept": "cat_portrait",
+      "commons_search": "intitle:cat portrait filetype:bitmap"
+    },
+    {
+      "slot": 2,
+      "concept": "cat_sleep",
+      "commons_search": "intitle:cat sleeping filetype:bitmap"
+    },
+    {
+      "slot": 3,
+      "concept": "dog_agility",
+      "commons_search": "intitle:dog agility filetype:bitmap"
+    },
+    {
+      "slot": 4,
+      "concept": "dog_sleep",
+      "commons_search": "intitle:dog sleeping filetype:bitmap"
+    },
+    {
+      "slot": 5,
+      "concept": "coffee_pour",
+      "commons_search": "intitle:pouring coffee filetype:bitmap"
+    },
+    {
+      "slot": 6,
+      "concept": "coffee_latte",
+      "commons_search": "intitle:latte art filetype:bitmap"
+    },
+    {
+      "slot": 7,
+      "concept": "reading_person",
+      "commons_search": "intitle:reading book person filetype:bitmap"
+    },
+    {
+      "slot": 8,
+      "concept": "book_stack",
+      "commons_search": "intitle:stack books filetype:bitmap"
+    },
+    {
+      "slot": 9,
+      "concept": "cycling_person",
+      "commons_search": "intitle:cyclist road filetype:bitmap"
+    },
+    {
+      "slot": 10,
+      "concept": "bicycle_parked",
+      "commons_search": "intitle:bicycles parked filetype:bitmap"
+    },
+    {
+      "slot": 11,
+      "concept": "apple_fruit",
+      "commons_search": "intitle:apples fruit basket filetype:bitmap"
+    },
+    {
+      "slot": 12,
+      "concept": "orange_fruit",
+      "commons_search": "intitle:oranges fruit filetype:bitmap"
+    },
+    {
+      "slot": 13,
+      "concept": "croissant",
+      "commons_search": "intitle:croissant filetype:bitmap"
+    },
+    {
+      "slot": 14,
+      "concept": "doughnut",
+      "commons_search": "intitle:doughnut filetype:bitmap"
+    },
+    {
+      "slot": 15,
+      "concept": "train_platform",
+      "commons_search": "intitle:train platform filetype:bitmap"
+    },
+    {
+      "slot": 16,
+      "concept": "bus_stop",
+      "commons_search": "intitle:bus stop shelter filetype:bitmap"
+    },
+    {
+      "slot": 17,
+      "concept": "stop_sign",
+      "commons_search": "intitle:stop sign street filetype:bitmap"
+    },
+    {
+      "slot": 18,
+      "concept": "yield_sign",
+      "commons_search": "intitle:yield sign road filetype:bitmap"
+    },
+    {
+      "slot": 19,
+      "concept": "speed_30",
+      "commons_search": "intitle:speed limit 30 sign filetype:bitmap"
+    },
+    {
+      "slot": 20,
+      "concept": "speed_50",
+      "commons_search": "intitle:speed limit 50 sign filetype:bitmap"
+    },
+    {
+      "slot": 21,
+      "concept": "sunflower",
+      "commons_search": "intitle:sunflower field filetype:bitmap"
+    },
+    {
+      "slot": 22,
+      "concept": "rose",
+      "commons_search": "intitle:red rose flower filetype:bitmap"
+    },
+    {
+      "slot": 23,
+      "concept": "waterfall",
+      "commons_search": "intitle:waterfall forest filetype:bitmap"
+    },
+    {
+      "slot": 24,
+      "concept": "river_bridge",
+      "commons_search": "intitle:stone bridge river filetype:bitmap"
+    },
+    {
+      "slot": 25,
+      "concept": "snow_mountain",
+      "commons_search": "intitle:snow mountain landscape filetype:bitmap"
+    },
+    {
+      "slot": 26,
+      "concept": "beach",
+      "commons_search": "intitle:sandy beach sea filetype:bitmap"
+    },
+    {
+      "slot": 27,
+      "concept": "guitar_player",
+      "commons_search": "intitle:guitar player filetype:bitmap"
+    },
+    {
+      "slot": 28,
+      "concept": "piano_player",
+      "commons_search": "intitle:piano player filetype:bitmap"
+    },
+    {
+      "slot": 29,
+      "concept": "cooking_person",
+      "commons_search": "intitle:cooking kitchen person filetype:bitmap"
+    },
+    {
+      "slot": 30,
+      "concept": "washing_dishes",
+      "commons_search": "intitle:washing dishes filetype:bitmap"
+    },
+    {
+      "slot": 31,
+      "concept": "umbrella_rain",
+      "commons_search": "intitle:umbrella rain street filetype:bitmap"
+    },
+    {
+      "slot": 32,
+      "concept": "umbrella_beach",
+      "commons_search": "intitle:beach umbrella filetype:bitmap"
+    },
+    {
+      "slot": 33,
+      "concept": "basketball",
+      "commons_search": "intitle:basketball game filetype:bitmap"
+    },
+    {
+      "slot": 34,
+      "concept": "football",
+      "commons_search": "intitle:football soccer game filetype:bitmap"
+    },
+    {
+      "slot": 35,
+      "concept": "laptop",
+      "commons_search": "intitle:laptop open filetype:bitmap"
+    },
+    {
+      "slot": 36,
+      "concept": "keyboard",
+      "commons_search": "intitle:computer keyboard filetype:bitmap"
+    },
+    {
+      "slot": 37,
+      "concept": "shopping_cart",
+      "commons_search": "intitle:shopping cart supermarket filetype:bitmap"
+    },
+    {
+      "slot": 38,
+      "concept": "shopping_basket",
+      "commons_search": "intitle:shopping basket filetype:bitmap"
+    },
+    {
+      "slot": 39,
+      "concept": "parking_sign",
+      "commons_search": "intitle:parking sign street filetype:bitmap"
+    },
+    {
+      "slot": 40,
+      "concept": "no_parking_sign",
+      "commons_search": "intitle:no parking sign filetype:bitmap"
+    }
+  ],
+  "selection": "Retrieve up to 5 ranked Commons bitmap candidates per predeclared concept; inspect visually. Choose first licensed, decodable real photograph clearly depicting concept. Skip diagrams, screenshots, unusably tiny or unintelligible images. Record every replacement and its visual reason before retrieval evaluation. If no candidate qualifies, use documented revised keyword search for same concept. Relevance queries are then written from visual evidence, without observing development or validation retrieval results.",
+  "license_allowlist": [
+    "CC0",
+    "Public domain",
+    "CC BY",
+    "CC BY-SA"
+  ],
+  "query_design": "40 image-specific queries, 12 multi-positive/generalization queries, 16 exclusions/OCR confusions, 12 semantically plausible empty queries; revise exact proportions only for visible evidence, record actual counts.",
+  "annotation": "Codex AI visual inspection of all selected images and full closed-corpus relevance review; not independent human double annotation. No paid annotation model and no generated image.",
+  "independence": "New real publicly available photographs, visually authored new Chinese queries, no development output access. Exact and perceptual hash comparison with development. Shared internet/foundation training exposure is unknown; this is not proof of training independence."
+}

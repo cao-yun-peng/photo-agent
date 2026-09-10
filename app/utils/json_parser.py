@@ -6,11 +6,12 @@
 - 兼容dict/list/str/bytes/None多种输入
 - 解析失败不抛异常，返回原值或默认值
 """
+
 from __future__ import annotations
 
 import json
 import re
-from typing import Any, Dict, List, Optional, TypeVar
+from typing import Any, Dict, List, TypeVar
 
 T = TypeVar("T")
 
@@ -154,13 +155,13 @@ def extract_json_field_by_regex(
     """
     patterns = [
         # 双引号: "key": "value"
-        fr'"{field_name}"\s*:\s*"([^"]*)"',
+        rf'"{field_name}"\s*:\s*"([^"]*)"',
         # 单引号: 'key': 'value'
-        fr"'{field_name}'\s*:\s*'([^']*)'",
+        rf"'{field_name}'\s*:\s*'([^']*)'",
         # 无引号key: key: "value"
-        fr'{field_name}\s*:\s*"([^"]*)"',
+        rf'{field_name}\s*:\s*"([^"]*)"',
         # 布尔值: "key": true/false
-        fr'"{field_name}"\s*:\s*(true|false)',
+        rf'"{field_name}"\s*:\s*(true|false)',
     ]
 
     for pattern in patterns:

@@ -1,0 +1,109 @@
+{
+  "concept": "piano_player",
+  "slot": 28,
+  "rank": 1,
+  "search": "intitle:piano player filetype:bitmap",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Aeolian_brand_player_piano.jpg",
+  "commons_page": {
+    "pageid": 88948315,
+    "ns": 6,
+    "title": "File:Aeolian brand player piano.jpg",
+    "index": 1,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 145848,
+        "width": 1069,
+        "height": 499,
+        "thumburl": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Aeolian_brand_player_piano.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "thumbwidth": 1280,
+        "thumbheight": 597,
+        "thumbattribs": {
+          "src": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Aeolian_brand_player_piano.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 597
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Aeolian_brand_player_piano.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Aeolian_brand_player_piano.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=88948315",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2020-04-06 16:02:53",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Aeolian brand player piano",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Aeolian Company|Aeolian Player Piano (No. 27934)",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Aeolian brand player piano keyboard close-up from File:Aeolian Player Piano (No. 27934).jpg (section)",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2007-05-04",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "derivative from File:Aeolian Player Piano (No. 27934).jpg",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a href=\"//www.flickr.com/people/40225188@N00\" class=\"extiw\" title=\"flickruser:40225188@N00\">Housing Works Thrift Shops</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 2.5",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 2.5",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/2.5",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-2.5",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

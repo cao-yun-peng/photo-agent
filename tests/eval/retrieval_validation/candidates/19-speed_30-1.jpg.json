@@ -1,0 +1,109 @@
+{
+  "concept": "speed_30",
+  "slot": 19,
+  "rank": 1,
+  "search": "intitle:speed limit 30 sign filetype:bitmap",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Speed_Limit_30_sign_Town_of_St._Johnsbury_VT_July_2019.jpg",
+  "commons_page": {
+    "pageid": 80255979,
+    "ns": 6,
+    "title": "File:Speed Limit 30 sign Town of St. Johnsbury VT July 2019.jpg",
+    "index": 1,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 205014,
+        "width": 690,
+        "height": 920,
+        "thumburl": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Speed_Limit_30_sign_Town_of_St._Johnsbury_VT_July_2019.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "thumbwidth": 1280,
+        "thumbheight": 1707,
+        "thumbattribs": {
+          "src": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Speed_Limit_30_sign_Town_of_St._Johnsbury_VT_July_2019.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 1707
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Speed_Limit_30_sign_Town_of_St._Johnsbury_VT_July_2019.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Speed_Limit_30_sign_Town_of_St._Johnsbury_VT_July_2019.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=80255979",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2019-07-08 14:53:39",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Speed Limit 30 sign Town of St. Johnsbury VT July 2019",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "St. Johnsbury, Vermont|Self-published work|Speed limit road signs in Vermont|July 2019 in Vermont|United States photographs taken on 2019-07-06|Keep right road signs in the United States|30 mph speed limit road signs in the United States|Images by Artaxerxes",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Speed limit 30 miles per hour sign for Town of St. Johnsbury in Vermont (with Keep Right sign).",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2019-07-06",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a href=\"//commons.wikimedia.org/wiki/User:Artaxerxes\" title=\"User:Artaxerxes\">Artaxerxes</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 4.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 4.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/4.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-4.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

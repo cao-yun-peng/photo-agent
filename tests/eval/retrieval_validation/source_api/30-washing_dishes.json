@@ -1,0 +1,594 @@
+{
+  "batchcomplete": "",
+  "continue": {
+    "gsroffset": 5,
+    "continue": "gsroffset||"
+  },
+  "query": {
+    "pages": {
+      "162619711": {
+        "pageid": 162619711,
+        "ns": 6,
+        "title": "File:A woman washing dishes to assist the cooks.jpg",
+        "index": 4,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 205638,
+            "width": 1658,
+            "height": 1155,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/A_woman_washing_dishes_to_assist_the_cooks.jpg/1280px-A_woman_washing_dishes_to_assist_the_cooks.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 892,
+            "responsiveUrls": {
+              "2": "https://upload.wikimedia.org/wikipedia/commons/5/5a/A_woman_washing_dishes_to_assist_the_cooks.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/A_woman_washing_dishes_to_assist_the_cooks.jpg/1280px-A_woman_washing_dishes_to_assist_the_cooks.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 892,
+              "srcset": "https://upload.wikimedia.org/wikipedia/commons/5/5a/A_woman_washing_dishes_to_assist_the_cooks.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/A_woman_washing_dishes_to_assist_the_cooks.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:A_woman_washing_dishes_to_assist_the_cooks.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=162619711",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2025-03-22 12:33:16",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "A woman washing dishes to assist the cooks",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Kitchens|Self-published work",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "A woman washing dishes as part of the food preparation process, assisting the cooks and contributing to the teamwork in the kitchen.",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2025-03-22",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a href=\"//commons.wikimedia.org/wiki/User:Bim24\" title=\"User:Bim24\">Bim24</a>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY 4.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution 4.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by/4.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-4.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "146421841": {
+        "pageid": 146421841,
+        "ns": 6,
+        "title": "File:Girl washing dishes by Malvin nzondo.jpg",
+        "index": 3,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 2483438,
+            "width": 2448,
+            "height": 3264,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Girl_washing_dishes_by_Malvin_nzondo.jpg/1280px-Girl_washing_dishes_by_Malvin_nzondo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 1707,
+            "responsiveUrls": {
+              "2": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Girl_washing_dishes_by_Malvin_nzondo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Girl_washing_dishes_by_Malvin_nzondo.jpg/1280px-Girl_washing_dishes_by_Malvin_nzondo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 1707,
+              "srcset": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Girl_washing_dishes_by_Malvin_nzondo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Girl_washing_dishes_by_Malvin_nzondo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Girl_washing_dishes_by_Malvin_nzondo.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=146421841",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2024-03-15 16:20:21",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Girl washing dishes by Malvin nzondo",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Dish washing|Self-published work|Images from Wiki Loves Africa 2024|Uploaded via Campaign:wlafrica|Files with coordinates missing SDC location of creation|Images from Wiki Loves Africa 2024 to check|Images from Wiki Loves Africa 2024 without categories|Images from Wiki Loves Africa 2024 in South Africa|Taken with Stylo Inkosi Pro",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "-27.559889",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "24.693167",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Foto nke nwa agbọghọ na-asa efere nke Malvin nzondo mepụtara",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2024-03-15 18:03:21",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a href=\"//commons.wikimedia.org/wiki/User:Malvin_nzondo_._S\" title=\"User:Malvin nzondo . S\">Malvin nzondo . S</a>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 4.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 4.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/4.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-4.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "4314903": {
+        "pageid": 4314903,
+        "ns": 6,
+        "title": "File:Washing dishes Our Community Place soup kitchen Little Grill Collective Harrisonburg VA June 2008.jpg",
+        "index": 2,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 512309,
+            "width": 1299,
+            "height": 2207,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Washing_dishes_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg/1280px-Washing_dishes_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 2175,
+            "responsiveUrls": {
+              "2": "https://upload.wikimedia.org/wikipedia/commons/4/49/Washing_dishes_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Washing_dishes_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg/1280px-Washing_dishes_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 2175,
+              "srcset": "https://upload.wikimedia.org/wikipedia/commons/4/49/Washing_dishes_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/4/49/Washing_dishes_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Washing_dishes_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=4314903",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2008-07-03 01:41:17",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Washing dishes Our Community Place soup kitchen Little Grill Collective Harrisonburg VA June 2008",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "GFDL|Women of the United States|Little Grill Collective|Grace (given name)|Dish washing|People of Harrisonburg, Virginia|Our Community Place|License migration redundant|Self-published work|Fashion in 2008|Images with extracted images|Restaurant kitchens in Virginia|Women with necklaces|June 2008 in Virginia|Women wearing brown T-shirts|Files with coordinates missing SDC location of creation|United States photographs taken on 2008-06-28|Women wearing glasses in Virginia|Smiling women in Virginia|Images by Artaxerxes|2008 in Harrisonburg, Virginia",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "38.455882",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "-78.864813",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Stack of dishes to wash at Our Community Place Soup Kitchen held at Little Grill Collective in Harrisonburg, Virginia June 28, 2008.",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2008-06-28",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a href=\"//commons.wikimedia.org/wiki/User:Artaxerxes\" title=\"User:Artaxerxes\">Artaxerxes</a>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 3.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 3.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/3.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-3.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "4314890": {
+        "pageid": 4314890,
+        "ns": 6,
+        "title": "File:Washing dishes for Our Community Place soup kitchen Little Grill Collective Harrisonburg VA June 2008.jpg",
+        "index": 1,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 772128,
+            "width": 2092,
+            "height": 2800,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg/1280px-Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 1713,
+            "responsiveUrls": {
+              "2": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg/1280px-Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 1713,
+              "srcset": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=4314890",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2008-07-03 01:37:43",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Washing dishes for Our Community Place soup kitchen Little Grill Collective Harrisonburg VA June 2008",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Volunteers|GFDL|Little Grill Collective|Dish washing|People of Harrisonburg, Virginia|Our Community Place|License migration redundant|Self-published work|Men wearing baseball caps in Virginia|Men at work in Virginia|June 2008 in Virginia|Men wearing gray T-shirts|Files with coordinates missing SDC location of creation|United States photographs taken on 2008-06-28|Sinks in the United States|Plates in Virginia|Soup kitchens in the United States|Images by Artaxerxes|Men at work in the 2000s|2008 in Harrisonburg, Virginia",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "38.455882",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "-78.864813",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Washing dishes at the Our Community Place Soup Kitchen held at <a href=\"https://en.wikipedia.org/wiki/Little_Grill_Collective\" class=\"extiw\" title=\"en:Little Grill Collective\">Little Grill Collective</a> on Monday, June 28, 2008 in Harrisonburg, Virginia.",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2008-06-28",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a href=\"//commons.wikimedia.org/wiki/User:Artaxerxes\" title=\"User:Artaxerxes\">Artaxerxes</a>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 3.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 3.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/3.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-3.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "142255852": {
+        "pageid": 142255852,
+        "ns": 6,
+        "title": "File:Washing the dishes at Glenbrittle Campsite, 1992 - geograph.org.uk - 5940548.jpg",
+        "index": 5,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 159681,
+            "width": 1024,
+            "height": 683,
+            "thumburl": "https://upload.wikimedia.org/wikipedia/commons/9/99/Washing_the_dishes_at_Glenbrittle_Campsite%2C_1992_-_geograph.org.uk_-_5940548.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+            "thumbwidth": 1280,
+            "thumbheight": 854,
+            "thumbattribs": {
+              "src": "https://upload.wikimedia.org/wikipedia/commons/9/99/Washing_the_dishes_at_Glenbrittle_Campsite%2C_1992_-_geograph.org.uk_-_5940548.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 854
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/9/99/Washing_the_dishes_at_Glenbrittle_Campsite%2C_1992_-_geograph.org.uk_-_5940548.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Washing_the_dishes_at_Glenbrittle_Campsite,_1992_-_geograph.org.uk_-_5940548.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=142255852",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2023-12-16 10:47:09",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Washing the dishes at Glenbrittle Campsite, 1992 - geograph.org.uk - 5940548",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Bracadale (civil parish)|Images from Geograph Britain and Ireland",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "57.202192",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "-6.287481",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Washing the dishes at Glenbrittle Campsite, 1992 <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Washing_the_dishes_at_Glenbrittle_Campsite,_1992_-_geograph.org.uk_-_5940548.jpg#ooui-php-4\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "1992-09",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/photo/5940548\">Geograph Britain and Ireland</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Washing_the_dishes_at_Glenbrittle_Campsite,_1992_-_geograph.org.uk_-_5940548.jpg#P7482\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/760\">Mark Anderson</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Washing_the_dishes_at_Glenbrittle_Campsite,_1992_-_geograph.org.uk_-_5940548.jpg#P170\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 2.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 2.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Attribution": {
+                "value": "<i>Washing the dishes at Glenbrittle Campsite, 1992</i> by Mark Anderson",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/2.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-2.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

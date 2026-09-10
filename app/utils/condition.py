@@ -11,11 +11,12 @@
 - 搜索结果过滤规则
 - Agent决策条件表达式（运营可配置，无需改代码）
 """
+
 from __future__ import annotations
 
 import ast
 import re
-from typing import Any, Callable, Dict, List, Mapping, Optional
+from typing import Any, Callable, Dict, Mapping, Optional
 
 _MISSING = object()
 
@@ -27,6 +28,7 @@ _DOT_PATH_PATTERN = re.compile(
 # ---------------------------------------------------------------------------
 # 基础语义函数
 # ---------------------------------------------------------------------------
+
 
 def path_get(data: Any, path: str, default: Any = "") -> Any:
     """按 `a.b.c` 点路径从 dict/list 中安全取值。
@@ -150,6 +152,7 @@ _SAFE_FUNCTION_SET = set(_SAFE_FUNCTIONS.values())
 # 点路径重写（a.b.c -> path_get(a, "b.c", "")）
 # ---------------------------------------------------------------------------
 
+
 def _rewrite_dot_paths(expression: str) -> str:
     """将点路径表达式自动改写为path_get调用，避免KeyError。
 
@@ -216,6 +219,7 @@ def _rewrite_dot_paths(expression: str) -> str:
 # ---------------------------------------------------------------------------
 # 受限AST求值核心
 # ---------------------------------------------------------------------------
+
 
 def _safe_eval(expression: str, context: Dict[str, Any]) -> Any:
     """受限AST求值：只允许白名单内的操作。
@@ -353,7 +357,9 @@ def _safe_eval(expression: str, context: Dict[str, Any]) -> Any:
             if fn in _SAFE_FUNCTION_SET:
                 return fn(*args, **kwargs)
             # 允许dict.get()方法
-            if getattr(fn, "__name__", "") == "get" and isinstance(getattr(fn, "__self__", None), dict):
+            if getattr(fn, "__name__", "") == "get" and isinstance(
+                getattr(fn, "__self__", None), dict
+            ):
                 return fn(*args, **kwargs)
             raise ValueError(f"不支持的函数调用: {getattr(fn, '__name__', fn)}")
 
@@ -362,7 +368,12 @@ def _safe_eval(expression: str, context: Dict[str, Any]) -> Any:
             base = _eval(node.value)
             if isinstance(base, dict) and node.attr == "get":
                 return base.get
-            if isinstance(base, (list, str)) and node.attr in ("count", "index", "find", "strip"):
+            if isinstance(base, (list, str)) and node.attr in (
+                "count",
+                "index",
+                "find",
+                "strip",
+            ):
                 return getattr(base, node.attr)
             raise ValueError(f"不支持的属性访问: .{node.attr}")
 
@@ -372,7 +383,11 @@ def _safe_eval(expression: str, context: Dict[str, Any]) -> Any:
         if isinstance(node, ast.Tuple):
             return tuple(_eval(e) for e in node.elts)
         if isinstance(node, ast.Dict):
-            return {_eval(k): _eval(v) for k, v in zip(node.keys, node.values) if k is not None}
+            return {
+                _eval(k): _eval(v)
+                for k, v in zip(node.keys, node.values)
+                if k is not None
+            }
         if isinstance(node, ast.Set):
             return {_eval(e) for e in node.elts}
 
@@ -389,6 +404,7 @@ def _safe_eval(expression: str, context: Dict[str, Any]) -> Any:
 # ---------------------------------------------------------------------------
 # 对外API
 # ---------------------------------------------------------------------------
+
 
 def evaluate_condition(
     condition: str,
@@ -449,7 +465,8 @@ def evaluate_condition(
         if logger is not None:
             logger.warning(
                 "condition evaluation failed: %s | condition=%r",
-                e, raw,
+                e,
+                raw,
             )
         return default
 
@@ -474,6 +491,7 @@ def evaluate_expression(
         if logger is not None:
             logger.warning(
                 "expression evaluation failed: %s | expr=%r",
-                e, raw,
+                e,
+                raw,
             )
         return default

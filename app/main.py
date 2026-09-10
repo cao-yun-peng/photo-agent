@@ -43,6 +43,7 @@ from app.services.circuit_breaker import (
     search_visual_verify_breaker,
     vl_breaker,
 )
+from app.services.search_time import SearchTimezoneMiddleware
 from app.services.lock import get_redis
 
 # ---------- 日志初始化（最先执行）----------
@@ -82,6 +83,7 @@ async def _get_http_client():
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     """应用生命周期管理."""
+    settings.validate_runtime()
     logger.info(
         "photo-agent api starting up | env=%s version=%s",
         settings.app_env,
@@ -151,6 +153,8 @@ app = FastAPI(
 # ---------- 中间件注册 ----------
 
 # 1. LogID全链路追踪（最先注册，最外层）
+
+app.add_middleware(SearchTimezoneMiddleware)
 app.add_middleware(LogIDMiddleware, app_name=settings.app_name)
 
 # 2. CORS（开发态提供 Web 默认值，生产必须显式配置 allowlist）

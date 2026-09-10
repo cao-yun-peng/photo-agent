@@ -1,0 +1,694 @@
+{
+  "algorithm": "64-bit low-frequency 8x8 DCT of 32x32 luminance; DC zeroed; median of 63 AC coefficients",
+  "near_duplicate_threshold": 8,
+  "development_images": 137,
+  "validation_images": 40,
+  "cross_pairs": 5480,
+  "exact_cross_duplicates": [],
+  "near_cross_pairs": [],
+  "near_within_pairs": [],
+  "nearest_cross_pairs": [
+    {
+      "validation": "v-001",
+      "nearest_development": [
+        {
+          "photo_id": "p-069",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-043",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-133",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-002",
+      "nearest_development": [
+        {
+          "photo_id": "p-035",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-112",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-145",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-003",
+      "nearest_development": [
+        {
+          "photo_id": "p-134",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-155",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-076",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-004",
+      "nearest_development": [
+        {
+          "photo_id": "p-035",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-071",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-125",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-005",
+      "nearest_development": [
+        {
+          "photo_id": "p-090",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-124",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-021",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-006",
+      "nearest_development": [
+        {
+          "photo_id": "p-160",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-072",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-117",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-007",
+      "nearest_development": [
+        {
+          "photo_id": "p-033",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-085",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-007",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-008",
+      "nearest_development": [
+        {
+          "photo_id": "p-106",
+          "hamming": 18
+        },
+        {
+          "photo_id": "p-091",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-125",
+          "hamming": 20
+        }
+      ]
+    },
+    {
+      "validation": "v-009",
+      "nearest_development": [
+        {
+          "photo_id": "p-045",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-070",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-120",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-010",
+      "nearest_development": [
+        {
+          "photo_id": "p-121",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-019",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-035",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-011",
+      "nearest_development": [
+        {
+          "photo_id": "p-161",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-113",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-010",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-012",
+      "nearest_development": [
+        {
+          "photo_id": "p-069",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-081",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-120",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-013",
+      "nearest_development": [
+        {
+          "photo_id": "p-067",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-027",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-061",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-014",
+      "nearest_development": [
+        {
+          "photo_id": "p-029",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-042",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-077",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-015",
+      "nearest_development": [
+        {
+          "photo_id": "p-108",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-029",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-072",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-016",
+      "nearest_development": [
+        {
+          "photo_id": "p-021",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-034",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-126",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-017",
+      "nearest_development": [
+        {
+          "photo_id": "p-010",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-015",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-083",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-018",
+      "nearest_development": [
+        {
+          "photo_id": "p-004",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-008",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-030",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-019",
+      "nearest_development": [
+        {
+          "photo_id": "p-124",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-006",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-031",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-020",
+      "nearest_development": [
+        {
+          "photo_id": "p-092",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-034",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-162",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-021",
+      "nearest_development": [
+        {
+          "photo_id": "p-089",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-073",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-104",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-022",
+      "nearest_development": [
+        {
+          "photo_id": "p-055",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-113",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-125",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-023",
+      "nearest_development": [
+        {
+          "photo_id": "p-004",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-033",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-061",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-024",
+      "nearest_development": [
+        {
+          "photo_id": "p-067",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-092",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-156",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-025",
+      "nearest_development": [
+        {
+          "photo_id": "p-033",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-072",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-073",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-026",
+      "nearest_development": [
+        {
+          "photo_id": "p-096",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-101",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-077",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-027",
+      "nearest_development": [
+        {
+          "photo_id": "p-119",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-153",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-014",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-028",
+      "nearest_development": [
+        {
+          "photo_id": "p-103",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-106",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-012",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-029",
+      "nearest_development": [
+        {
+          "photo_id": "p-116",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-028",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-039",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-030",
+      "nearest_development": [
+        {
+          "photo_id": "p-115",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-134",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-135",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-031",
+      "nearest_development": [
+        {
+          "photo_id": "p-012",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-137",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-106",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-032",
+      "nearest_development": [
+        {
+          "photo_id": "p-036",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-082",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-045",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-033",
+      "nearest_development": [
+        {
+          "photo_id": "p-163",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-074",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-081",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-034",
+      "nearest_development": [
+        {
+          "photo_id": "p-102",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-028",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-038",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-035",
+      "nearest_development": [
+        {
+          "photo_id": "p-038",
+          "hamming": 18
+        },
+        {
+          "photo_id": "p-039",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-112",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-036",
+      "nearest_development": [
+        {
+          "photo_id": "p-019",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-134",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-031",
+          "hamming": 24
+        }
+      ]
+    },
+    {
+      "validation": "v-037",
+      "nearest_development": [
+        {
+          "photo_id": "p-006",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-044",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-132",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-038",
+      "nearest_development": [
+        {
+          "photo_id": "p-099",
+          "hamming": 20
+        },
+        {
+          "photo_id": "p-008",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-074",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-039",
+      "nearest_development": [
+        {
+          "photo_id": "p-125",
+          "hamming": 18
+        },
+        {
+          "photo_id": "p-055",
+          "hamming": 22
+        },
+        {
+          "photo_id": "p-120",
+          "hamming": 22
+        }
+      ]
+    },
+    {
+      "validation": "v-040",
+      "nearest_development": [
+        {
+          "photo_id": "p-026",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-081",
+          "hamming": 24
+        },
+        {
+          "photo_id": "p-042",
+          "hamming": 26
+        }
+      ]
+    }
+  ],
+  "visual_pair_review": [],
+  "limitations": "pHash is a duplicate screen, not proof of absence of every crop, composition or foundation-training overlap."
+}

@@ -1,0 +1,127 @@
+{
+  "concept": "beach",
+  "slot": 26,
+  "rank": 3,
+  "search": "intitle:sandy beach sea filetype:bitmap",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Sidmouth_%2C_Sandy_Beach_and_Sea_Wall_-_geograph.org.uk_-_1139830.jpg",
+  "commons_page": {
+    "pageid": 13848889,
+    "ns": 6,
+    "title": "File:Sidmouth , Sandy Beach and Sea Wall - geograph.org.uk - 1139830.jpg",
+    "index": 3,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 58819,
+        "width": 640,
+        "height": 512,
+        "thumburl": "https://upload.wikimedia.org/wikipedia/commons/5/51/Sidmouth_%2C_Sandy_Beach_and_Sea_Wall_-_geograph.org.uk_-_1139830.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "thumbwidth": 1280,
+        "thumbheight": 1024,
+        "thumbattribs": {
+          "src": "https://upload.wikimedia.org/wikipedia/commons/5/51/Sidmouth_%2C_Sandy_Beach_and_Sea_Wall_-_geograph.org.uk_-_1139830.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 1024
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Sidmouth_%2C_Sandy_Beach_and_Sea_Wall_-_geograph.org.uk_-_1139830.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sidmouth_,_Sandy_Beach_and_Sea_Wall_-_geograph.org.uk_-_1139830.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=13848889",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2011-02-25 04:44:25",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Sidmouth , Sandy Beach and Sea Wall - geograph.org.uk - 1139830",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Jurassic Coast|Images from Geograph Britain and Ireland|People at the beach|Information field template with formatting|Beach huts in Devon|United Kingdom photographs taken on 2004-07-02|Photographs by Lewis Clarke|Beaches of Sidmouth",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "GPSLatitude": {
+            "value": "50.675040",
+            "source": "commons-desc-page"
+          },
+          "GPSLongitude": {
+            "value": "-3.247000",
+            "source": "commons-desc-page"
+          },
+          "GPSMapDatum": {
+            "value": "WGS-84",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Sidmouth : Sandy Beach &amp; Sea Wall The beach is full of people who sit just under the sea wall.",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2004-07-02",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "From <a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/photo/1139830\">geograph.org.uk</a>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/11775\">Lewis Clarke</a>",
+            "source": "commons-desc-page"
+          },
+          "Attribution": {
+            "value": "Lewis Clarke",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 2.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 2.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/2.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-2.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

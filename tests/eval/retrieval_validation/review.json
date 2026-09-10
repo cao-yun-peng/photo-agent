@@ -1,0 +1,306 @@
+{
+  "reviewer": "Codex AI visual reviewer, not human double annotation",
+  "reviewed_at": "2026-09-08T15:35:49.245820+00:00",
+  "retrieval_outputs_seen": false,
+  "image_count": 40,
+  "query_count": 80,
+  "binary_pair_count": 3200,
+  "method": "Inspect every selected source photograph, then compare every new query against all 40 selected images. Captions and all positive/negative labels are visual judgments by Codex, without production model labels or retrieval outputs. Source titles are used for provenance and candidate discovery only; explicit query conditions require visible evidence.",
+  "images": [
+    {
+      "photo_id": "v-001",
+      "candidate": "01-cat_portrait-2.jpg",
+      "observation": "无毛猫正面近照，蓝色眼睛、大耳朵，趴在浅色织物上。",
+      "selection_reason": "首名为纸上版画非真实照片；第二名为真实无毛猫照片。",
+      "group_id": "validation-source-001"
+    },
+    {
+      "photo_id": "v-002",
+      "candidate": "02-cat_sleep-supplement.jpg",
+      "observation": "黑白花猫蜷成一团，闭着眼躺在条纹床单上。",
+      "selection_reason": "原搜索两次网络失败，按同一睡猫类别补充公开实拍来源。",
+      "group_id": "validation-source-002"
+    },
+    {
+      "photo_id": "v-003",
+      "candidate": "03-dog_agility-2.jpg",
+      "observation": "草地围栏内设置犬类障碍设施，一只棕色狗跑向镜头；背景有住宅。",
+      "selection_reason": "首名没有可见狗；第二名有狗和障碍训练场景。",
+      "group_id": "validation-source-003"
+    },
+    {
+      "photo_id": "v-004",
+      "candidate": "04-dog_sleep-supplement.jpg",
+      "observation": "一只黑色狗侧躺在室内黑色垫子上，背后有花色窗帘。",
+      "selection_reason": "原搜索两次网络失败，按同一睡狗类别补充公开实拍来源。",
+      "group_id": "validation-source-004"
+    },
+    {
+      "photo_id": "v-005",
+      "candidate": "05-coffee_pour-supplement.jpg",
+      "observation": "咖啡机的出液口正向白色杯子流出两股咖啡，背景较暗。",
+      "selection_reason": "原搜索两次网络失败，按倒出咖啡的同一类别补充真实咖啡制作照片。",
+      "group_id": "validation-source-005"
+    },
+    {
+      "photo_id": "v-006",
+      "candidate": "06-coffee_latte-1.jpg",
+      "observation": "俯拍一杯浅棕色咖啡，中间有一大片白色奶泡，周边布满细泡。",
+      "selection_reason": "首名为真实奶泡咖啡照片；不以标题推定无法可靠辨别的苹果拉花形状。",
+      "group_id": "validation-source-006"
+    },
+    {
+      "photo_id": "v-007",
+      "candidate": "07-reading_person-1.jpg",
+      "observation": "格子衬衣人物的手托着一本打开的书，画面为身体与双手近景，书页朝向人物。",
+      "selection_reason": "首名为真实人物读书近照；不推测人物身份。",
+      "group_id": "validation-source-007"
+    },
+    {
+      "photo_id": "v-008",
+      "candidate": "08-book_stack-1.jpg",
+      "observation": "一大摞不同颜色的书横向叠放，书脊可见非拉丁文字，背景较暗。",
+      "selection_reason": "首名符合书堆概念；不以无法可靠识别的文字作OCR标签。",
+      "group_id": "validation-source-008"
+    },
+    {
+      "photo_id": "v-009",
+      "candidate": "09-cycling_person-1.jpg",
+      "observation": "几位骑行者正在建筑旁的街道上骑自行车，前景一人穿蓝白骑行服，路边有白色酒馆。",
+      "selection_reason": "复核首名完整原图后确认骑行人物清楚，按预定首次适合规则选择首名。",
+      "group_id": "validation-source-009"
+    },
+    {
+      "photo_id": "v-010",
+      "candidate": "10-bicycle_parked-1.jpg",
+      "observation": "一辆蓝色自行车停在涂鸦密布的建筑门窗前，未见骑车人。",
+      "selection_reason": "首名清楚显示静止自行车。",
+      "group_id": "validation-source-010"
+    },
+    {
+      "photo_id": "v-011",
+      "candidate": "11-apple_fruit-1.jpg",
+      "observation": "草地上一个藤编提篮盛满红色苹果，阳光下篮子与苹果清楚可见。",
+      "selection_reason": "首名为真实水果照片；第二名为同一拍摄族相邻照片，不同时收录。",
+      "group_id": "validation-source-011"
+    },
+    {
+      "photo_id": "v-012",
+      "candidate": "12-orange_fruit-1.jpg",
+      "observation": "白色背景上放着三个橘子，其中左右两个带有绿叶，未剥皮。",
+      "selection_reason": "首名为完整柑橘实拍，第二名是绘画不收录。",
+      "group_id": "validation-source-012"
+    },
+    {
+      "photo_id": "v-013",
+      "candidate": "13-croissant-1.jpg",
+      "observation": "一只手托着表面有浅色奶油的可颂面包，背景为交通工具里的红色座椅。",
+      "selection_reason": "首名为真实可颂照片。",
+      "group_id": "validation-source-013"
+    },
+    {
+      "photo_id": "v-014",
+      "candidate": "14-doughnut-3.jpg",
+      "observation": "玻璃食品柜里有多层不同糖霜与装饰的甜甜圈，柜子底部有价格牌。",
+      "selection_reason": "前两名是经济模型示意图；第三名才为真实甜甜圈展示柜。",
+      "group_id": "validation-source-014"
+    },
+    {
+      "photo_id": "v-015",
+      "candidate": "15-train_platform-1.jpg",
+      "observation": "火车站月台有金属雨棚，右侧轨道停有黄色车头的列车，画面中未见近处乘客。",
+      "selection_reason": "首名清楚显示列车与站台。",
+      "group_id": "validation-source-015"
+    },
+    {
+      "photo_id": "v-016",
+      "candidate": "16-bus_stop-1.jpg",
+      "observation": "路边有青绿色弧形候车亭和一排座椅，背景为树木；亭内未见候车人。",
+      "selection_reason": "首名清楚显示室外公交候车亭。",
+      "group_id": "validation-source-016"
+    },
+    {
+      "photo_id": "v-017",
+      "candidate": "17-stop_sign-supplement.jpg",
+      "observation": "红色八角STOP牌立在道路边，牌面文字清楚，后方可见停放车辆。",
+      "selection_reason": "原搜索网络失败；补充的真实路牌具有清晰OCR，排除标志设计图。",
+      "group_id": "validation-source-017"
+    },
+    {
+      "photo_id": "v-018",
+      "candidate": "18-yield_sign-2.jpg",
+      "observation": "黄色牌面写有 TURNING VEHICLES 并有右转箭头，下方白底牌有 YIELD 小三角、TO 和行人图案。",
+      "selection_reason": "首名为交通标志设计图，不是真实场景照片；第二名为真实路牌照片。",
+      "group_id": "validation-source-018"
+    },
+    {
+      "photo_id": "v-019",
+      "candidate": "19-speed_30-1.jpg",
+      "observation": "草木部分遮住的白色矩形路牌，SPEED LIMIT 和数字30清晰，下方还有KEEP字样。",
+      "selection_reason": "首名清楚显示实拍限速30牌。",
+      "group_id": "validation-source-019"
+    },
+    {
+      "photo_id": "v-020",
+      "candidate": "20-speed_50-supplement.jpg",
+      "observation": "白色矩形路牌中有红圆圈与黑色数字50，后面是街道与树木。",
+      "selection_reason": "原候选中一张是20、另一张是设计图；同类补充真实50牌。",
+      "group_id": "validation-source-020"
+    },
+    {
+      "photo_id": "v-021",
+      "candidate": "21-sunflower-1.jpg",
+      "observation": "晴天蓝天下大片黄色向日葵花田，远处有树和小房子。",
+      "selection_reason": "首名清楚显示真实向日葵花田。",
+      "group_id": "validation-source-021"
+    },
+    {
+      "photo_id": "v-022",
+      "candidate": "22-rose-1.jpg",
+      "observation": "一朵红玫瑰的近照，背景为纯黑色，花瓣层次清楚。",
+      "selection_reason": "首名为玫瑰近照。",
+      "group_id": "validation-source-022"
+    },
+    {
+      "photo_id": "v-023",
+      "candidate": "23-waterfall-1.jpg",
+      "observation": "岩石间多股白色瀑布，周围绿树，远处山形与晚霞天空；未见石桥。",
+      "selection_reason": "首名清楚显示自然瀑布。",
+      "group_id": "validation-source-023"
+    },
+    {
+      "photo_id": "v-024",
+      "candidate": "24-river_bridge-1.jpg",
+      "observation": "石拱桥横跨小河，桥两侧有枯枝和绿草，桥上未见火车。",
+      "selection_reason": "首名清楚显示河上石桥。",
+      "group_id": "validation-source-024"
+    },
+    {
+      "photo_id": "v-025",
+      "candidate": "25-snow_mountain-1.jpg",
+      "observation": "积雪覆盖群山和岩石，前景有蓝绿色小湖与几个很小的徒步人物。",
+      "selection_reason": "首名为雪山真实景观。",
+      "group_id": "validation-source-025"
+    },
+    {
+      "photo_id": "v-026",
+      "candidate": "26-beach-1.jpg",
+      "observation": "阴天下空旷沙滩连接灰色海面，地面留有痕迹，未见遮阳伞。",
+      "selection_reason": "首名清楚显示海与沙滩。",
+      "group_id": "validation-source-026"
+    },
+    {
+      "photo_id": "v-027",
+      "candidate": "27-guitar_player-1.jpg",
+      "observation": "街边一位戴墨镜、穿黑色外套的人正弹木吉他，背后有建筑与树木。",
+      "selection_reason": "首名清楚显示人物弹吉他；不以来源标题推测人物身份。",
+      "group_id": "validation-source-027"
+    },
+    {
+      "photo_id": "v-028",
+      "candidate": "28-piano_player-supplement.jpg",
+      "observation": "黑白照片中双手正在弹钢琴，前景手腕上戴着圆形手表，人物脸部不在画面内。",
+      "selection_reason": "原搜索结果全是自动演奏钢琴，无人物弹奏；同类精确文件名补充真实双手弹琴照片。",
+      "group_id": "validation-source-028"
+    },
+    {
+      "photo_id": "v-029",
+      "candidate": "29-cooking_person-1.jpg",
+      "observation": "一个人坐在轮椅上，在白色厨房灶台前伸手操作锅具，桌上有蔬果。",
+      "selection_reason": "首名清楚显示人物在厨房做饭；不推测医疗状况。",
+      "group_id": "validation-source-029"
+    },
+    {
+      "photo_id": "v-030",
+      "candidate": "30-washing_dishes-1.jpg",
+      "observation": "水槽前一位戴浅色帽子的人用绿色海绵清洗白盘，水龙头流出大量水，旁边还有人在洗东西。",
+      "selection_reason": "首名清楚显示洗碗动作与水流。",
+      "group_id": "validation-source-030"
+    },
+    {
+      "photo_id": "v-031",
+      "candidate": "31-umbrella_rain-1.jpg",
+      "observation": "湿漉漉的街道上有人撑着蓝色雨伞，画面里有水雾与架设的强光灯。",
+      "selection_reason": "首名是真实摄影中的人工造雨场景；查询只描述可见湿地、水雾与撑伞，不声称天然降雨。",
+      "group_id": "validation-source-031"
+    },
+    {
+      "photo_id": "v-032",
+      "candidate": "32-umbrella_beach-3.jpg",
+      "observation": "海边排列数把草编遮阳伞，伞下形成圆形阴影，远处海水蓝绿；完整图中可见四把近处伞。",
+      "selection_reason": "同槽前两名分别为人物持便携伞的摆拍及收拢的伞；选择明确展开的海滩遮阳伞，支撑预定晴天遮阳/雨中撑伞对照。",
+      "group_id": "validation-source-032"
+    },
+    {
+      "photo_id": "v-033",
+      "candidate": "33-basketball-1.jpg",
+      "observation": "几个人在室外碎石地面打篮球，一人弯身控橙色球，一人穿粉色上衣防守。",
+      "selection_reason": "首名清楚呈现篮球运动。",
+      "group_id": "validation-source-033"
+    },
+    {
+      "photo_id": "v-034",
+      "candidate": "34-football-3.jpg",
+      "observation": "草地足球场上红白两队球员正在踢球，背景有看台和建筑。",
+      "selection_reason": "前两名是合影或步行，第三名才清楚呈现预定足球比赛场景。",
+      "group_id": "validation-source-034"
+    },
+    {
+      "photo_id": "v-035",
+      "candidate": "35-laptop-3.jpg",
+      "observation": "一台打开屏幕的笔记本电脑放在桌面，键盘和触控板可见，黑屏上有光线反射。",
+      "selection_reason": "首名是便携光盘播放器，第二名是拆机内部；第三名是打开上盖的笔记本电脑。",
+      "group_id": "validation-source-035"
+    },
+    {
+      "photo_id": "v-036",
+      "candidate": "36-keyboard-2.jpg",
+      "observation": "黑色电脑键盘按键的近照，按键边缘有灰尘，英文大写字母清楚可见。",
+      "selection_reason": "首名变焦拖影使主要物体不清晰；第二名清楚呈现键盘。",
+      "group_id": "validation-source-036"
+    },
+    {
+      "photo_id": "v-037",
+      "candidate": "37-shopping_cart-supplement.jpg",
+      "observation": "超市里绿色有孔塑料购物推车，车内有蔬菜盒和包装食品，地板上有保持距离圆形贴纸。",
+      "selection_reason": "恢复原搜索首名下载后按首个适合候选规则选择。",
+      "group_id": "validation-source-037"
+    },
+    {
+      "photo_id": "v-038",
+      "candidate": "38-shopping_basket-2.jpg",
+      "observation": "红砖墙前摆着数个不同形状的藤编提篮，其中有长提手和圆口篮。",
+      "selection_reason": "首名主体是价目表，第三名是目录图；第二名清楚显示可提的真实篮子。",
+      "group_id": "validation-source-038"
+    },
+    {
+      "photo_id": "v-039",
+      "candidate": "39-parking_sign-2.jpg",
+      "observation": "白色停车牌有蓝底P，写着Mon-Sat、8 am-6 pm、2 hours和No return within 2 hours。",
+      "selection_reason": "首名以禁止驶入和远处难读文字为主；第二名符合预定清晰停车OCR。",
+      "group_id": "validation-source-039"
+    },
+    {
+      "photo_id": "v-040",
+      "candidate": "40-no_parking_sign-4.jpg",
+      "observation": "木柱上的旧路牌有红色NO PARKING ANY TIME文字和双向箭头，表面有大量裂纹。",
+      "selection_reason": "前两名只有远处禁停图形，第三名下载失败；第四名符合预定清晰禁停OCR。",
+      "group_id": "validation-source-040"
+    }
+  ],
+  "pre_execution_changes": [
+    {
+      "query_id": "val-032",
+      "old": "找海边三把草编遮阳伞在地上投下圆形影子的照片",
+      "new": "找海边几把草编遮阳伞在地上投下圆形影子的照片",
+      "reason": "最终放大复核显示四把近处伞，缩略审阅时漏数一把；执行前去除错误精确数量，相关照片集合不变。",
+      "retrieval_outputs_observed": false
+    }
+  ],
+  "limitations": [
+    "AI visual annotation by one reviewer; no independent human adjudication.",
+    "Convenience-stratified Commons sample, not a random sample of a personal album.",
+    "Public image exposure in foundation-model training is unknown.",
+    "Predominantly clear photographs with some natural scene OCR; this validation does not establish performance for private faces, temporal queries or GPS."
+  ]
+}

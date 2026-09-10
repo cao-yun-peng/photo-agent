@@ -1,4 +1,5 @@
 """Agent 会话状态表 — 支撑多轮对话和兜底追踪."""
+
 from datetime import datetime
 from uuid import UUID, uuid4
 
@@ -28,14 +29,10 @@ class AgentSession(Base):
         index=True,
     )
 
-    state: Mapped[dict] = mapped_column(
-        JSONB, nullable=False, default=dict
-    )
+    state: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
     # {search_attempts, last_query, rejected_ids, strategy, ...}
 
-    status: Mapped[str] = mapped_column(
-        String(16), nullable=False, default="active"
-    )
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="active")
     # active=等待用户回复；completed=上一轮正常结束但在 expires_at 前仍可续接；
     # failed/abandoned=不可续接
 

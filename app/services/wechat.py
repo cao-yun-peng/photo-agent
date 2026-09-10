@@ -1,4 +1,5 @@
 """微信小程序 jscode2session 换 openid."""
+
 import httpx
 
 from app.config import settings

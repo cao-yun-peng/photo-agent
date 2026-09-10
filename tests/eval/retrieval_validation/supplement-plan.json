@@ -1,0 +1,31 @@
+{
+  "retrieval_outcomes_seen": false,
+  "selection": "Exact public titles identified from same-concept web search, then subject to source-license and visual inspection",
+  "requests": [
+    {
+      "slot": 2,
+      "title": "File:Cat sleeping on bed.jpg",
+      "reason": "Original Commons search failed twice; public web search for the same sleeping-cat concept identified this real-photo source."
+    },
+    {
+      "slot": 4,
+      "title": "File:Sleeping dog (4100811373).jpg",
+      "reason": "Original Commons search failed twice; same-concept public web search identified a photographic candidate."
+    },
+    {
+      "slot": 5,
+      "title": "File:Machine pouring coffee (Unsplash).jpg",
+      "reason": "Original Commons search failed twice; same pouring-coffee concept, source describes real espresso preparation."
+    },
+    {
+      "slot": 17,
+      "title": "File:Stop sign (1).jpg",
+      "reason": "Original Commons search failed twice; same-concept web search, exclude stop-sign icon results."
+    },
+    {
+      "slot": 20,
+      "title": "File:50 km speed limit road sign 2.jpg",
+      "reason": "Original candidates showed speed 20 or a graphic sign; same-concept exact title identifies a photographic 50 sign."
+    }
+  ]
+}

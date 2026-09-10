@@ -7,8 +7,7 @@ let messageSequence = 0;
 let completeResultBuffer = [];
 const RESULT_RENDER_BATCH = 30;
 
-Page({
-  data: {
+const initialData = {
     q: '',
     quickChips: ['最近一周', '上个月', '美食', '风景', '人像'],
     activeChip: '',
@@ -24,16 +23,31 @@ Page({
     recording: false,
     apiBase: API_BASE,
     agentSessionId: '',
+    feedbackBatchId: '',
+    undoId: '',
     agentStatus: '',
     agentProgress: '',
     awaitingClarification: false,
     chatMessages: [],
     chatScrollTarget: '',
     searchInputFocused: false,
-  },
+  };
 
-  onShow() {
+Page({
+  data: JSON.parse(JSON.stringify(initialData)),
+
+  onUnload() { this._requestId = (this._requestId || 0) + 1; },
+
+  async onShow() {
     const app = getApp();
+    await app.authReady;
+    if (this.authEpoch !== app.globalData.authEpoch) {
+      this._requestId = (this._requestId || 0) + 1;
+      this.authEpoch = app.globalData.authEpoch;
+      completeResultBuffer = [];
+      voicePath = null;
+      this.setData(JSON.parse(JSON.stringify(initialData)));
+    }
     if (!app.isLoggedIn()) wx.reLaunch({ url: '/pages/login/index' });
   },
 
@@ -78,6 +92,8 @@ Page({
       coverageHint: '',
       hasMoreResults: false,
       agentSessionId: '',
+    feedbackBatchId: '',
+    undoId: '',
       agentStatus: '',
       agentProgress: '',
       awaitingClarification: false,
@@ -108,13 +124,16 @@ Page({
       searchInputFocused: false,
     });
 
+    const requestId = this._requestId = (this._requestId || 0) + 1;
     try {
       await agent.stream({
         query: agentQuery,
         session_id: sessionId,
-        onEvent: (event) => this._handleAgentEvent(event, resultMode),
+        feedback_batch_id: this.data.feedbackBatchId || undefined,
+        onEvent: (event) => { if (this._requestId === requestId) this._handleAgentEvent(event, resultMode); },
       });
     } catch (err) {
+      if (this._requestId !== requestId) return;
       const detail = typeof err.detail === 'string' ? err.detail : 'Agent 执行失败';
       this._appendChatMessage('assistant', detail);
       if (err.status === 404) {
@@ -122,7 +141,7 @@ Page({
       }
       wx.showToast({ title: detail.slice(0, 20), icon: 'none' });
     } finally {
-      this.setData({ loading: false, agentProgress: '' });
+      if (this._requestId === requestId) this.setData({ loading: false, agentProgress: '' });
     }
   },
 
@@ -133,6 +152,32 @@ Page({
         agentSessionId: payload.session_id || this.data.agentSessionId,
         agentProgress: '正在理解你的需求…',
       });
+      return;
+    }
+    if (event.type === 'search_state') {
+      if (payload.display_mode === 'replace') {
+        completeResultBuffer = [];
+        this._batchNumber = 0;
+        this.setData({ undoId: '', results: [], selectedResultId: '', feedbackBatchId: '', resultTotal: 0, hasMoreResults: false, coverageHint: '' });
+      }
+      return;
+    }
+    if (event.type === 'undo_available') { this.setData({ undoId: payload.undo_id || '' }); return; }
+    if (event.type === 'feedback_undone') {
+      const restored = (payload.items || []).map(item => ({ ...item,
+        batchLabel: `第 ${item.batch_number} 批 · 第 ${item.batch_position} 张`,
+        thumb_url_full: this._resolveThumb(item.thumb_url) }));
+      completeResultBuffer = [...completeResultBuffer, ...restored.filter(p => !completeResultBuffer.some(old => old.id === p.id))]
+        .sort((a, b) => ((a.batch_number || 0) * 1000000 + (a.batch_position || 0)) - ((b.batch_number || 0) * 1000000 + (b.batch_position || 0)));
+      this.setData({ results: completeResultBuffer.slice(0, Math.max(this.data.results.length + restored.length, RESULT_RENDER_BATCH)),
+        resultTotal: completeResultBuffer.length, undoId: '', selectedResultId: payload.selected_photo_id || '' });
+      return;
+    }
+    if (event.type === 'feedback') {
+      const removed = new Set(payload.removed_photo_ids || []);
+      completeResultBuffer = completeResultBuffer.filter(item => !removed.has(item.id));
+      this.setData({ undoId: payload.undo_id || '', resultTotal: completeResultBuffer.length, results: this.data.results.filter(item => !removed.has(item.id)),
+        selectedResultId: removed.has(this.data.selectedResultId) ? '' : this.data.selectedResultId });
       return;
     }
     if (event.type === 'route') {
@@ -151,6 +196,9 @@ Page({
     if (event.type === 'tool_call') {
       const labels = {
         search_photos: '正在搜索照片…',
+        continue_search: '正在继续查找…',
+        feedback_results: '正在更新照片反馈…',
+        browse_album: '正在浏览全部相册…',
         fallback_search: '正在扩大范围查找…',
         browse_candidates: '正在整理候选照片…',
         ask_clarification: '正在确认搜索条件…',
@@ -163,17 +211,26 @@ Page({
       if (payload.tool === 'apply_skill' && result.confirmation_required) {
         this._confirmAgentGeneration(result);
       }
-      if (['search_photos', 'fallback_search', 'browse_candidates'].includes(payload.tool)) {
-        completeResultBuffer = (result.items || []).map((item) => ({
+      if (['search_photos', 'continue_search', 'feedback_results', 'browse_album', 'fallback_search', 'browse_candidates'].includes(payload.tool) && result.ok !== false && Array.isArray(result.items)) {
+        if (result.result_batch_id) this.setData({ feedbackBatchId: result.result_batch_id });
+        if (result.display_mode !== 'append') this._batchNumber = 0;
+        if (result.items.length) this._batchNumber = (this._batchNumber || 0) + 1;
+        const incoming = (result.items || []).map((item, position) => ({
+          batchLabel: `第 ${result.result_batch_number || this._batchNumber} 批 · 第 ${position + 1} 张`,
+          result_batch_id: result.result_batch_id,
+          batch_number: result.result_batch_number || this._batchNumber,
+          batch_position: position + 1,
           ...item,
           thumb_url_full: this._resolveThumb(item.thumb_url),
         }));
-        const visibleCount = Math.min(RESULT_RENDER_BATCH, completeResultBuffer.length);
+        const append = result.display_mode === 'append';
+        completeResultBuffer = append ? [...completeResultBuffer, ...incoming.filter(item => !completeResultBuffer.some(old => old.id === item.id))] : incoming;
+        const visibleCount = append ? completeResultBuffer.length : Math.min(RESULT_RENDER_BATCH, completeResultBuffer.length);
         this.setData({
           results: completeResultBuffer.slice(0, visibleCount),
           parsed: result.parsed || this.data.parsed,
           resultMode: result.result_mode || requestedMode,
-          selectedResultId: '',
+          selectedResultId: append ? this.data.selectedResultId : '',
           resultTotal: Number(
             result.total_matches !== undefined
               ? result.total_matches
@@ -201,6 +258,8 @@ Page({
       return;
     }
     if (event.type === 'done') {
+      if (payload.state && 'feedback_undo' in payload.state) this.setData({ undoId: payload.state.feedback_undo ? payload.state.feedback_undo.undo_id : '' });
+      if (payload.state && 'confirmed_photo_id' in payload.state) this.setData({ selectedResultId: payload.state.confirmed_photo_id || '' });
       this.setData({
         agentSessionId: payload.session_id || this.data.agentSessionId,
         agentStatus: payload.status || '',
@@ -267,19 +326,34 @@ Page({
     });
   },
 
+  onRejectResult(e) {
+    const item = this.data.results[Number(e.currentTarget.dataset.index)];
+    if (item && item.result_batch_id) return this._runUIAction(`不要${item.batchLabel}`, { action: 'reject_photo', photo_id: item.id, batch_id: item.result_batch_id });
+  },
+
+  onContinueResults() { return this._runUIAction('再看一些', { action: 'continue_search' }); },
+  onUndoFeedback() { if (this.data.undoId) return this._runUIAction('撤销刚才的移除', { action: 'undo_feedback', undo_id: this.data.undoId }); },
+
+  async _runUIAction(query, ui_action) {
+    if (this.data.loading || !this.data.agentSessionId) return;
+    this.setData({ loading: true, agentProgress: '正在更新照片…' });
+    this._appendChatMessage('user', query);
+    const requestId = this._requestId = (this._requestId || 0) + 1;
+    try {
+      await agent.stream({ query, session_id: this.data.agentSessionId, ui_action,
+        onEvent: event => { if (this._requestId === requestId) this._handleAgentEvent(event, this.data.resultMode); } });
+    } catch (err) {
+      if (this._requestId === requestId) this._appendChatMessage('assistant', typeof err.detail === 'string' ? err.detail : '操作失败，请重试');
+    } finally {
+      if (this._requestId === requestId) this.setData({ loading: false, agentProgress: '' });
+    }
+  },
+
   onSelectResult(e) {
     if (this.data.loading) return;
     const index = Number(e.currentTarget.dataset.index);
     const item = this.data.results[index];
-    if (!item || !item.id) return;
-    wx.showModal({
-      title: `选择第 ${index + 1} 张？`,
-      content: '确认后 Photo Agent 会把这张照片作为你本人选中的照片。',
-      confirmText: '确认选择',
-      success: (res) => {
-        if (res.confirm) this._confirmResultSelection(item, index);
-      },
-    });
+    if (item && item.id) return this._confirmResultSelection(item, index);
   },
 
   async _confirmResultSelection(item, index) {
@@ -296,20 +370,23 @@ Page({
       agentProgress: '正在确认你的选择…',
     });
     search.click({ photo_id: item.id, query: '', rank: index }).catch(() => {});
+    const requestId = this._requestId = (this._requestId || 0) + 1;
     try {
       await agent.stream({
         query: message,
         session_id: sessionId,
+        feedback_batch_id: this.data.feedbackBatchId || undefined,
         selected_photo_id: item.id,
-        onEvent: (event) => this._handleAgentEvent(event, this.data.resultMode),
+        onEvent: (event) => { if (this._requestId === requestId) this._handleAgentEvent(event, this.data.resultMode); },
       });
     } catch (err) {
+      if (this._requestId !== requestId) return;
       const detail = typeof err.detail === 'string' ? err.detail : '确认选择失败';
       this._appendChatMessage('assistant', detail);
       this.setData({ selectedResultId: '' });
       wx.showToast({ title: detail.slice(0, 20), icon: 'none' });
     } finally {
-      this.setData({ loading: false, agentProgress: '' });
+      if (this._requestId === requestId) this.setData({ loading: false, agentProgress: '' });
     }
   },
 

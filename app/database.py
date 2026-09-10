@@ -1,4 +1,5 @@
 """SQLAlchemy 异步引擎与 Session 工厂."""
+
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -22,9 +23,22 @@ engine = create_async_engine(
     max_overflow=20,
 )
 
+
+class OwnedAsyncSession(AsyncSession):
+    async def commit(self) -> None:
+        guard = self.info.get("commit_guard")
+        if guard is not None:
+            try:
+                await guard(self)
+            except BaseException:
+                await self.rollback()
+                raise
+        await super().commit()
+
+
 AsyncSessionLocal = async_sessionmaker(
     engine,
-    class_=AsyncSession,
+    class_=OwnedAsyncSession,
     expire_on_commit=False,
     autoflush=False,
 )
@@ -35,6 +49,6 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         try:
             yield session
-        except Exception:
+        except BaseException:
             await session.rollback()
             raise

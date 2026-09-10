@@ -8,8 +8,9 @@ Page({
     uploading: false,
   },
 
-  onShow() {
+  async onShow() {
     const app = getApp();
+    await app.authReady;
     if (!app.isLoggedIn()) {
       wx.reLaunch({ url: '/pages/login/index' });
     }

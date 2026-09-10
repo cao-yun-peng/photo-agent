@@ -1,0 +1,131 @@
+{
+  "concept": "beach",
+  "slot": 26,
+  "rank": 1,
+  "search": "intitle:sandy beach sea filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Burnham-on-Sea_%2C_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg/1280px-Burnham-on-Sea_%2C_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg",
+  "commons_page": {
+    "pageid": 109361545,
+    "ns": 6,
+    "title": "File:Burnham-on-Sea , Sandy Beach - geograph.org.uk - 2531098.jpg",
+    "index": 1,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 4882045,
+        "width": 4288,
+        "height": 2848,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Burnham-on-Sea_%2C_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg/1280px-Burnham-on-Sea_%2C_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 850,
+        "responsiveUrls": {
+          "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Burnham-on-Sea_%2C_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg/3840px-Burnham-on-Sea_%2C_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Burnham-on-Sea_%2C_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg/1280px-Burnham-on-Sea_%2C_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 850,
+          "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Burnham-on-Sea_%2C_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg/3840px-Burnham-on-Sea_%2C_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Burnham-on-Sea_%2C_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Burnham-on-Sea_,_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=109361545",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2021-08-27 10:41:34",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Burnham-on-Sea , Sandy Beach - geograph.org.uk - 2531098",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Images from Geograph Britain and Ireland|Burnham-on-Sea beach",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "GPSLatitude": {
+            "value": "51.233714",
+            "source": "commons-desc-page"
+          },
+          "GPSLongitude": {
+            "value": "-2.999796",
+            "source": "commons-desc-page"
+          },
+          "GPSMapDatum": {
+            "value": "WGS-84",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Burnham-on-Sea : Sandy Beach <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Burnham-on-Sea_,_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg#ooui-php-4\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2011-07-29",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/photo/2531098\">Geograph Britain and Ireland</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Burnham-on-Sea_,_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg#P7482\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/11775\">Lewis Clarke</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Burnham-on-Sea_,_Sandy_Beach_-_geograph.org.uk_-_2531098.jpg#P170\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 2.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 2.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Attribution": {
+            "value": "<i>Burnham-on-Sea : Sandy Beach</i> by Lewis Clarke",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/2.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-2.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

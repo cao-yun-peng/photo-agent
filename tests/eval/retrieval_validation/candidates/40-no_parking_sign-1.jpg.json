@@ -1,0 +1,126 @@
+{
+  "concept": "no_parking_sign",
+  "slot": 40,
+  "rank": 1,
+  "search": "intitle:no parking sign filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/No_parking%2C_Ayawaso_East_%28P1090891%29.jpg/1280px-No_parking%2C_Ayawaso_East_%28P1090891%29.jpg",
+  "commons_page": {
+    "pageid": 128992148,
+    "ns": 6,
+    "title": "File:No parking, Ayawaso East (P1090891).jpg",
+    "index": 1,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 8860155,
+        "width": 3456,
+        "height": 4608,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/No_parking%2C_Ayawaso_East_%28P1090891%29.jpg/1280px-No_parking%2C_Ayawaso_East_%28P1090891%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 1707,
+        "responsiveUrls": {
+          "2": "https://upload.wikimedia.org/wikipedia/commons/2/29/No_parking%2C_Ayawaso_East_%28P1090891%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/No_parking%2C_Ayawaso_East_%28P1090891%29.jpg/1280px-No_parking%2C_Ayawaso_East_%28P1090891%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 1707,
+          "srcset": "https://upload.wikimedia.org/wikipedia/commons/2/29/No_parking%2C_Ayawaso_East_%28P1090891%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/29/No_parking%2C_Ayawaso_East_%28P1090891%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:No_parking,_Ayawaso_East_(P1090891).jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=128992148",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2023-02-23 19:42:37",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "No parking, Ayawaso East (P1090891)",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "GFDL|License migration redundant|Parking prohibition signs|Ayawaso East Municipal District|Hilla Limann Highway|Self-published work|CC-BY-SA-2.0+|Uploaded with LrMediaWiki|User MB-one supported by Wikimedia Deutschland/Lightroom|Ghana photographs taken on 2023-02-02|Taken with Panasonic Lumix DMC-G5 and Panasonic Lumix G Vario HD 14-140mm F4.0-5.8 Asph Mega OIS|2023 photographs of Greater Accra Region",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "quality",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "GPSLatitude": {
+            "value": "5.579206",
+            "source": "commons-desc-page"
+          },
+          "GPSLongitude": {
+            "value": "-0.195872",
+            "source": "commons-desc-page"
+          },
+          "GPSMapDatum": {
+            "value": "WGS-84",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "No parking sign on the Hilla Limann Highway, Greater Accra <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:No_parking,_Ayawaso_East_(P1090891).jpg#ooui-php-4\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2023-02-02 12:58:41",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a href=\"//commons.wikimedia.org/wiki/User:MB-one\" title=\"User:MB-one\">Matti Blume</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 4.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 4.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-4.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

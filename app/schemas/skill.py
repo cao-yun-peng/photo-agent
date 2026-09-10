@@ -4,7 +4,8 @@ from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+from app.schemas.creative_plan import PackageOptions, ExecutionSnapshot
 
 
 class SkillCreate(BaseModel):
@@ -30,18 +31,28 @@ class SkillUpdate(BaseModel):
     prompt_template: str | None = None
     reference_keys: list[str] | None = None
     cover_key: str | None = None
-    model: str | None = None
+    model: str | None = Field(
+        default=None, pattern="^(wanx2\\.1-imageedit|gpt-image-2)$"
+    )
     function: str | None = Field(
         default=None, pattern="^(description_edit|stylization_all|stylization_local)$"
     )
     strength: float | None = Field(default=None, ge=0.0, le=1.0)
     is_public: bool | None = None
 
+    @model_validator(mode="after")
+    def validate_model_update(self):
+        if "model" in self.model_fields_set and self.model is None:
+            raise ValueError("model cannot be null")
+        return self
+
 
 class SkillOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
+    kind: str = "template"
+    current_version_id: UUID | None = None
     owner_id: UUID | None
     name: str
     description: str | None
@@ -59,6 +70,7 @@ class SkillOut(BaseModel):
 
 
 class GenerateRequest(BaseModel):
+    package_options: PackageOptions | None = None
     skill_id: UUID | None = None  # 不给就是"纯自由生成"
     extra_prompt: str | None = Field(default=None, max_length=500)
     model: str | None = Field(
@@ -69,12 +81,26 @@ class GenerateRequest(BaseModel):
 
 class GenerationConfirmRequest(BaseModel):
     confirmation_token: UUID
+    execution_digest: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+
+
+class GenerationIterationRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    feedback: str = Field(min_length=1, max_length=500)
+    idempotency_key: str = Field(min_length=8, max_length=128)
 
 
 class GenerationOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
+    progress_stage: str = "awaiting_confirmation"
+    parent_generation_id: UUID | None = None
+    root_generation_id: UUID | None = None
+    iteration_index: int = 0
+    execution_snapshot: ExecutionSnapshot | None = None
+    execution_digest: str | None = None
+    verification: dict | None = None
     source_photo_id: UUID | None
     skill_id: UUID | None
     extra_prompt: str | None
@@ -96,3 +122,8 @@ class QuotaInfo(BaseModel):
     used: int
     quota: int
     remaining: int
+
+
+class ApplySkillArguments(GenerateRequest):
+    model_config = ConfigDict(extra="forbid")
+    photo_id: UUID

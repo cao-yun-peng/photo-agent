@@ -11,8 +11,13 @@ Page({
     apiBase: API_BASE,
   },
 
-  onShow() {
+  async onShow() {
     const app = getApp();
+    await app.authReady;
+    if (this.authEpoch !== app.globalData.authEpoch) {
+      this.authEpoch = app.globalData.authEpoch;
+      this.setData({ items: [], offset: 0, hasMore: true, loading: false });
+    }
     if (!app.isLoggedIn()) {
       wx.reLaunch({ url: '/pages/login/index' });
       return;

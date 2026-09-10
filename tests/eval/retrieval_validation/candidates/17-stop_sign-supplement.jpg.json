@@ -1,0 +1,114 @@
+{
+  "concept": "stop_sign",
+  "slot": 17,
+  "rank": "supplement",
+  "search": "File:Stop sign (1).jpg",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Stop_sign_%281%29.jpg/1280px-Stop_sign_%281%29.jpg",
+  "commons_page": {
+    "pageid": 24930305,
+    "ns": 6,
+    "title": "File:Stop sign (1).jpg",
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 1447196,
+        "width": 3664,
+        "height": 2748,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Stop_sign_%281%29.jpg/1280px-Stop_sign_%281%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 960,
+        "responsiveUrls": {
+          "2": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Stop_sign_%281%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Stop_sign_%281%29.jpg/1280px-Stop_sign_%281%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 960,
+          "srcset": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Stop_sign_%281%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Stop_sign_%281%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Stop_sign_(1).jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=24930305",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2013-03-01 18:47:31",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Stop sign (1)",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "PD-author|Images uploaded by Fæ|Public-domain-image.com|Public-domain-image.com (check needed)|Stop (text) on red octagonal stop signs",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "<br>\n<dl><dd>Image title: Stop sign</dd>\n<dd>Image from Public domain images website, <a rel=\"nofollow\" class=\"external free\" href=\"http://www.public-domain-image.com/full-image/objects-public-domain-images-pictures/signs-public-domain-images-pictures/stop-sign.jpg.html\">http://www.public-domain-image.com/full-image/objects-public-domain-images-pictures/signs-public-domain-images-pictures/stop-sign.jpg.html</a></dd></dl>",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "<p>Not given\n</p>\n<ul><li>Transferred by <a href=\"//commons.wikimedia.org/wiki/User:F%C3%A6\" title=\"User:Fæ\">Fæ</a> on 2013-03-01</li></ul>",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<a rel=\"nofollow\" class=\"external free\" href=\"http://www.public-domain-image.com/public-domain-images-pictures-free-stock-photos/objects-public-domain-images-pictures/signs-public-domain-images-pictures/stop-sign.jpg\">http://www.public-domain-image.com/public-domain-images-pictures-free-stock-photos/objects-public-domain-images-pictures/signs-public-domain-images-pictures/stop-sign.jpg</a>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "John Harvey",
+            "source": "commons-desc-page"
+          },
+          "Permission": {
+            "value": "This file is in public domain, not copyrighted, no rights reserved, free for any use. You can use this picture for any use including commercial purposes without the prior written permission and without fee or obligation.",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseShortName": {
+            "value": "Public domain",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Public domain",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "false",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Copyrighted": {
+            "value": "False",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "pd",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  },
+  "selection_reason": "Original Commons search failed twice; same-concept web search, exclude stop-sign icon results."
+}

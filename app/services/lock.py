@@ -4,10 +4,14 @@
 锁 key 格式：lock:agent:{user_id}
 锁 value：随机 token，释放/续期时校验 token 防止误操作别人的锁。
 """
+
 from __future__ import annotations
 
 import asyncio
 import logging
+import time
+
+from app.services.task_lifecycle import OwnershipLost
 from typing import Any
 from uuid import uuid4
 
@@ -54,6 +58,8 @@ async def get_redis() -> aioredis.Redis:
         _redis_client = aioredis.from_url(
             settings.redis_url,
             decode_responses=True,
+            socket_connect_timeout=3,
+            socket_timeout=3,
         )
     return _redis_client
 
@@ -78,6 +84,8 @@ class AgentLock:
         self.key = f"lock:agent:{user_id}"
         self.redis = redis
         self._token: str | None = None
+        self.lost = asyncio.Event()
+        self._valid_until = 0.0
 
     async def _get_redis(self) -> aioredis.Redis:
         if self.redis is None:
@@ -92,10 +100,20 @@ class AgentLock:
         ttl = ttl or settings.agent_lock_ttl
         redis = await self._get_redis()
         self._token = uuid4().hex
-        result = await redis.set(self.key, self._token, nx=True, ex=ttl)
+        started = time.monotonic()
+        result = await asyncio.wait_for(
+            redis.set(self.key, self._token, nx=True, ex=ttl), timeout=max(1, ttl / 3)
+        )
+        self._valid_until = started + ttl
+        self.lost.clear()
         acquired = result is not None
         if acquired:
-            logger.debug("agent lock acquired | user=%s token=%s ttl=%d", self.user_id, self._token, ttl)
+            logger.debug(
+                "agent lock acquired | user=%s token=%s ttl=%d",
+                self.user_id,
+                self._token,
+                ttl,
+            )
         else:
             self._token = None
             logger.debug("agent lock busy | user=%s", self.user_id)
@@ -133,25 +151,48 @@ class AgentLock:
         result = await redis.eval(_EXTEND_SCRIPT, 1, self.key, self._token, str(ttl))
         return bool(result)
 
-    async def start_auto_renew(self, interval: int | None = None) -> asyncio.Task:
-        """启动自动续期后台任务。
+    async def assert_owned(self) -> None:
+        if (
+            self.lost.is_set()
+            or self._token is None
+            or time.monotonic() >= self._valid_until
+        ):
+            self.lost.set()
+            raise OwnershipLost("agent_lock_lost")
+        try:
+            redis = await self._get_redis()
+            value = await asyncio.wait_for(
+                redis.get(self.key), timeout=max(1, settings.agent_lock_ttl / 3)
+            )
+            if value != self._token or time.monotonic() >= self._valid_until:
+                raise OwnershipLost("agent_lock_lost")
+        except Exception as exc:
+            self.lost.set()
+            raise OwnershipLost("agent_lock_lost") from exc
 
-        续期间隔默认为 TTL 的一半，确保在 TTL 过期前续期。
-        返回 asyncio.Task，调用方应在结束时 cancel。
-        """
-        interval = interval or max(settings.agent_lock_ttl // 2, 5)
+    async def start_auto_renew(self, interval: float | None = None) -> asyncio.Task:
+        interval = (
+            interval if interval is not None else max(settings.agent_lock_ttl / 3, 0.1)
+        )
 
-        async def _renew_loop() -> None:
-            while True:
-                await asyncio.sleep(interval)
-                if not await self.extend():
-                    logger.warning(
-                        "agent lock auto-renewal failed (token lost) | user=%s",
-                        self.user_id,
-                    )
-                    break
+        async def renew_loop() -> None:
+            try:
+                while True:
+                    await asyncio.sleep(interval)
+                    started = time.monotonic()
+                    if started >= self._valid_until or not await asyncio.wait_for(
+                        self.extend(), timeout=max(1, settings.agent_lock_ttl / 3)
+                    ):
+                        self.lost.set()
+                        return
+                    self._valid_until = started + settings.agent_lock_ttl
+            except asyncio.CancelledError:
+                raise
+            except Exception:
+                logger.warning("agent lock renewal failed | user=%s", self.user_id)
+                self.lost.set()
 
-        return asyncio.create_task(_renew_loop())
+        return asyncio.create_task(renew_loop(), name="agent-lock-renew")
 
     async def is_locked(self) -> bool:
         """检查当前是否被锁定。"""

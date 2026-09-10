@@ -1,0 +1,126 @@
+{
+  "concept": "dog_sleep",
+  "slot": 4,
+  "rank": "supplement",
+  "search": "File:Sleeping dog (4100811373).jpg",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Sleeping_dog_%284100811373%29.jpg/1280px-Sleeping_dog_%284100811373%29.jpg",
+  "commons_page": {
+    "pageid": 173957766,
+    "ns": 6,
+    "title": "File:Sleeping dog (4100811373).jpg",
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 2822484,
+        "width": 2370,
+        "height": 1778,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Sleeping_dog_%284100811373%29.jpg/1280px-Sleeping_dog_%284100811373%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 960,
+        "responsiveUrls": {
+          "2": "https://upload.wikimedia.org/wikipedia/commons/4/45/Sleeping_dog_%284100811373%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Sleeping_dog_%284100811373%29.jpg/1280px-Sleeping_dog_%284100811373%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 960,
+          "srcset": "https://upload.wikimedia.org/wikipedia/commons/4/45/Sleeping_dog_%284100811373%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/45/Sleeping_dog_%284100811373%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sleeping_dog_(4100811373).jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=173957766",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2025-08-30 03:41:20",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Sleeping dog (4100811373)",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Markelo|Flickr images reviewed by FlickreviewR 2|Files with coordinates missing SDC location of creation (52° N, 6° E)|Files from larsjuh Flickr stream",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "GPSLatitude": {
+            "value": "52.224744",
+            "source": "commons-desc-page"
+          },
+          "GPSLongitude": {
+            "value": "6.527050",
+            "source": "commons-desc-page"
+          },
+          "GPSMapDatum": {
+            "value": "WGS-84",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Sleeping dog",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2009-11-07 20:22",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/photos/larsjuh/4100811373/\">Sleeping dog</a>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/22528972@N05\">larsjuh</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY 2.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution 2.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by/2.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-2.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  },
+  "selection_reason": "Original Commons search failed twice; same-concept public web search identified a photographic candidate."
+}

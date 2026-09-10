@@ -1,0 +1,105 @@
+{
+  "concept": "apple_fruit",
+  "slot": 11,
+  "rank": 4,
+  "search": "intitle:apples fruit basket filetype:bitmap",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/4/42/Emma_Mulvad_Still_life_with_chrysanthemum_in_a_vase_and_a_basket_with_grapes_and_apples_1897.jpg",
+  "commons_page": {
+    "pageid": 143439881,
+    "ns": 6,
+    "title": "File:Emma Mulvad Still life with chrysanthemum in a vase and a basket with grapes and apples 1897.jpg",
+    "index": 4,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 216609,
+        "width": 735,
+        "height": 1229,
+        "thumburl": "https://upload.wikimedia.org/wikipedia/commons/4/42/Emma_Mulvad_Still_life_with_chrysanthemum_in_a_vase_and_a_basket_with_grapes_and_apples_1897.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "thumbwidth": 1280,
+        "thumbheight": 2140,
+        "thumbattribs": {
+          "src": "https://upload.wikimedia.org/wikipedia/commons/4/42/Emma_Mulvad_Still_life_with_chrysanthemum_in_a_vase_and_a_basket_with_grapes_and_apples_1897.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 2140
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/42/Emma_Mulvad_Still_life_with_chrysanthemum_in_a_vase_and_a_basket_with_grapes_and_apples_1897.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Emma_Mulvad_Still_life_with_chrysanthemum_in_a_vase_and_a_basket_with_grapes_and_apples_1897.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=143439881",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2024-01-02 19:12:17",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Emma Mulvad Still life with chrysanthemum in a vase and a basket with grapes and apples 1897",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Author died more than 70 years ago public domain images|CC-PD-Mark|Still-life paintings of fruit baskets|Still-life paintings with apples|PD-old missing SDC copyright status|Still-life paintings with grapes|19th-century still-life paintings of flowers in vases|Chrysanthemums in still-life paintings|Paintings by Emma Mulvad",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Emma Mulvad, 'Still life with chrysanthemum in a vase and a basket with grapes and apples', 1897\n<p>oil on canvas\n</p>\n95 x 58 cm. (37.4 x 22.8 in.)",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "1897",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<a rel=\"nofollow\" class=\"external free\" href=\"https://www.facebook.com/photo/?fbid=898511282020533&amp;set=gm.7542164965815811&amp;idorvanity=2261343273898033\">https://www.facebook.com/photo/?fbid=898511282020533&amp;set=gm.7542164965815811&amp;idorvanity=2261343273898033</a>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "Emma Mulvad (1838-1903)",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "Public domain",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Public domain",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "false",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Copyrighted": {
+            "value": "False",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "pd",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

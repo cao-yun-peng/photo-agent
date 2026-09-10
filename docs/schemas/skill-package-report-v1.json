@@ -1,0 +1,175 @@
+{
+  "$defs": {
+    "PackageAssetInfo": {
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "media_type": {
+          "title": "Media Type",
+          "type": "string"
+        },
+        "size": {
+          "title": "Size",
+          "type": "integer"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "media_type",
+        "size",
+        "sha256"
+      ],
+      "title": "PackageAssetInfo",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "enum": [
+        1
+      ],
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "importer_version": {
+      "default": "skill-zip-v1",
+      "title": "Importer Version",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "root": {
+      "title": "Root",
+      "type": "string"
+    },
+    "content_sha256": {
+      "title": "Content Sha256",
+      "type": "string"
+    },
+    "source": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source"
+    },
+    "license": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "License"
+    },
+    "assets": {
+      "items": {
+        "$ref": "#/$defs/PackageAssetInfo"
+      },
+      "title": "Assets",
+      "type": "array"
+    },
+    "references": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "References",
+      "type": "object"
+    },
+    "cover_path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cover Path"
+    },
+    "cover_data_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cover Data Url"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    },
+    "errors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Errors",
+      "type": "array"
+    },
+    "supported": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supported",
+      "type": "array"
+    },
+    "execution_status": {
+      "const": "not_available",
+      "default": "not_available",
+      "enum": [
+        "not_available"
+      ],
+      "title": "Execution Status",
+      "type": "string"
+    },
+    "can_import": {
+      "default": true,
+      "title": "Can Import",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "root",
+    "content_sha256",
+    "assets",
+    "references"
+  ],
+  "title": "PackageReport",
+  "type": "object"
+}

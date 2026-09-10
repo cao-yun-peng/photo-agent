@@ -1,0 +1,531 @@
+{
+  "batchcomplete": "",
+  "continue": {
+    "gsroffset": 5,
+    "continue": "gsroffset||"
+  },
+  "query": {
+    "pages": {
+      "133838764": {
+        "pageid": 133838764,
+        "ns": 6,
+        "title": "File:Fire Safety - A person who uses a wheelchair cooking safely in their kitchen.jpg",
+        "index": 1,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 2145876,
+            "width": 2500,
+            "height": 1667,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg/1280px-Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 854,
+            "responsiveUrls": {
+              "2": "https://upload.wikimedia.org/wikipedia/commons/8/83/Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg/1280px-Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 854,
+              "srcset": "https://upload.wikimedia.org/wikipedia/commons/8/83/Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/8/83/Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=133838764",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2023-07-01 22:42:26",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Fire Safety - A person who uses a wheelchair cooking safely in their kitchen",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "United States Consumer Product Safety Commission|People cooking in the 2020s|Home kitchens in the 2020s|PD US CPSC|Males in wheelchairs",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Fire Safety - A person who uses a wheelchair cooking safely in their kitchen.",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "Unknown",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<a rel=\"nofollow\" class=\"external free\" href=\"https://www.cpsc.gov/Newsroom/Multimedia/Americans-with-Disabilities-Home-Safety-Best-Practices\">https://www.cpsc.gov/Newsroom/Multimedia/Americans-with-Disabilities-Home-Safety-Best-Practices</a>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "U.S. Consumer Product Safety Commission",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "Public domain",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Public domain",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "false",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Copyrighted": {
+                "value": "False",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "pd",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "186505347": {
+        "pageid": 186505347,
+        "ns": 6,
+        "title": "File:Hand slices nuts on wooden cutting board in kitchen during afternoon cooking session.jpg",
+        "index": 5,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 17655619,
+            "width": 6048,
+            "height": 4032,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Hand_slices_nuts_on_wooden_cutting_board_in_kitchen_during_afternoon_cooking_session.jpg/1280px-Hand_slices_nuts_on_wooden_cutting_board_in_kitchen_during_afternoon_cooking_session.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 853,
+            "responsiveUrls": {
+              "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Hand_slices_nuts_on_wooden_cutting_board_in_kitchen_during_afternoon_cooking_session.jpg/3840px-Hand_slices_nuts_on_wooden_cutting_board_in_kitchen_during_afternoon_cooking_session.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Hand_slices_nuts_on_wooden_cutting_board_in_kitchen_during_afternoon_cooking_session.jpg/1280px-Hand_slices_nuts_on_wooden_cutting_board_in_kitchen_during_afternoon_cooking_session.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 853,
+              "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Hand_slices_nuts_on_wooden_cutting_board_in_kitchen_during_afternoon_cooking_session.jpg/3840px-Hand_slices_nuts_on_wooden_cutting_board_in_kitchen_during_afternoon_cooking_session.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/2/26/Hand_slices_nuts_on_wooden_cutting_board_in_kitchen_during_afternoon_cooking_session.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Hand_slices_nuts_on_wooden_cutting_board_in_kitchen_during_afternoon_cooking_session.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=186505347",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2026-03-19 20:11:19",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Hand slices nuts on wooden cutting board in kitchen during afternoon cooking session",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Kitchens|Self-published work|Mixed nuts",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "A person uses a knife to chop nuts on a wooden cutting board in a kitchen. The setting is casual with various ingredients nearby.",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2026-03-01 12:46:21",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a href=\"//commons.wikimedia.org/wiki/User:Shixart1985\" title=\"User:Shixart1985\">Shixart1985</a>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY 2.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution 2.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by/2.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-2.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "16522262": {
+        "pageid": 16522262,
+        "ns": 6,
+        "title": "File:No original caption. (Woman cooking in a kitchen.) - NARA - 513406.tif",
+        "index": 4,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 6819282,
+            "width": 3000,
+            "height": 2273,
+            "pagecount": 1,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/No_original_caption._%28Woman_cooking_in_a_kitchen.%29_-_NARA_-_513406.tif/lossy-page1-1280px-No_original_caption._%28Woman_cooking_in_a_kitchen.%29_-_NARA_-_513406.tif.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 970,
+            "responsiveUrls": {
+              "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/No_original_caption._%28Woman_cooking_in_a_kitchen.%29_-_NARA_-_513406.tif/lossy-page1-1920px-No_original_caption._%28Woman_cooking_in_a_kitchen.%29_-_NARA_-_513406.tif.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/No_original_caption._%28Woman_cooking_in_a_kitchen.%29_-_NARA_-_513406.tif/lossy-page1-1280px-No_original_caption._%28Woman_cooking_in_a_kitchen.%29_-_NARA_-_513406.tif.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 970,
+              "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/No_original_caption._%28Woman_cooking_in_a_kitchen.%29_-_NARA_-_513406.tif/lossy-page1-1920px-No_original_caption._%28Woman_cooking_in_a_kitchen.%29_-_NARA_-_513406.tif.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/1/10/No_original_caption._%28Woman_cooking_in_a_kitchen.%29_-_NARA_-_513406.tif?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:No_original_caption._(Woman_cooking_in_a_kitchen.)_-_NARA_-_513406.tif",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=16522262",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2011-09-17 02:43:02",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "<div class=\"fn\">\n<i>No original caption. [Woman cooking in a kitchen.]</i></div>",
+                "source": "commons-desc-page"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "PD US Government|Images from the National Archives and Records Administration|Media contributed by the National Archives and Records Administration|20th-century women of the United States|Kitchen sinks|Artworks without Wikidata item|Hand-powered beaters|Template Unknown (author)|CC-PD-Mark|High-resolution TIFF images from the National Archives and Records Administration|US National Archives series: Extension and Home Demonstration Activities, compiled 1920 - 1954|Sinks in the United States|Home kitchens in the United States|Home cooking|Historical built-in kitchens|Women in home kitchens",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Artist": {
+                "value": "<div class=\"fn value\">\nUnknown author<span style=\"display: none;\">Unknown author</span> or not provided</div>",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "between 1920 and 1954<div style=\"display: none;\">date QS:P571,+1950-00-00T00:00:00Z/7,P1319,+1920-00-00T00:00:00Z/9,P1326,+1954-00-00T00:00:00Z/9</div>",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<a href=\"https://en.wikipedia.org/wiki/U.S._National_Archives_and_Records_Administration\" class=\"extiw\" title=\"en:U.S. National Archives and Records Administration\">U.S. National Archives and Records Administration</a>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "Public domain",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Public domain",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "false",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Copyrighted": {
+                "value": "False",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "pd",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "187328876": {
+        "pageid": 187328876,
+        "ns": 6,
+        "title": "File:Person removes ash tray from wood stove in kitchen while preparing for cooking activities.jpg",
+        "index": 2,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 8735590,
+            "width": 6048,
+            "height": 4024,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Person_removes_ash_tray_from_wood_stove_in_kitchen_while_preparing_for_cooking_activities.jpg/1280px-Person_removes_ash_tray_from_wood_stove_in_kitchen_while_preparing_for_cooking_activities.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 852,
+            "responsiveUrls": {
+              "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Person_removes_ash_tray_from_wood_stove_in_kitchen_while_preparing_for_cooking_activities.jpg/3840px-Person_removes_ash_tray_from_wood_stove_in_kitchen_while_preparing_for_cooking_activities.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Person_removes_ash_tray_from_wood_stove_in_kitchen_while_preparing_for_cooking_activities.jpg/1280px-Person_removes_ash_tray_from_wood_stove_in_kitchen_while_preparing_for_cooking_activities.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 852,
+              "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Person_removes_ash_tray_from_wood_stove_in_kitchen_while_preparing_for_cooking_activities.jpg/3840px-Person_removes_ash_tray_from_wood_stove_in_kitchen_while_preparing_for_cooking_activities.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/a/a7/Person_removes_ash_tray_from_wood_stove_in_kitchen_while_preparing_for_cooking_activities.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Person_removes_ash_tray_from_wood_stove_in_kitchen_while_preparing_for_cooking_activities.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=187328876",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2026-03-28 21:42:10",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Person removes ash tray from wood stove in kitchen while preparing for cooking activities",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Cottages|Self-published work|Stoves",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "A person is removing the ash tray from a wood stove in a kitchen. The setting is cozy and warm with shelves of various items visible. It is daytime and the atmosphere feels busy.",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2026-03-01 13:13:46",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a href=\"//commons.wikimedia.org/wiki/User:Shixart1985\" title=\"User:Shixart1985\">Shixart1985</a>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY 2.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution 2.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by/2.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-2.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "65458244": {
+        "pageid": 65458244,
+        "ns": 6,
+        "title": "File:Woman Cooking in a Kitchen. (3904009814).jpg",
+        "index": 3,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 475901,
+            "width": 3000,
+            "height": 2273,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg/1280px-Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 970,
+            "responsiveUrls": {
+              "2": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg/1280px-Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 970,
+              "srcset": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Woman_Cooking_in_a_Kitchen._%283904009814%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Woman_Cooking_in_a_Kitchen._(3904009814).jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=65458244",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2018-01-12 18:32:41",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Woman Cooking in a Kitchen. (3904009814)",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "PD US Government|20th-century women of the United States|Files from Flickr's 'The Commons'|Historical kitchens in the United States|CC-PD-Mark|Women at work in the United States|Files uploaded by Artix Kreiger|Flickr images reviewed by FlickreviewR 2|White kitchen cabinets|Images from the National Archives and Records Administration flickr stream",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "<p><b>Note:</b> No Original Caption. [Woman Cooking in a Kitchen.]\n</p><p><b>U.S. National Archives’ Local Identifier:</b> NWDNS-33-S-12790\n</p>\n<pre><b>From: </b> Series: Extension and Home Demonstration Activities (Record Group 33) \n</pre>\n<p><b>Created by:</b> Department of Agriculture. Extension Service, (06/17/1981 - 1995 )\n</p><p><b>Coverage Dates:</b> 1920 - 1954\n</p><p><b>Subjects:</b>\nLabor\nWomen\n</p><p><b>Persistent URL:</b><a rel=\"nofollow\" class=\"external text\" href=\"https://catalog.archives.gov/id/513406\">catalog.archives.gov/id/513406</a>\n</p><p><b>Repository: </b> Still Picture Records Section, Special Media Archives Services Division (NWCS-S), National Archives at College Park, 8601 Adelphi Road, College Park, MD, 20740-6001. \n</p><p>For information about ordering reproductions of photographs held by the Still Picture Unit, visit: <a rel=\"nofollow\" class=\"external text\" href=\"https://www.archives.gov/research/order/still-pictures.html\">www.archives.gov/research/order/still-pictures.html</a>\n</p><p>Reproductions may be ordered via an independent vendor. NARA maintains a list of vendors at <a rel=\"nofollow\" class=\"external text\" href=\"https://www.archives.gov/research/order/vendors-photos-maps-dc.html\">www.archives.gov/research/order/vendors-photos-maps-dc.html</a> \n</p><p><br> \n</p><p>Access Restrictions: Unrestricted\n</p>\nUse Restrictions: Unrestricted",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "1920-01-01 00:00",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/photos/usnationalarchives/3904009814/\">Woman Cooking in a Kitchen.</a>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/35740357@N03\">The U.S. National Archives</a>",
+                "source": "commons-desc-page"
+              },
+              "Permission": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.archives.gov/social-media/flickr-faqs.html#9\">The U.S. National Archives @ Flickr Commons</a>",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseShortName": {
+                "value": "Public domain",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Public domain",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "false",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Copyrighted": {
+                "value": "False",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "pd",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

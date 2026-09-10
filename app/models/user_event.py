@@ -1,4 +1,5 @@
 """用户行为事件表 — 个性化系统的数据源."""
+
 from datetime import datetime
 from uuid import UUID
 

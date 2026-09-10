@@ -7,6 +7,7 @@ import { clearSession } from '@/lib/auth/session';
 import styles from './app-shell.module.css';
 
 const navItems = [
+  { href: '/workspace', label: '选片与相册', glyph: '选' },
   { href: '/photos', label: '时间线', glyph: '片' },
   { href: '/upload', label: '上传', glyph: '传' },
   { href: '/search', label: '智能搜索', glyph: '搜' },

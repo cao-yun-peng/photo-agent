@@ -1,4 +1,5 @@
 """User 表：微信 openid 为唯一标识."""
+
 from datetime import datetime
 from uuid import UUID, uuid4
 
@@ -19,6 +20,9 @@ class User(Base):
     )
     wechat_openid: Mapped[str] = mapped_column(
         String(128), unique=True, nullable=False, index=True
+    )
+    agent_run_token: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True), nullable=True
     )
     nickname: Mapped[str | None] = mapped_column(String(64), nullable=True)
     avatar_url: Mapped[str | None] = mapped_column(String(512), nullable=True)

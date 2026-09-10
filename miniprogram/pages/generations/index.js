@@ -4,7 +4,16 @@ const { generations, API_BASE } = require('../../utils/api');
 Page({
   data: { items: [], loading: false },
 
-  onShow() { this.load(); },
+  async onShow() {
+    const app = getApp();
+    await app.authReady;
+    if (this.authEpoch !== app.globalData.authEpoch) {
+      this.authEpoch = app.globalData.authEpoch;
+      this.setData({ items: [], loading: false });
+    }
+    if (!app.isLoggedIn()) { wx.reLaunch({ url: '/pages/login/index' }); return; }
+    this.load();
+  },
 
   async load() {
     this.setData({ loading: true });

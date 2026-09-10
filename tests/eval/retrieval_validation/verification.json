@@ -1,0 +1,1 @@
+{"status": "passed", "dataset_version": "1.0.1-independent-real-commons", "photos": 40, "queries": 80, "relevance_pairs": 3200, "positive_queries": 68, "empty_queries": 12, "multi_positive_queries": 12, "families": 18, "verified_frozen_files": 93, "source_attribution_complete": true, "model_calls": 0}

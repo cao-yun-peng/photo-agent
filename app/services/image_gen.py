@@ -10,6 +10,7 @@
 - **未配置时走 mock**：dev 环境跑通链路不需要真实计费。
 - **wanx-v1 已弃用**：在 generate() 入口自动重定向到 wanx2.1-imageedit。
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -22,6 +23,8 @@ from typing import Any
 import httpx
 
 from app.config import settings
+from app.services.generation_accounting import safe_usage
+from app.services.provider_contract import image_contract, SIZES
 
 logger = logging.getLogger(__name__)
 
@@ -33,20 +36,20 @@ _WANX_CREATE_URL = (
 _WANX_TASK_URL = "https://dashscope.aliyuncs.com/api/v1/tasks/{task_id}"
 _WANX_TIMEOUT = httpx.Timeout(30.0, connect=5.0)
 _WANX_POLL_INTERVAL = 3.0
-_WANX_MAX_POLLS = 40           # 3s * 40 = 120s
+_WANX_MAX_POLLS = 40  # 3s * 40 = 120s
 
-_GPT_IMAGE_URL = "https://api.openai.com/v1/images/edits"
 _GPT_TIMEOUT = httpx.Timeout(120.0, connect=5.0)
 
 
 # ---- 数据结构 --------------------------------------------------------
 @dataclass(slots=True)
 class GenResult:
-    cost_yuan: float      # 估算成本
+    cost_yuan: float  # 估算成本
     model: str
     image_url: str | None = None
     image_bytes: bytes | None = None
     content_type: str = "image/jpeg"
+    usage: dict | None = None
 
 
 class GenerationError(RuntimeError):
@@ -75,6 +78,8 @@ async def generate(
     model: str = "wanx2.1-imageedit",
     function: str = "description_edit",
     strength: float = 0.7,
+    image_inputs: list[bytes] | None = None,
+    size: str = "1024x1024",
 ) -> GenResult:
     """
     对现有照片做 AI 改造。
@@ -92,6 +97,23 @@ async def generate(
     strength         : 修改幅度 0.0~1.0，值越大风格变化越强烈（默认 0.7）
     """
     reference_urls = reference_urls or []
+    if image_inputs is not None:
+        if model != "gpt-image-2" or not 1 <= len(image_inputs) <= 5 or reference_urls:
+            raise GenerationError(
+                "Frozen multi-image inputs require gpt-image-2 and at most five images"
+            )
+        if size not in {"1024x1024", "1536x1024", "1024x1536"}:
+            raise GenerationError("Unsupported output size")
+        if _is_openai_mock():
+            return GenResult(
+                model="mock",
+                cost_yuan=0,
+                image_bytes=image_inputs[0],
+                content_type="image/png",
+            )
+        return await _generate_gpt_image(
+            "", prompt, [], image_inputs=image_inputs, size=size
+        )
     # wanx-v1 已弃用，统一重定向到 wanx2.1-imageedit
     if model == "wanx-v1":
         model = "wanx2.1-imageedit"
@@ -104,9 +126,7 @@ async def generate(
                 "wanx2.1-imageedit does not support extra reference images; ignored=%d",
                 len(reference_urls),
             )
-        return await _generate_wanx(
-            source_image_url, prompt, model, function, strength
-        )
+        return await _generate_wanx(source_image_url, prompt, model, function, strength)
     if model == "gpt-image-2":
         if _is_openai_mock():
             return await _generate_mock(source_image_url, prompt)
@@ -149,8 +169,8 @@ async def _generate_wanx(
     payload: dict[str, Any] = {
         "model": "wanx2.1-imageedit",
         "input": {
-            "prompt": prompt[:800],            # 800 字上限
-            "function": function,               # 功能模式（可配置）
+            "prompt": prompt[:800],  # 800 字上限
+            "function": function,  # 功能模式（可配置）
             "base_image_url": source_image_url,  # 原图
         },
         "parameters": parameters,
@@ -166,7 +186,9 @@ async def _generate_wanx(
 
     logger.info(
         "wanx create | model=%s prompt=%r url=%s",
-        model, prompt[:80], source_image_url,
+        model,
+        prompt[:80],
+        source_image_url,
     )
 
     async with httpx.AsyncClient(timeout=_WANX_TIMEOUT) as client:
@@ -218,6 +240,9 @@ async def _generate_gpt_image(
     source_image_url: str,
     prompt: str,
     reference_urls: list[str],
+    *,
+    image_inputs: list[bytes] | None = None,
+    size: str = "1024x1024",
 ) -> GenResult:
     """
     调 OpenAI images/edits。请求体是 multipart/form-data。
@@ -226,10 +251,21 @@ async def _generate_gpt_image(
     key = getattr(settings, "openai_api_key", "") or ""
     if not key:
         raise GenerationError("OPENAI_API_KEY not configured")
+    if size not in SIZES or len(image_inputs or []) > 5:
+        raise GenerationError("Unsupported image size or input count")
+    contract = image_contract(settings.openai_base_url)
+    if len(reference_urls) > 4 or len(prompt) > 32000:
+        raise GenerationError("Input exceeds supported reference or prompt limit")
 
     async with httpx.AsyncClient(timeout=_GPT_TIMEOUT) as client:
         image_parts = []
-        for index, url in enumerate([source_image_url, *reference_urls[:4]]):
+        for index, content in enumerate(image_inputs or []):
+            image_parts.append(
+                ("image[]", (f"input-{index}.png", content, "image/png"))
+            )
+        for index, url in enumerate(
+            [] if image_inputs else [source_image_url, *reference_urls]
+        ):
             image_resp = await client.get(url)
             if image_resp.status_code != 200:
                 raise GenerationError(
@@ -244,26 +280,30 @@ async def _generate_gpt_image(
                 )
             )
 
-        resp = await client.post(
-            _GPT_IMAGE_URL,
+        from app.services.provider_ledger import recorded_post
+
+        resp = await recorded_post(
+            client,
+            contract["endpoint"],
+            model="gpt-image-2",
             files=image_parts,
             data={
-                "prompt": prompt[:1000],
+                "prompt": prompt,
                 "model": "gpt-image-2",
                 "n": 1,
-                "size": "1024x1024",
+                "size": size,
             },
             headers={"Authorization": f"Bearer {key}"},
         )
     if resp.status_code != 200:
-        raise GenerationError(
-            f"gpt-image HTTP {resp.status_code}: {resp.text[:300]}"
-        )
+        raise GenerationError(f"gpt-image HTTP {resp.status_code}: {resp.text[:300]}")
     data = resp.json()
     try:
         encoded = data["data"][0]["b64_json"]
-    except (KeyError, IndexError) as exc:
-        raise GenerationError(f"gpt-image unexpected: {data}") from exc
+    except (KeyError, IndexError, TypeError) as exc:
+        raise GenerationError("gpt-image response violates b64_json contract") from exc
+    if not isinstance(encoded, str) or len(encoded) > 24 * 1024 * 1024:
+        raise GenerationError("gpt-image response exceeds supported size")
     try:
         image_bytes = base64.b64decode(encoded, validate=True)
     except (binascii.Error, ValueError, TypeError) as exc:
@@ -271,10 +311,11 @@ async def _generate_gpt_image(
     if not image_bytes:
         raise GenerationError("gpt-image returned an empty image")
     return GenResult(
-        cost_yuan=0.30,
+        cost_yuan=settings.package_generation_estimated_cost_yuan,
         model="gpt-image-2",
         image_bytes=image_bytes,
         content_type="image/png",
+        usage=safe_usage(data.get("usage")),
     )
 
 

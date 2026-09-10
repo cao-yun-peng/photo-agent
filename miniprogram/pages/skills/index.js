@@ -9,8 +9,13 @@ Page({
     quota: null,
   },
 
-  onShow() {
+  async onShow() {
     const app = getApp();
+    await app.authReady;
+    if (this.authEpoch !== app.globalData.authEpoch) {
+      this.authEpoch = app.globalData.authEpoch;
+      this.setData({ items: [], quota: null, loading: false });
+    }
     if (!app.isLoggedIn()) {
       wx.reLaunch({ url: '/pages/login/index' });
       return;

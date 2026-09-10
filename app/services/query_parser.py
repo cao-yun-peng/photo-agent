@@ -4,17 +4,25 @@
 mock 模式：用一个小型规则引擎（正则匹配"今天/昨天/上周/上个月"等），
             这样即便没 DashScope Key 也能演示 auto_parse 的效果。
 """
+
 from __future__ import annotations
 
 import json
 import logging
 import re
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, timedelta
 from typing import Any
 
 import httpx
 
 from app.config import settings
+from app.services.search_budget import (
+    model_call,
+    record_provider_usage,
+    BudgetExhausted,
+    RequestTimeout,
+)
+from app.services.search_time import local_today
 from app.schemas.photo import ParsedQuery
 from app.services.circuit_breaker import ServiceDegradedError, agent_llm_breaker
 
@@ -88,12 +96,12 @@ def _is_mock() -> bool:
 # ------------------------------------------------------------------
 # mock 模式：规则版解析
 # ------------------------------------------------------------------
-def _rule_based_parse(text: str) -> ParsedQuery:
+def _rule_based_parse(text: str, *, today: date | None = None) -> ParsedQuery:
     """
     dev 用规则匹配几个常见词。真实产品当然要用大模型。
     这里覆盖：今天 / 昨天 / 前天 / 上周 / 上个月 / 今年 / X 月
     """
-    today = datetime.now(timezone.utc).date()
+    today = today or local_today()
     from_date: date | None = None
     to_date: date | None = None
     remaining = text
@@ -104,10 +112,13 @@ def _rule_based_parse(text: str) -> ParsedQuery:
         ("前天", (today - timedelta(days=2), today - timedelta(days=2))),
         ("最近一周", (today - timedelta(days=7), today)),
         ("这周", (today - timedelta(days=today.weekday()), today)),
-        ("上周", (
-            today - timedelta(days=today.weekday() + 7),
-            today - timedelta(days=today.weekday() + 1),
-        )),
+        (
+            "上周",
+            (
+                today - timedelta(days=today.weekday() + 7),
+                today - timedelta(days=today.weekday() + 1),
+            ),
+        ),
         ("这个月", (today.replace(day=1), today)),
         ("上个月", _last_month_range(today)),
         ("今年", (today.replace(month=1, day=1), today)),
@@ -127,11 +138,24 @@ def _rule_based_parse(text: str) -> ParsedQuery:
         ),
     ]
     for kw, rng in patterns:
-        if kw in text:
+        if kw in text and not is_visible_date(
+            text, text.index(kw), text.index(kw) + len(kw)
+        ):
             from_date, to_date = rng
             remaining = remaining.replace(kw, "")
             break
 
+    explicit = re.search(r"(\d{4})[年-](\d{1,2})[月-](\d{1,2})[日号]?", text)
+    if (
+        explicit
+        and should_apply_parsed_date_filters(text)
+        and not is_visible_date(text, *explicit.span())
+    ):
+        try:
+            from_date = to_date = date(*map(int, explicit.groups()))
+            remaining = remaining.replace(explicit.group(), "")
+        except ValueError:
+            pass
     # 简单挑几个常见地点
     place = None
     for name in ("西湖", "北京", "上海", "杭州", "成都", "海边", "沙滩", "公司", "家"):
@@ -146,6 +170,8 @@ def _rule_based_parse(text: str) -> ParsedQuery:
 
     return ParsedQuery(
         semantic=semantic,
+        date_kind="capture_time_range" if from_date or to_date else None,
+        date_source=text if from_date or to_date else None,
         from_date=from_date,
         to_date=to_date,
         place=place,
@@ -163,12 +189,12 @@ def _last_month_range(today: date) -> tuple[date, date]:
 # ------------------------------------------------------------------
 # 真模式：调 qwen-plus
 # ------------------------------------------------------------------
-async def _llm_parse(text: str) -> ParsedQuery:
+async def _llm_parse(text: str, *, today: date | None = None) -> ParsedQuery:
     """调 qwen-plus 解析查询。异常直接 raise，由 parse_query 统一降级。
 
     让异常传播使熔断器能正确追踪失败次数。
     """
-    today = datetime.now(timezone.utc).date().isoformat()
+    today = (today or local_today()).isoformat()
     payload: dict[str, Any] = {
         "model": "qwen-plus",
         "input": {
@@ -190,10 +216,13 @@ async def _llm_parse(text: str) -> ParsedQuery:
 
     # Keep DashScope traffic independent from stale desktop/system proxies.
     async with httpx.AsyncClient(timeout=15.0, trust_env=False) as client:
-        resp = await client.post(_QWEN_TEXT_URL, json=payload, headers=headers)
+        resp = await model_call(
+            "parse", lambda: client.post(_QWEN_TEXT_URL, json=payload, headers=headers)
+        )
     if resp.status_code != 200:
         raise RuntimeError(f"qwen-plus HTTP {resp.status_code}: {resp.text[:200]}")
 
+    await record_provider_usage(resp.json().get("usage"))
     content = resp.json()["output"]["choices"][0]["message"]["content"]
     if isinstance(content, list):
         content = "".join(c.get("text", "") for c in content if isinstance(c, dict))
@@ -205,6 +234,10 @@ async def _llm_parse(text: str) -> ParsedQuery:
     data = json.loads(content)
     return ParsedQuery(
         semantic=data.get("semantic") or text,
+        date_kind="capture_time_range"
+        if data.get("from_date") or data.get("to_date")
+        else None,
+        date_source=text if data.get("from_date") or data.get("to_date") else None,
         from_date=_maybe_date(data.get("from_date")),
         to_date=_maybe_date(data.get("to_date")),
         place=data.get("place"),
@@ -221,12 +254,29 @@ def _maybe_date(v) -> date | None:
         return None
 
 
+def is_visible_date(text: str, start: int, end: int) -> bool:
+    """Prefer explicit capture wording adjacent to this date, not unrelated dates."""
+    before, after = text[max(0, start - 12) : start], text[end : end + 8]
+    if re.search(r"(?:拍于|拍摄于|拍摄时间[是为]?|当时是)$", before) or re.match(
+        r"(?:那天|当天|的)?(?:拍摄|拍的|照的)", after
+    ):
+        return False
+    return any(cue in text for cue in _VISUAL_DATE_CUES)
+
+
 def should_apply_parsed_date_filters(text: str) -> bool:
-    """仅在查询明确描述照片拍摄时间时接受 LLM 解析出的日期过滤。"""
     normalized = re.sub(r"\s+", "", text)
     if any(cue in normalized for cue in _VISUAL_DATE_CUES):
-        return False
-    return any(cue in normalized for cue in _CAPTURE_TIME_CUES)
+        return bool(
+            re.search(
+                r"(?:今天|昨天|前天|去年|\d+[日号])(?:的)?(?:拍摄|拍的|照的)|(?:拍于|拍摄于)\d",
+                normalized,
+            )
+        )
+    return any(
+        cue in normalized
+        for cue in (*_CAPTURE_TIME_CUES, "今天", "今年", "这周", "这个月", "当时")
+    )
 
 
 def resolve_auto_parsed_query(
@@ -270,26 +320,65 @@ def resolve_auto_parsed_query(
 # ------------------------------------------------------------------
 # 对外接口
 # ------------------------------------------------------------------
-def parse_query_locally(text: str) -> ParsedQuery:
+def parse_query_locally(
+    text: str, *, timezone_name: str | None = None, clock=None
+) -> ParsedQuery:
     """不调用模型地解析常见时间与地点，供 Agent 普通搜索快路径复用。"""
 
-    return _rule_based_parse(text)
+    return _rule_based_parse(text, today=local_today(timezone_name, clock))
 
 
-async def parse_query(text: str) -> ParsedQuery:
+async def _parse_query(
+    text: str, *, timezone_name: str | None = None, clock=None
+) -> ParsedQuery:
     """把自然语言查询拆成结构化条件。mock 模式走规则，真模式走 qwen-plus。
 
     真模式经 agent_llm_breaker 熔断器保护：
     - 熔断器 open 时直接降级到规则解析，不等待超时
     - LLM 调用失败时也降级到规则解析
     """
+    today = local_today(timezone_name, clock)
     if _is_mock():
-        return _rule_based_parse(text)
+        return _rule_based_parse(text, today=today)
     try:
-        return await agent_llm_breaker.call(_llm_parse, text)
+        return await agent_llm_breaker.call(_llm_parse, text, today=today)
+    except (BudgetExhausted, RequestTimeout):
+        raise
     except ServiceDegradedError:
         logger.warning("query_parser llm degraded, fallback to rule-based")
-        return _rule_based_parse(text)
+        return _rule_based_parse(text, today=today)
     except Exception as exc:  # noqa: BLE001
         logger.warning("query_parser llm failed, fallback to rule: %s", exc)
-        return _rule_based_parse(text)
+        return _rule_based_parse(text, today=today)
+
+
+async def parse_query(text: str, *, timezone_name=None, clock=None) -> ParsedQuery:
+    from app.services.search_cache import cache_key, cached_call
+    from app.services.search_time import current_timezone
+
+    from app.services.search_budget import _active
+
+    if _is_mock() or _active.get() is None:
+        return await _parse_query(text, timezone_name=timezone_name, clock=clock)
+    key = cache_key(
+        "parse",
+        [
+            _QWEN_TEXT_URL,
+            "qwen-plus",
+            "parser-v4",
+            text,
+            timezone_name or current_timezone(),
+            str(local_today(timezone_name, clock)),
+        ],
+    )
+
+    async def compute():
+        return (
+            await _parse_query(text, timezone_name=timezone_name, clock=clock)
+        ).model_dump(mode="json")
+
+    def validate(value):
+        return ParsedQuery.model_validate(value).model_dump(mode="json")
+
+    value, _ = await cached_call(key, compute, ttl=600, validate=validate)
+    return ParsedQuery.model_validate(value)

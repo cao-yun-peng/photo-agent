@@ -1,0 +1,42 @@
+op.alter_column('generations', 'cost_yuan',
+               existing_type=sa.NUMERIC(precision=8, scale=4),
+               nullable=False,
+               existing_server_default=sa.text("'0'::numeric"))
+
+op.alter_column('generations', 'estimated_cost_yuan',
+               existing_type=sa.NUMERIC(precision=8, scale=4),
+               nullable=False)
+
+op.alter_column('photos', 'size_bytes',
+               existing_type=sa.BIGINT(),
+               type_=sa.Integer(),
+               existing_nullable=True)
+
+op.alter_column('skills', 'reference_keys',
+               existing_type=postgresql.JSONB(astext_type=sa.Text()),
+               nullable=False,
+               existing_server_default=sa.text("'[]'::jsonb"))
+
+op.create_index(op.f('ix_users_wechat_openid'), 'users', ['wechat_openid'], unique=True)
+
+op.drop_constraint('users_wechat_openid_key', 'users', type_='unique')
+
+op.drop_index('idx_generations_user_created', table_name='generations')
+
+op.drop_index('idx_photos_emb', table_name='photos', postgresql_using='hnsw')
+
+op.drop_index('idx_photos_user_taken', table_name='photos')
+
+op.drop_index('ix_agent_sessions_status', table_name='agent_sessions')
+
+op.drop_index('ix_photos_ai_analysis', table_name='photos', postgresql_using='gin')
+
+op.drop_index('ix_user_events_created_at', table_name='user_events')
+
+op.drop_index('ix_user_events_created_at_brin', table_name='user_events', postgresql_using='brin')
+
+op.drop_index('ix_users_wechat_openid', table_name='users')
+
+op.drop_table('migration_progress')
+
+op.drop_table('user_event_partitions')

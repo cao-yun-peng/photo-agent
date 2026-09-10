@@ -1,0 +1,109 @@
+{
+  "concept": "rose",
+  "slot": 22,
+  "rank": 3,
+  "search": "intitle:red rose flower filetype:bitmap",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/2/24/Rose_flower_red.jpg",
+  "commons_page": {
+    "pageid": 69038254,
+    "ns": 6,
+    "title": "File:Rose flower red.jpg",
+    "index": 3,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 35466,
+        "width": 540,
+        "height": 960,
+        "thumburl": "https://upload.wikimedia.org/wikipedia/commons/2/24/Rose_flower_red.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "thumbwidth": 1280,
+        "thumbheight": 2276,
+        "thumbattribs": {
+          "src": "https://upload.wikimedia.org/wikipedia/commons/2/24/Rose_flower_red.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 2276
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/24/Rose_flower_red.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Rose_flower_red.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=69038254",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2018-05-12 20:31:38",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Rose flower red",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Self-published work|Flowers of Pakistan|Images from Wiki Loves Earth 2018|Unidentified red Rosa cultivars|Uploaded via Campaign:wle-pk|Images from Wiki Loves Earth 2018 in Pakistan|Pakistan photographs taken on 2018-05-12|Images from Wiki Loves Earth missing SDC location of creation|Bunches of red roses",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Red rose flower",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2018-05-12",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Rizzithegreat&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Rizzithegreat (page does not exist)\">Rizzithegreat</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 4.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 4.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/4.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-4.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

@@ -8,9 +8,10 @@ Page({
     loading: false,
   },
 
-  onLoad() {
+  async onLoad() {
     // 已登录直接跳过
     const app = getApp();
+    await app.authReady;
     if (app.isLoggedIn()) {
       wx.switchTab({ url: '/pages/timeline/index' });
     }
@@ -40,7 +41,8 @@ Page({
       });
       // 3. 拉自己的信息
       const app = getApp();
-      app.globalData.token = resp.access_token;
+      app.setLogin({ token: resp.access_token, user: null });
+      app.globalData.authValidated = false;
       const me = await auth.me();
       app.setLogin({ token: resp.access_token, user: me });
 

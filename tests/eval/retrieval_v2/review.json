@@ -1,0 +1,3835 @@
+{
+  "reviewer": "Codex visual inspection; no human double annotation",
+  "reviewed_at": "2026-09-08T15:22:12.047003+00:00",
+  "retrieval_outputs_seen": false,
+  "method": "Read all 217 queries; inspect all 137 photos in nine sheets; compare visible conditions and confusable alternatives; zoom uncertain OCR, pen, vehicle color and silhouette.",
+  "limitations": [
+    "Single AI reviewer; binary full-corpus judgments may still contain mistakes.",
+    "Images are synthetic and most queries have one positive; not representative personal-album accuracy."
+  ],
+  "changes": [
+    {
+      "query_id": "recall-006",
+      "old_query": "找黑白色调、四个人坐在一起的老式全家福",
+      "new_query": "找棕褐色旧照片中四个人坐在一起的老式全家福",
+      "reason": "p-011 为棕褐色旧照片，不宜要求严格黑白。"
+    },
+    {
+      "query_id": "recall-034",
+      "old_query": "找窗台上仙人掌、多肉和其他盆栽摆在一起的照片",
+      "new_query": "找白色架子上仙人掌、多肉和其他盆栽摆在一起的照片",
+      "reason": "p-047 可见白色架子，但无法确认它是窗台。"
+    },
+    {
+      "query_id": "recall-040",
+      "old_query": "找下雨时从公交车侧窗看到近处白色汽车的照片",
+      "new_query": "找下雨时从公交车侧窗看到近处银白色汽车的照片",
+      "reason": "放大 p-060 后可见车身偏银色，避免颜色硬冲突。"
+    },
+    {
+      "query_id": "recall-053",
+      "old_query": "找手拿钢笔在横线笔记本上写英文笔记的近照",
+      "new_query": "找手拿黑色笔在横线笔记本上写英文笔记的近照",
+      "reason": "放大 p-076 后笔尖不是钢笔，改为可确认的黑色笔。"
+    },
+    {
+      "query_id": "recall-055",
+      "old_query": "找深夜便利店里一个人站在柜台前的照片",
+      "new_query": "找便利店里一个人站在柜台前的照片",
+      "reason": "p-078 室内照明无法证明深夜。"
+    },
+    {
+      "query_id": "recall-125",
+      "old_query": "找一个人背对镜头站在亮窗前形成黑色剪影的照片",
+      "new_query": "找一个人站在亮窗前形成黑色剪影的照片",
+      "reason": "放大 p-151 仍不能可靠判断人物正背朝向。"
+    },
+    {
+      "query_id": "recall-128",
+      "old_query": "找误拍成倾斜画面的室内天花板和成排日光灯",
+      "new_query": "找倾斜构图的室内天花板和成排日光灯照片",
+      "reason": "p-154 可确认倾斜，不能从图像确认误拍意图。"
+    },
+    {
+      "query_id": "recall-146",
+      "old_query": "刚醒头发乱糟糟，拿手机照镜子的照片",
+      "new_query": "头发乱糟糟，拿手机照镜子的照片",
+      "reason": "移除无法确认的刚醒时间状态。"
+    },
+    {
+      "query_id": "recall-154",
+      "old_query": "相机不小心对着天花板，还拍歪了的照片",
+      "new_query": "相机对着天花板，还拍歪了的照片",
+      "reason": "移除无法确认的不小心拍摄意图。"
+    }
+  ],
+  "observations": {
+    "p-004": "黑碗拉面、切半鸡蛋、叉烧",
+    "p-006": "粉樱花与公园步道",
+    "p-007": "无人巧克力生日蛋糕、点燃蜡烛",
+    "p-008": "草地徒步路与远处雪山",
+    "p-010": "两只金毛在草地奔跑",
+    "p-011": "棕褐色四人旧全家福",
+    "p-012": "近景乐队舞台、LIVE LOUD",
+    "p-013": "候机厅行李箱、窗外飞机",
+    "p-014": "银杏大道黄叶",
+    "p-015": "窗边整洁木桌、电脑白杯盆栽",
+    "p-019": "石屋花园拱门小路",
+    "p-021": "单只小金毛草地坐姿",
+    "p-026": "三文鱼寿司与海苔卷",
+    "p-027": "白色草莓蛋糕与茶具",
+    "p-028": "咖啡馆可颂",
+    "p-029": "清晰完整芝士汉堡近景",
+    "p-030": "竹蒸笼饺子",
+    "p-031": "绿紫极光山湖",
+    "p-032": "森林瀑布水潭",
+    "p-033": "沙丘日落",
+    "p-034": "紫薰衣草条带花田",
+    "p-035": "彩色郁金香花田风车",
+    "p-036": "绿色山脊长城",
+    "p-037": "东方明珠江面夜景",
+    "p-038": "水乡石拱桥河道白房",
+    "p-039": "棱角蓝玻璃高楼",
+    "p-040": "海边夕阳举相机的人",
+    "p-041": "窗边穿毛衣女生读书",
+    "p-042": "戴头盔骑车的人与绿树道路",
+    "p-043": "室内瑜伽女生与绿植",
+    "p-044": "厨房女生切菜",
+    "p-045": "木柜唱片机与黑胶",
+    "p-046": "桌上老式相机胶卷",
+    "p-047": "白色架子多肉仙人掌盆栽",
+    "p-051": "红橙枫叶阳光",
+    "p-053": "银河山湖倒影",
+    "p-055": "城市水边烟花",
+    "p-056": "双显示器代码工作桌",
+    "p-058": "厨房用金属壶往白杯倒咖啡",
+    "p-060": "公交侧窗雨滴、银白汽车",
+    "p-061": "树荫道路牵金毛的人",
+    "p-064": "女生衣架前选衣服、599牌",
+    "p-066": "电视前盒装面条、可乐",
+    "p-067": "男人用夹子烧烤肉串、身后朋友",
+    "p-068": "沙发毯子腿部爆米花看电视",
+    "p-069": "女生往滚筒洗衣机放衣服",
+    "p-070": "阳台盆栽绿色浇水壶",
+    "p-071": "灰猫睡在电脑键盘",
+    "p-072": "健身房男人举哑铃",
+    "p-073": "黑衣女生公园跑步",
+    "p-074": "台灯下男人写作业",
+    "p-075": "女生向电脑多人视频会议挥手",
+    "p-076": "手持黑笔英文横线笔记",
+    "p-077": "影院银幕人物、前景爆米花",
+    "p-078": "便利店柜台前黑衣顾客",
+    "p-079": "湿街道彩虹伞人物背影",
+    "p-080": "小孩蜡笔画房子太阳",
+    "p-081": "女生被窝台灯看书",
+    "p-082": "朋友餐桌举酒杯自拍",
+    "p-083": "毕业合影抛学士帽",
+    "p-084": "户外婚礼花拱门亲友合影",
+    "p-085": "白板会议室围桌讨论",
+    "p-086": "朋友围寿星点蜡烛生日蛋糕",
+    "p-087": "校服学生老师分排合影",
+    "p-088": "四人登山包、山顶路牌与山景",
+    "p-089": "音乐节巨大观众全景、远处小舞台",
+    "p-090": "红灯笼圆桌团圆饭",
+    "p-091": "新娘与浅色晨袍伴娘准备",
+    "p-092": "球衣队员举奖杯",
+    "p-093": "女生宿舍裹毯子零食聚会",
+    "p-094": "橘猫爪碰倒透明玻璃杯、洒水",
+    "p-095": "米饭青菜肉菜餐前桌面",
+    "p-096": "金毛沙发仰躺睡觉",
+    "p-097": "办公室电脑前雨窗楼房",
+    "p-098": "白鞋伸向蓝绿山湖",
+    "p-099": "凌乱办公桌纸张便签键盘杯子",
+    "p-100": "驾驶位看堵车尾灯与晚霞",
+    "p-101": "汽车侧窗看粉橙晚霞、路边拖影",
+    "p-102": "手拿浅色咖啡杯、窗边木台植物",
+    "p-103": "恐龙三角路牌、DINOSAURS CROSSING",
+    "p-104": "雨刷夹黄单、PARKING VIOLATION",
+    "p-105": "牛仔裤白鞋俯拍",
+    "p-106": "暗厨房人物打开近空冰箱、钟12:17",
+    "p-107": "乱发手机镜面自拍、背后床",
+    "p-108": "家门口堆品牌快递箱",
+    "p-109": "红八角STOP",
+    "p-110": "禁烟标志、NO SMOKING",
+    "p-111": "蓝路牌中山路ZHONGSHAN LU",
+    "p-112": "门上绿灯箱EXIT",
+    "p-113": "星巴克外带纸杯与Starbucks文字",
+    "p-114": "展开中文菜名价格图片菜单",
+    "p-115": "红色Coca-Cola罐近景",
+    "p-116": "黄色M与McDonald's门店",
+    "p-117": "伊利纯牛奶蓝白盒",
+    "p-118": "电脑前CUP NOODLES杯面筷子",
+    "p-119": "红盖农夫山泉瓶",
+    "p-120": "银色HERSHEY'S包装与巧克力块",
+    "p-121": "手机锁屏9:41",
+    "p-122": "笔记本代码hello world",
+    "p-123": "沙发黑遥控器",
+    "p-124": "余华活着书封面",
+    "p-125": "人民日报报纸桌面",
+    "p-126": "中文手写会议纪要待办事项",
+    "p-127": "蓝火车票北京南上海虹桥G1",
+    "p-129": "登机牌BOARDING PASS座位3A",
+    "p-132": "夜间7-ELEVEN与OPEN 24 HOURS",
+    "p-133": "台历八月2026与15",
+    "p-134": "白T恤I红心NY",
+    "p-135": "白杯WORLD'S BEST BOSS",
+    "p-136": "冰箱贴与买牛奶手写便签",
+    "p-137": "衣服吊牌199元",
+    "p-138": "棕门垫WELCOME",
+    "p-139": "黑暗桌面烛光照盘中食物",
+    "p-140": "暗酒吧整排酒瓶背光",
+    "p-141": "暗床头亮手机闹钟水杯",
+    "p-142": "地下车库两侧车辆通道",
+    "p-143": "草地狗明显运动模糊",
+    "p-144": "公交侧窗拍城市车辆拖影",
+    "p-145": "客厅沙发前小孩跑动拖影",
+    "p-146": "床面堆满衣服",
+    "p-147": "地上插头数据线充电器缠绕",
+    "p-148": "超市食品货架长通道",
+    "p-149": "剩菜餐具脏纸巾饭后桌",
+    "p-150": "近全白过曝雪地淡树影",
+    "p-151": "亮窗前人物黑剪影、方向不可确认",
+    "p-152": "闪光白玩具熊及大硬阴影",
+    "p-153": "倾斜蓝路牌西四南大街、不含环",
+    "p-154": "倾斜天花板日光灯",
+    "p-155": "反光玻璃外楼房树晴天",
+    "p-156": "鱼缸污渍反光及多条鱼",
+    "p-157": "前挡雨滴雨刷前方车辆公路",
+    "p-158": "起雾玻璃街灯模糊车影",
+    "p-159": "指纹油膜彩色光晕遮汉堡薯条",
+    "p-160": "WEATHER天气温度列表应用截图",
+    "p-161": "MAPS蓝导航路线应用截图",
+    "p-162": "背朝镜头窗台橘猫盆栽、窗外鸟",
+    "p-163": "侧脸朝镜头侧窗台橘猫"
+  },
+  "query_reviews": [
+    {
+      "query_id": "recall-001",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-004"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-004": "黑碗拉面、切半鸡蛋、叉烧"
+      }
+    },
+    {
+      "query_id": "recall-002",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-006"
+      ],
+      "hard_negative_ids": [
+        "p-051",
+        "p-150"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-006": "粉樱花与公园步道",
+        "p-051": "红橙枫叶阳光",
+        "p-150": "近全白过曝雪地淡树影"
+      }
+    },
+    {
+      "query_id": "recall-003",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-007"
+      ],
+      "hard_negative_ids": [
+        "p-086"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-007": "无人巧克力生日蛋糕、点燃蜡烛",
+        "p-086": "朋友围寿星点蜡烛生日蛋糕"
+      }
+    },
+    {
+      "query_id": "recall-004",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-008"
+      ],
+      "hard_negative_ids": [
+        "p-010",
+        "p-021",
+        "p-088",
+        "p-143"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-008": "草地徒步路与远处雪山",
+        "p-010": "两只金毛在草地奔跑",
+        "p-021": "单只小金毛草地坐姿",
+        "p-088": "四人登山包、山顶路牌与山景",
+        "p-143": "草地狗明显运动模糊"
+      }
+    },
+    {
+      "query_id": "recall-005",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-010"
+      ],
+      "hard_negative_ids": [
+        "p-021",
+        "p-143",
+        "p-008",
+        "p-061"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-008": "草地徒步路与远处雪山",
+        "p-010": "两只金毛在草地奔跑",
+        "p-021": "单只小金毛草地坐姿",
+        "p-061": "树荫道路牵金毛的人",
+        "p-143": "草地狗明显运动模糊"
+      }
+    },
+    {
+      "query_id": "recall-006",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-011"
+      ],
+      "hard_negative_ids": [],
+      "decision": "query_revised_labels_retained",
+      "evidence": {
+        "p-011": "棕褐色四人旧全家福"
+      }
+    },
+    {
+      "query_id": "recall-007",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-012"
+      ],
+      "hard_negative_ids": [
+        "p-089"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-012": "近景乐队舞台、LIVE LOUD",
+        "p-089": "音乐节巨大观众全景、远处小舞台"
+      }
+    },
+    {
+      "query_id": "recall-008",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-013"
+      ],
+      "hard_negative_ids": [
+        "p-041",
+        "p-097",
+        "p-151",
+        "p-155"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-013": "候机厅行李箱、窗外飞机",
+        "p-041": "窗边穿毛衣女生读书",
+        "p-097": "办公室电脑前雨窗楼房",
+        "p-151": "亮窗前人物黑剪影、方向不可确认",
+        "p-155": "反光玻璃外楼房树晴天"
+      }
+    },
+    {
+      "query_id": "recall-009",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-014"
+      ],
+      "hard_negative_ids": [
+        "p-042",
+        "p-061",
+        "p-073"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-014": "银杏大道黄叶",
+        "p-042": "戴头盔骑车的人与绿树道路",
+        "p-061": "树荫道路牵金毛的人",
+        "p-073": "黑衣女生公园跑步"
+      }
+    },
+    {
+      "query_id": "recall-010",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-015"
+      ],
+      "hard_negative_ids": [
+        "p-074",
+        "p-058",
+        "p-071",
+        "p-075"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-015": "窗边整洁木桌、电脑白杯盆栽",
+        "p-058": "厨房用金属壶往白杯倒咖啡",
+        "p-071": "灰猫睡在电脑键盘",
+        "p-074": "台灯下男人写作业",
+        "p-075": "女生向电脑多人视频会议挥手"
+      }
+    },
+    {
+      "query_id": "recall-011",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-019"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-019": "石屋花园拱门小路"
+      }
+    },
+    {
+      "query_id": "recall-012",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-021"
+      ],
+      "hard_negative_ids": [
+        "p-010",
+        "p-143",
+        "p-008",
+        "p-061"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-008": "草地徒步路与远处雪山",
+        "p-010": "两只金毛在草地奔跑",
+        "p-021": "单只小金毛草地坐姿",
+        "p-061": "树荫道路牵金毛的人",
+        "p-143": "草地狗明显运动模糊"
+      }
+    },
+    {
+      "query_id": "recall-013",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-026"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-026": "三文鱼寿司与海苔卷"
+      }
+    },
+    {
+      "query_id": "recall-014",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-027"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-027": "白色草莓蛋糕与茶具"
+      }
+    },
+    {
+      "query_id": "recall-015",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-028"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-028": "咖啡馆可颂"
+      }
+    },
+    {
+      "query_id": "recall-016",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-029"
+      ],
+      "hard_negative_ids": [
+        "p-159"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-029": "清晰完整芝士汉堡近景",
+        "p-159": "指纹油膜彩色光晕遮汉堡薯条"
+      }
+    },
+    {
+      "query_id": "recall-017",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-030"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-030": "竹蒸笼饺子"
+      }
+    },
+    {
+      "query_id": "recall-018",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-031"
+      ],
+      "hard_negative_ids": [
+        "p-053",
+        "p-098",
+        "p-036"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-031": "绿紫极光山湖",
+        "p-036": "绿色山脊长城",
+        "p-053": "银河山湖倒影",
+        "p-098": "白鞋伸向蓝绿山湖"
+      }
+    },
+    {
+      "query_id": "recall-019",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-032"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-032": "森林瀑布水潭"
+      }
+    },
+    {
+      "query_id": "recall-020",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-033"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-033": "沙丘日落"
+      }
+    },
+    {
+      "query_id": "recall-021",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-034"
+      ],
+      "hard_negative_ids": [
+        "p-035"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-034": "紫薰衣草条带花田",
+        "p-035": "彩色郁金香花田风车"
+      }
+    },
+    {
+      "query_id": "recall-022",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-035"
+      ],
+      "hard_negative_ids": [
+        "p-034"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-034": "紫薰衣草条带花田",
+        "p-035": "彩色郁金香花田风车"
+      }
+    },
+    {
+      "query_id": "recall-023",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-036"
+      ],
+      "hard_negative_ids": [
+        "p-031",
+        "p-053",
+        "p-098"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-031": "绿紫极光山湖",
+        "p-036": "绿色山脊长城",
+        "p-053": "银河山湖倒影",
+        "p-098": "白鞋伸向蓝绿山湖"
+      }
+    },
+    {
+      "query_id": "recall-024",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-037"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-037": "东方明珠江面夜景"
+      }
+    },
+    {
+      "query_id": "recall-025",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-038"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-038": "水乡石拱桥河道白房"
+      }
+    },
+    {
+      "query_id": "recall-026",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-039"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-039": "棱角蓝玻璃高楼"
+      }
+    },
+    {
+      "query_id": "recall-027",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-040"
+      ],
+      "hard_negative_ids": [
+        "p-046"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-040": "海边夕阳举相机的人",
+        "p-046": "桌上老式相机胶卷"
+      }
+    },
+    {
+      "query_id": "recall-028",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-041"
+      ],
+      "hard_negative_ids": [
+        "p-013",
+        "p-074",
+        "p-081",
+        "p-097"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-013": "候机厅行李箱、窗外飞机",
+        "p-041": "窗边穿毛衣女生读书",
+        "p-074": "台灯下男人写作业",
+        "p-081": "女生被窝台灯看书",
+        "p-097": "办公室电脑前雨窗楼房"
+      }
+    },
+    {
+      "query_id": "recall-029",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-042"
+      ],
+      "hard_negative_ids": [
+        "p-014",
+        "p-061",
+        "p-073"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-014": "银杏大道黄叶",
+        "p-042": "戴头盔骑车的人与绿树道路",
+        "p-061": "树荫道路牵金毛的人",
+        "p-073": "黑衣女生公园跑步"
+      }
+    },
+    {
+      "query_id": "recall-030",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-043"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-043": "室内瑜伽女生与绿植"
+      }
+    },
+    {
+      "query_id": "recall-031",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-044"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-044": "厨房女生切菜"
+      }
+    },
+    {
+      "query_id": "recall-032",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-045"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-045": "木柜唱片机与黑胶"
+      }
+    },
+    {
+      "query_id": "recall-033",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-046"
+      ],
+      "hard_negative_ids": [
+        "p-040"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-040": "海边夕阳举相机的人",
+        "p-046": "桌上老式相机胶卷"
+      }
+    },
+    {
+      "query_id": "recall-034",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-047"
+      ],
+      "hard_negative_ids": [
+        "p-070"
+      ],
+      "decision": "query_revised_labels_retained",
+      "evidence": {
+        "p-047": "白色架子多肉仙人掌盆栽",
+        "p-070": "阳台盆栽绿色浇水壶"
+      }
+    },
+    {
+      "query_id": "recall-035",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-051"
+      ],
+      "hard_negative_ids": [
+        "p-006",
+        "p-150"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-006": "粉樱花与公园步道",
+        "p-051": "红橙枫叶阳光",
+        "p-150": "近全白过曝雪地淡树影"
+      }
+    },
+    {
+      "query_id": "recall-036",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-053"
+      ],
+      "hard_negative_ids": [
+        "p-031",
+        "p-098",
+        "p-036"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-031": "绿紫极光山湖",
+        "p-036": "绿色山脊长城",
+        "p-053": "银河山湖倒影",
+        "p-098": "白鞋伸向蓝绿山湖"
+      }
+    },
+    {
+      "query_id": "recall-037",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-055"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-055": "城市水边烟花"
+      }
+    },
+    {
+      "query_id": "recall-038",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-056"
+      ],
+      "hard_negative_ids": [
+        "p-099"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-056": "双显示器代码工作桌",
+        "p-099": "凌乱办公桌纸张便签键盘杯子"
+      }
+    },
+    {
+      "query_id": "recall-039",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-058"
+      ],
+      "hard_negative_ids": [
+        "p-015",
+        "p-099"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-015": "窗边整洁木桌、电脑白杯盆栽",
+        "p-058": "厨房用金属壶往白杯倒咖啡",
+        "p-099": "凌乱办公桌纸张便签键盘杯子"
+      }
+    },
+    {
+      "query_id": "recall-040",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-060"
+      ],
+      "hard_negative_ids": [
+        "p-144",
+        "p-097",
+        "p-101",
+        "p-104"
+      ],
+      "decision": "query_revised_labels_retained",
+      "evidence": {
+        "p-060": "公交侧窗雨滴、银白汽车",
+        "p-097": "办公室电脑前雨窗楼房",
+        "p-101": "汽车侧窗看粉橙晚霞、路边拖影",
+        "p-104": "雨刷夹黄单、PARKING VIOLATION",
+        "p-144": "公交侧窗拍城市车辆拖影"
+      }
+    },
+    {
+      "query_id": "recall-041",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-061"
+      ],
+      "hard_negative_ids": [
+        "p-010",
+        "p-014",
+        "p-021",
+        "p-042"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-010": "两只金毛在草地奔跑",
+        "p-014": "银杏大道黄叶",
+        "p-021": "单只小金毛草地坐姿",
+        "p-042": "戴头盔骑车的人与绿树道路",
+        "p-061": "树荫道路牵金毛的人"
+      }
+    },
+    {
+      "query_id": "recall-042",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-064"
+      ],
+      "hard_negative_ids": [
+        "p-078",
+        "p-137",
+        "p-146"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-064": "女生衣架前选衣服、599牌",
+        "p-078": "便利店柜台前黑衣顾客",
+        "p-137": "衣服吊牌199元",
+        "p-146": "床面堆满衣服"
+      }
+    },
+    {
+      "query_id": "recall-043",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-066"
+      ],
+      "hard_negative_ids": [
+        "p-068",
+        "p-145"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-066": "电视前盒装面条、可乐",
+        "p-068": "沙发毯子腿部爆米花看电视",
+        "p-145": "客厅沙发前小孩跑动拖影"
+      }
+    },
+    {
+      "query_id": "recall-044",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-067"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-067": "男人用夹子烧烤肉串、身后朋友"
+      }
+    },
+    {
+      "query_id": "recall-045",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-068"
+      ],
+      "hard_negative_ids": [
+        "p-145",
+        "p-066",
+        "p-077",
+        "p-093"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-066": "电视前盒装面条、可乐",
+        "p-068": "沙发毯子腿部爆米花看电视",
+        "p-077": "影院银幕人物、前景爆米花",
+        "p-093": "女生宿舍裹毯子零食聚会",
+        "p-145": "客厅沙发前小孩跑动拖影"
+      }
+    },
+    {
+      "query_id": "recall-046",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-069"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-069": "女生往滚筒洗衣机放衣服"
+      }
+    },
+    {
+      "query_id": "recall-047",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-070"
+      ],
+      "hard_negative_ids": [
+        "p-047"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-047": "白色架子多肉仙人掌盆栽",
+        "p-070": "阳台盆栽绿色浇水壶"
+      }
+    },
+    {
+      "query_id": "recall-048",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-071"
+      ],
+      "hard_negative_ids": [
+        "p-015",
+        "p-074",
+        "p-075",
+        "p-094"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-015": "窗边整洁木桌、电脑白杯盆栽",
+        "p-071": "灰猫睡在电脑键盘",
+        "p-074": "台灯下男人写作业",
+        "p-075": "女生向电脑多人视频会议挥手",
+        "p-094": "橘猫爪碰倒透明玻璃杯、洒水"
+      }
+    },
+    {
+      "query_id": "recall-049",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-072"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-072": "健身房男人举哑铃"
+      }
+    },
+    {
+      "query_id": "recall-050",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-073"
+      ],
+      "hard_negative_ids": [
+        "p-014",
+        "p-042",
+        "p-061",
+        "p-105"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-014": "银杏大道黄叶",
+        "p-042": "戴头盔骑车的人与绿树道路",
+        "p-061": "树荫道路牵金毛的人",
+        "p-073": "黑衣女生公园跑步",
+        "p-105": "牛仔裤白鞋俯拍"
+      }
+    },
+    {
+      "query_id": "recall-051",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-074"
+      ],
+      "hard_negative_ids": [
+        "p-015",
+        "p-041",
+        "p-071",
+        "p-075"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-015": "窗边整洁木桌、电脑白杯盆栽",
+        "p-041": "窗边穿毛衣女生读书",
+        "p-071": "灰猫睡在电脑键盘",
+        "p-074": "台灯下男人写作业",
+        "p-075": "女生向电脑多人视频会议挥手"
+      }
+    },
+    {
+      "query_id": "recall-052",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-075"
+      ],
+      "hard_negative_ids": [
+        "p-015",
+        "p-071",
+        "p-074",
+        "p-076"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-015": "窗边整洁木桌、电脑白杯盆栽",
+        "p-071": "灰猫睡在电脑键盘",
+        "p-074": "台灯下男人写作业",
+        "p-075": "女生向电脑多人视频会议挥手",
+        "p-076": "手持黑笔英文横线笔记"
+      }
+    },
+    {
+      "query_id": "recall-053",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-076"
+      ],
+      "hard_negative_ids": [
+        "p-075",
+        "p-102",
+        "p-126"
+      ],
+      "decision": "query_revised_labels_retained",
+      "evidence": {
+        "p-075": "女生向电脑多人视频会议挥手",
+        "p-076": "手持黑笔英文横线笔记",
+        "p-102": "手拿浅色咖啡杯、窗边木台植物",
+        "p-126": "中文手写会议纪要待办事项"
+      }
+    },
+    {
+      "query_id": "recall-054",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-077"
+      ],
+      "hard_negative_ids": [
+        "p-068"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-068": "沙发毯子腿部爆米花看电视",
+        "p-077": "影院银幕人物、前景爆米花"
+      }
+    },
+    {
+      "query_id": "recall-055",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-078"
+      ],
+      "hard_negative_ids": [
+        "p-064",
+        "p-132",
+        "p-134"
+      ],
+      "decision": "query_revised_labels_retained",
+      "evidence": {
+        "p-064": "女生衣架前选衣服、599牌",
+        "p-078": "便利店柜台前黑衣顾客",
+        "p-132": "夜间7-ELEVEN与OPEN 24 HOURS",
+        "p-134": "白T恤I红心NY"
+      }
+    },
+    {
+      "query_id": "recall-056",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-079"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-079": "湿街道彩虹伞人物背影"
+      }
+    },
+    {
+      "query_id": "recall-057",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-080"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-080": "小孩蜡笔画房子太阳"
+      }
+    },
+    {
+      "query_id": "recall-058",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-081"
+      ],
+      "hard_negative_ids": [
+        "p-041",
+        "p-074",
+        "p-093",
+        "p-107"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-041": "窗边穿毛衣女生读书",
+        "p-074": "台灯下男人写作业",
+        "p-081": "女生被窝台灯看书",
+        "p-093": "女生宿舍裹毯子零食聚会",
+        "p-107": "乱发手机镜面自拍、背后床"
+      }
+    },
+    {
+      "query_id": "recall-059",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-082"
+      ],
+      "hard_negative_ids": [
+        "p-095",
+        "p-149"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-082": "朋友餐桌举酒杯自拍",
+        "p-095": "米饭青菜肉菜餐前桌面",
+        "p-149": "剩菜餐具脏纸巾饭后桌"
+      }
+    },
+    {
+      "query_id": "recall-060",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-083"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-083": "毕业合影抛学士帽"
+      }
+    },
+    {
+      "query_id": "recall-061",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-084"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-084": "户外婚礼花拱门亲友合影"
+      }
+    },
+    {
+      "query_id": "recall-062",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-085"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-085": "白板会议室围桌讨论"
+      }
+    },
+    {
+      "query_id": "recall-063",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-086"
+      ],
+      "hard_negative_ids": [
+        "p-007"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-007": "无人巧克力生日蛋糕、点燃蜡烛",
+        "p-086": "朋友围寿星点蜡烛生日蛋糕"
+      }
+    },
+    {
+      "query_id": "recall-064",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-087"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-087": "校服学生老师分排合影"
+      }
+    },
+    {
+      "query_id": "recall-065",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-088"
+      ],
+      "hard_negative_ids": [
+        "p-008",
+        "p-100",
+        "p-103",
+        "p-111"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-008": "草地徒步路与远处雪山",
+        "p-088": "四人登山包、山顶路牌与山景",
+        "p-100": "驾驶位看堵车尾灯与晚霞",
+        "p-103": "恐龙三角路牌、DINOSAURS CROSSING",
+        "p-111": "蓝路牌中山路ZHONGSHAN LU"
+      }
+    },
+    {
+      "query_id": "recall-066",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-089"
+      ],
+      "hard_negative_ids": [
+        "p-012"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-012": "近景乐队舞台、LIVE LOUD",
+        "p-089": "音乐节巨大观众全景、远处小舞台"
+      }
+    },
+    {
+      "query_id": "recall-067",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-090"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-090": "红灯笼圆桌团圆饭"
+      }
+    },
+    {
+      "query_id": "recall-068",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-091"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-091": "新娘与浅色晨袍伴娘准备"
+      }
+    },
+    {
+      "query_id": "recall-069",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-092"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-092": "球衣队员举奖杯"
+      }
+    },
+    {
+      "query_id": "recall-070",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-093"
+      ],
+      "hard_negative_ids": [
+        "p-068",
+        "p-081",
+        "p-146",
+        "p-148"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-068": "沙发毯子腿部爆米花看电视",
+        "p-081": "女生被窝台灯看书",
+        "p-093": "女生宿舍裹毯子零食聚会",
+        "p-146": "床面堆满衣服",
+        "p-148": "超市食品货架长通道"
+      }
+    },
+    {
+      "query_id": "recall-071",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-094"
+      ],
+      "hard_negative_ids": [
+        "p-071",
+        "p-162",
+        "p-163"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-071": "灰猫睡在电脑键盘",
+        "p-094": "橘猫爪碰倒透明玻璃杯、洒水",
+        "p-162": "背朝镜头窗台橘猫盆栽、窗外鸟",
+        "p-163": "侧脸朝镜头侧窗台橘猫"
+      }
+    },
+    {
+      "query_id": "recall-072",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-095"
+      ],
+      "hard_negative_ids": [
+        "p-082",
+        "p-149"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-082": "朋友餐桌举酒杯自拍",
+        "p-095": "米饭青菜肉菜餐前桌面",
+        "p-149": "剩菜餐具脏纸巾饭后桌"
+      }
+    },
+    {
+      "query_id": "recall-073",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-096"
+      ],
+      "hard_negative_ids": [
+        "p-010",
+        "p-021",
+        "p-061",
+        "p-068"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-010": "两只金毛在草地奔跑",
+        "p-021": "单只小金毛草地坐姿",
+        "p-061": "树荫道路牵金毛的人",
+        "p-068": "沙发毯子腿部爆米花看电视",
+        "p-096": "金毛沙发仰躺睡觉"
+      }
+    },
+    {
+      "query_id": "recall-074",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-097"
+      ],
+      "hard_negative_ids": [
+        "p-155",
+        "p-013",
+        "p-041",
+        "p-060"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-013": "候机厅行李箱、窗外飞机",
+        "p-041": "窗边穿毛衣女生读书",
+        "p-060": "公交侧窗雨滴、银白汽车",
+        "p-097": "办公室电脑前雨窗楼房",
+        "p-155": "反光玻璃外楼房树晴天"
+      }
+    },
+    {
+      "query_id": "recall-075",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-098"
+      ],
+      "hard_negative_ids": [
+        "p-031",
+        "p-053",
+        "p-036"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-031": "绿紫极光山湖",
+        "p-036": "绿色山脊长城",
+        "p-053": "银河山湖倒影",
+        "p-098": "白鞋伸向蓝绿山湖"
+      }
+    },
+    {
+      "query_id": "recall-076",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-099"
+      ],
+      "hard_negative_ids": [
+        "p-015",
+        "p-056",
+        "p-058"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-015": "窗边整洁木桌、电脑白杯盆栽",
+        "p-056": "双显示器代码工作桌",
+        "p-058": "厨房用金属壶往白杯倒咖啡",
+        "p-099": "凌乱办公桌纸张便签键盘杯子"
+      }
+    },
+    {
+      "query_id": "recall-077",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-100"
+      ],
+      "hard_negative_ids": [
+        "p-088",
+        "p-103",
+        "p-111",
+        "p-153"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-088": "四人登山包、山顶路牌与山景",
+        "p-100": "驾驶位看堵车尾灯与晚霞",
+        "p-103": "恐龙三角路牌、DINOSAURS CROSSING",
+        "p-111": "蓝路牌中山路ZHONGSHAN LU",
+        "p-153": "倾斜蓝路牌西四南大街、不含环"
+      }
+    },
+    {
+      "query_id": "recall-078",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-101"
+      ],
+      "hard_negative_ids": [
+        "p-060",
+        "p-144",
+        "p-158"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-060": "公交侧窗雨滴、银白汽车",
+        "p-101": "汽车侧窗看粉橙晚霞、路边拖影",
+        "p-144": "公交侧窗拍城市车辆拖影",
+        "p-158": "起雾玻璃街灯模糊车影"
+      }
+    },
+    {
+      "query_id": "recall-079",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-102"
+      ],
+      "hard_negative_ids": [
+        "p-076",
+        "p-113"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-076": "手持黑笔英文横线笔记",
+        "p-102": "手拿浅色咖啡杯、窗边木台植物",
+        "p-113": "星巴克外带纸杯与Starbucks文字"
+      }
+    },
+    {
+      "query_id": "recall-080",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-103"
+      ],
+      "hard_negative_ids": [
+        "p-088",
+        "p-100",
+        "p-111",
+        "p-153"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-088": "四人登山包、山顶路牌与山景",
+        "p-100": "驾驶位看堵车尾灯与晚霞",
+        "p-103": "恐龙三角路牌、DINOSAURS CROSSING",
+        "p-111": "蓝路牌中山路ZHONGSHAN LU",
+        "p-153": "倾斜蓝路牌西四南大街、不含环"
+      }
+    },
+    {
+      "query_id": "recall-081",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-104"
+      ],
+      "hard_negative_ids": [
+        "p-157",
+        "p-060",
+        "p-142",
+        "p-144"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-060": "公交侧窗雨滴、银白汽车",
+        "p-104": "雨刷夹黄单、PARKING VIOLATION",
+        "p-142": "地下车库两侧车辆通道",
+        "p-144": "公交侧窗拍城市车辆拖影",
+        "p-157": "前挡雨滴雨刷前方车辆公路"
+      }
+    },
+    {
+      "query_id": "recall-082",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-105"
+      ],
+      "hard_negative_ids": [
+        "p-073"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-073": "黑衣女生公园跑步",
+        "p-105": "牛仔裤白鞋俯拍"
+      }
+    },
+    {
+      "query_id": "recall-083",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-106"
+      ],
+      "hard_negative_ids": [
+        "p-107",
+        "p-121",
+        "p-136",
+        "p-141"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-106": "暗厨房人物打开近空冰箱、钟12:17",
+        "p-107": "乱发手机镜面自拍、背后床",
+        "p-121": "手机锁屏9:41",
+        "p-136": "冰箱贴与买牛奶手写便签",
+        "p-141": "暗床头亮手机闹钟水杯"
+      }
+    },
+    {
+      "query_id": "recall-084",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-107"
+      ],
+      "hard_negative_ids": [
+        "p-081",
+        "p-106",
+        "p-121",
+        "p-141"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-081": "女生被窝台灯看书",
+        "p-106": "暗厨房人物打开近空冰箱、钟12:17",
+        "p-107": "乱发手机镜面自拍、背后床",
+        "p-121": "手机锁屏9:41",
+        "p-141": "暗床头亮手机闹钟水杯"
+      }
+    },
+    {
+      "query_id": "recall-085",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-108"
+      ],
+      "hard_negative_ids": [
+        "p-112",
+        "p-138"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-108": "家门口堆品牌快递箱",
+        "p-112": "门上绿灯箱EXIT",
+        "p-138": "棕门垫WELCOME"
+      }
+    },
+    {
+      "query_id": "recall-086",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-109"
+      ],
+      "hard_negative_ids": [
+        "p-110"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-109": "红八角STOP",
+        "p-110": "禁烟标志、NO SMOKING"
+      }
+    },
+    {
+      "query_id": "recall-087",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-110"
+      ],
+      "hard_negative_ids": [
+        "p-109"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-109": "红八角STOP",
+        "p-110": "禁烟标志、NO SMOKING"
+      }
+    },
+    {
+      "query_id": "recall-088",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-111"
+      ],
+      "hard_negative_ids": [
+        "p-088",
+        "p-100",
+        "p-103",
+        "p-153"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-088": "四人登山包、山顶路牌与山景",
+        "p-100": "驾驶位看堵车尾灯与晚霞",
+        "p-103": "恐龙三角路牌、DINOSAURS CROSSING",
+        "p-111": "蓝路牌中山路ZHONGSHAN LU",
+        "p-153": "倾斜蓝路牌西四南大街、不含环"
+      }
+    },
+    {
+      "query_id": "recall-089",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-112"
+      ],
+      "hard_negative_ids": [
+        "p-108",
+        "p-138"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-108": "家门口堆品牌快递箱",
+        "p-112": "门上绿灯箱EXIT",
+        "p-138": "棕门垫WELCOME"
+      }
+    },
+    {
+      "query_id": "recall-090",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-113"
+      ],
+      "hard_negative_ids": [
+        "p-102"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-102": "手拿浅色咖啡杯、窗边木台植物",
+        "p-113": "星巴克外带纸杯与Starbucks文字"
+      }
+    },
+    {
+      "query_id": "recall-091",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-114"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-114": "展开中文菜名价格图片菜单"
+      }
+    },
+    {
+      "query_id": "recall-092",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-115"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-115": "红色Coca-Cola罐近景"
+      }
+    },
+    {
+      "query_id": "recall-093",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-116"
+      ],
+      "hard_negative_ids": [
+        "p-132"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-116": "黄色M与McDonald's门店",
+        "p-132": "夜间7-ELEVEN与OPEN 24 HOURS"
+      }
+    },
+    {
+      "query_id": "recall-094",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-117"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-117": "伊利纯牛奶蓝白盒"
+      }
+    },
+    {
+      "query_id": "recall-095",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-118"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-118": "电脑前CUP NOODLES杯面筷子"
+      }
+    },
+    {
+      "query_id": "recall-096",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-119"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-119": "红盖农夫山泉瓶"
+      }
+    },
+    {
+      "query_id": "recall-097",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-120"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-120": "银色HERSHEY'S包装与巧克力块"
+      }
+    },
+    {
+      "query_id": "recall-098",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-121"
+      ],
+      "hard_negative_ids": [
+        "p-106",
+        "p-107",
+        "p-141"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-106": "暗厨房人物打开近空冰箱、钟12:17",
+        "p-107": "乱发手机镜面自拍、背后床",
+        "p-121": "手机锁屏9:41",
+        "p-141": "暗床头亮手机闹钟水杯"
+      }
+    },
+    {
+      "query_id": "recall-099",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-122"
+      ],
+      "hard_negative_ids": [
+        "p-015",
+        "p-071",
+        "p-074",
+        "p-075"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-015": "窗边整洁木桌、电脑白杯盆栽",
+        "p-071": "灰猫睡在电脑键盘",
+        "p-074": "台灯下男人写作业",
+        "p-075": "女生向电脑多人视频会议挥手",
+        "p-122": "笔记本代码hello world"
+      }
+    },
+    {
+      "query_id": "recall-100",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-123"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-123": "沙发黑遥控器"
+      }
+    },
+    {
+      "query_id": "recall-101",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-124"
+      ],
+      "hard_negative_ids": [
+        "p-041",
+        "p-074",
+        "p-081"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-041": "窗边穿毛衣女生读书",
+        "p-074": "台灯下男人写作业",
+        "p-081": "女生被窝台灯看书",
+        "p-124": "余华活着书封面"
+      }
+    },
+    {
+      "query_id": "recall-102",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-125"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-125": "人民日报报纸桌面"
+      }
+    },
+    {
+      "query_id": "recall-103",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-126"
+      ],
+      "hard_negative_ids": [
+        "p-075",
+        "p-076"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-075": "女生向电脑多人视频会议挥手",
+        "p-076": "手持黑笔英文横线笔记",
+        "p-126": "中文手写会议纪要待办事项"
+      }
+    },
+    {
+      "query_id": "recall-104",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-127"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-127": "蓝火车票北京南上海虹桥G1"
+      }
+    },
+    {
+      "query_id": "recall-105",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-129"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-129": "登机牌BOARDING PASS座位3A"
+      }
+    },
+    {
+      "query_id": "recall-106",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-132"
+      ],
+      "hard_negative_ids": [
+        "p-078",
+        "p-116"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-078": "便利店柜台前黑衣顾客",
+        "p-116": "黄色M与McDonald's门店",
+        "p-132": "夜间7-ELEVEN与OPEN 24 HOURS"
+      }
+    },
+    {
+      "query_id": "recall-107",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-133"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-133": "台历八月2026与15"
+      }
+    },
+    {
+      "query_id": "recall-108",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-134"
+      ],
+      "hard_negative_ids": [
+        "p-078"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-078": "便利店柜台前黑衣顾客",
+        "p-134": "白T恤I红心NY"
+      }
+    },
+    {
+      "query_id": "recall-109",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-135"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-135": "白杯WORLD'S BEST BOSS"
+      }
+    },
+    {
+      "query_id": "recall-110",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-136"
+      ],
+      "hard_negative_ids": [
+        "p-106"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-106": "暗厨房人物打开近空冰箱、钟12:17",
+        "p-136": "冰箱贴与买牛奶手写便签"
+      }
+    },
+    {
+      "query_id": "recall-111",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-137"
+      ],
+      "hard_negative_ids": [
+        "p-064",
+        "p-146"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-064": "女生衣架前选衣服、599牌",
+        "p-137": "衣服吊牌199元",
+        "p-146": "床面堆满衣服"
+      }
+    },
+    {
+      "query_id": "recall-112",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-138"
+      ],
+      "hard_negative_ids": [
+        "p-108",
+        "p-112"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-108": "家门口堆品牌快递箱",
+        "p-112": "门上绿灯箱EXIT",
+        "p-138": "棕门垫WELCOME"
+      }
+    },
+    {
+      "query_id": "recall-113",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-139"
+      ],
+      "hard_negative_ids": [
+        "p-149",
+        "p-159"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-139": "黑暗桌面烛光照盘中食物",
+        "p-149": "剩菜餐具脏纸巾饭后桌",
+        "p-159": "指纹油膜彩色光晕遮汉堡薯条"
+      }
+    },
+    {
+      "query_id": "recall-114",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-140"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-140": "暗酒吧整排酒瓶背光"
+      }
+    },
+    {
+      "query_id": "recall-115",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-141"
+      ],
+      "hard_negative_ids": [
+        "p-106",
+        "p-107",
+        "p-121"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-106": "暗厨房人物打开近空冰箱、钟12:17",
+        "p-107": "乱发手机镜面自拍、背后床",
+        "p-121": "手机锁屏9:41",
+        "p-141": "暗床头亮手机闹钟水杯"
+      }
+    },
+    {
+      "query_id": "recall-116",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-142"
+      ],
+      "hard_negative_ids": [
+        "p-060",
+        "p-104",
+        "p-144",
+        "p-157"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-060": "公交侧窗雨滴、银白汽车",
+        "p-104": "雨刷夹黄单、PARKING VIOLATION",
+        "p-142": "地下车库两侧车辆通道",
+        "p-144": "公交侧窗拍城市车辆拖影",
+        "p-157": "前挡雨滴雨刷前方车辆公路"
+      }
+    },
+    {
+      "query_id": "recall-117",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-143"
+      ],
+      "hard_negative_ids": [
+        "p-010",
+        "p-021",
+        "p-008",
+        "p-061"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-008": "草地徒步路与远处雪山",
+        "p-010": "两只金毛在草地奔跑",
+        "p-021": "单只小金毛草地坐姿",
+        "p-061": "树荫道路牵金毛的人",
+        "p-143": "草地狗明显运动模糊"
+      }
+    },
+    {
+      "query_id": "recall-118",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-144"
+      ],
+      "hard_negative_ids": [
+        "p-060",
+        "p-101",
+        "p-104",
+        "p-142"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-060": "公交侧窗雨滴、银白汽车",
+        "p-101": "汽车侧窗看粉橙晚霞、路边拖影",
+        "p-104": "雨刷夹黄单、PARKING VIOLATION",
+        "p-142": "地下车库两侧车辆通道",
+        "p-144": "公交侧窗拍城市车辆拖影"
+      }
+    },
+    {
+      "query_id": "recall-119",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-145"
+      ],
+      "hard_negative_ids": [
+        "p-068",
+        "p-066",
+        "p-096"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-066": "电视前盒装面条、可乐",
+        "p-068": "沙发毯子腿部爆米花看电视",
+        "p-096": "金毛沙发仰躺睡觉",
+        "p-145": "客厅沙发前小孩跑动拖影"
+      }
+    },
+    {
+      "query_id": "recall-120",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-146"
+      ],
+      "hard_negative_ids": [
+        "p-064",
+        "p-081",
+        "p-093",
+        "p-137"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-064": "女生衣架前选衣服、599牌",
+        "p-081": "女生被窝台灯看书",
+        "p-093": "女生宿舍裹毯子零食聚会",
+        "p-137": "衣服吊牌199元",
+        "p-146": "床面堆满衣服"
+      }
+    },
+    {
+      "query_id": "recall-121",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-147"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-147": "地上插头数据线充电器缠绕"
+      }
+    },
+    {
+      "query_id": "recall-122",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-148"
+      ],
+      "hard_negative_ids": [
+        "p-093",
+        "p-106"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-093": "女生宿舍裹毯子零食聚会",
+        "p-106": "暗厨房人物打开近空冰箱、钟12:17",
+        "p-148": "超市食品货架长通道"
+      }
+    },
+    {
+      "query_id": "recall-123",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-149"
+      ],
+      "hard_negative_ids": [
+        "p-082",
+        "p-095",
+        "p-139",
+        "p-159"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-082": "朋友餐桌举酒杯自拍",
+        "p-095": "米饭青菜肉菜餐前桌面",
+        "p-139": "黑暗桌面烛光照盘中食物",
+        "p-149": "剩菜餐具脏纸巾饭后桌",
+        "p-159": "指纹油膜彩色光晕遮汉堡薯条"
+      }
+    },
+    {
+      "query_id": "recall-124",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-150"
+      ],
+      "hard_negative_ids": [
+        "p-006",
+        "p-051"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-006": "粉樱花与公园步道",
+        "p-051": "红橙枫叶阳光",
+        "p-150": "近全白过曝雪地淡树影"
+      }
+    },
+    {
+      "query_id": "recall-125",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-151"
+      ],
+      "hard_negative_ids": [
+        "p-013",
+        "p-041",
+        "p-097",
+        "p-155"
+      ],
+      "decision": "query_revised_labels_retained",
+      "evidence": {
+        "p-013": "候机厅行李箱、窗外飞机",
+        "p-041": "窗边穿毛衣女生读书",
+        "p-097": "办公室电脑前雨窗楼房",
+        "p-151": "亮窗前人物黑剪影、方向不可确认",
+        "p-155": "反光玻璃外楼房树晴天"
+      }
+    },
+    {
+      "query_id": "recall-126",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-152"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-152": "闪光白玩具熊及大硬阴影"
+      }
+    },
+    {
+      "query_id": "recall-127",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-153"
+      ],
+      "hard_negative_ids": [
+        "p-088",
+        "p-100",
+        "p-103",
+        "p-111"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-088": "四人登山包、山顶路牌与山景",
+        "p-100": "驾驶位看堵车尾灯与晚霞",
+        "p-103": "恐龙三角路牌、DINOSAURS CROSSING",
+        "p-111": "蓝路牌中山路ZHONGSHAN LU",
+        "p-153": "倾斜蓝路牌西四南大街、不含环"
+      }
+    },
+    {
+      "query_id": "recall-128",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-154"
+      ],
+      "hard_negative_ids": [],
+      "decision": "query_revised_labels_retained",
+      "evidence": {
+        "p-154": "倾斜天花板日光灯"
+      }
+    },
+    {
+      "query_id": "recall-129",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-155"
+      ],
+      "hard_negative_ids": [
+        "p-097",
+        "p-013",
+        "p-041",
+        "p-151"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-013": "候机厅行李箱、窗外飞机",
+        "p-041": "窗边穿毛衣女生读书",
+        "p-097": "办公室电脑前雨窗楼房",
+        "p-151": "亮窗前人物黑剪影、方向不可确认",
+        "p-155": "反光玻璃外楼房树晴天"
+      }
+    },
+    {
+      "query_id": "recall-130",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-156"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-156": "鱼缸污渍反光及多条鱼"
+      }
+    },
+    {
+      "query_id": "recall-131",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-157"
+      ],
+      "hard_negative_ids": [
+        "p-104",
+        "p-060",
+        "p-142",
+        "p-144"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-060": "公交侧窗雨滴、银白汽车",
+        "p-104": "雨刷夹黄单、PARKING VIOLATION",
+        "p-142": "地下车库两侧车辆通道",
+        "p-144": "公交侧窗拍城市车辆拖影",
+        "p-157": "前挡雨滴雨刷前方车辆公路"
+      }
+    },
+    {
+      "query_id": "recall-132",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-158"
+      ],
+      "hard_negative_ids": [
+        "p-060",
+        "p-101",
+        "p-144"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-060": "公交侧窗雨滴、银白汽车",
+        "p-101": "汽车侧窗看粉橙晚霞、路边拖影",
+        "p-144": "公交侧窗拍城市车辆拖影",
+        "p-158": "起雾玻璃街灯模糊车影"
+      }
+    },
+    {
+      "query_id": "recall-133",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-159"
+      ],
+      "hard_negative_ids": [
+        "p-029",
+        "p-139",
+        "p-149"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-029": "清晰完整芝士汉堡近景",
+        "p-139": "黑暗桌面烛光照盘中食物",
+        "p-149": "剩菜餐具脏纸巾饭后桌",
+        "p-159": "指纹油膜彩色光晕遮汉堡薯条"
+      }
+    },
+    {
+      "query_id": "recall-134",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-160"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-160": "WEATHER天气温度列表应用截图"
+      }
+    },
+    {
+      "query_id": "recall-135",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-161"
+      ],
+      "hard_negative_ids": [],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-161": "MAPS蓝导航路线应用截图"
+      }
+    },
+    {
+      "query_id": "recall-136",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-162"
+      ],
+      "hard_negative_ids": [
+        "p-163",
+        "p-013",
+        "p-041",
+        "p-071"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-013": "候机厅行李箱、窗外飞机",
+        "p-041": "窗边穿毛衣女生读书",
+        "p-071": "灰猫睡在电脑键盘",
+        "p-162": "背朝镜头窗台橘猫盆栽、窗外鸟",
+        "p-163": "侧脸朝镜头侧窗台橘猫"
+      }
+    },
+    {
+      "query_id": "recall-137",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-163"
+      ],
+      "hard_negative_ids": [
+        "p-162",
+        "p-013",
+        "p-041",
+        "p-071"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-013": "候机厅行李箱、窗外飞机",
+        "p-041": "窗边穿毛衣女生读书",
+        "p-071": "灰猫睡在电脑键盘",
+        "p-162": "背朝镜头窗台橘猫盆栽、窗外鸟",
+        "p-163": "侧脸朝镜头侧窗台橘猫"
+      }
+    },
+    {
+      "query_id": "recall-138",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-071"
+      ],
+      "hard_negative_ids": [
+        "p-162",
+        "p-163",
+        "p-015"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-015": "窗边整洁木桌、电脑白杯盆栽",
+        "p-071": "灰猫睡在电脑键盘",
+        "p-162": "背朝镜头窗台橘猫盆栽、窗外鸟",
+        "p-163": "侧脸朝镜头侧窗台橘猫"
+      }
+    },
+    {
+      "query_id": "recall-139",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-094"
+      ],
+      "hard_negative_ids": [
+        "p-071",
+        "p-102"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-071": "灰猫睡在电脑键盘",
+        "p-094": "橘猫爪碰倒透明玻璃杯、洒水",
+        "p-102": "手拿浅色咖啡杯、窗边木台植物"
+      }
+    },
+    {
+      "query_id": "recall-140",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-096"
+      ],
+      "hard_negative_ids": [
+        "p-021",
+        "p-061"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-021": "单只小金毛草地坐姿",
+        "p-061": "树荫道路牵金毛的人",
+        "p-096": "金毛沙发仰躺睡觉"
+      }
+    },
+    {
+      "query_id": "recall-141",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-143"
+      ],
+      "hard_negative_ids": [
+        "p-010",
+        "p-021"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-010": "两只金毛在草地奔跑",
+        "p-021": "单只小金毛草地坐姿",
+        "p-143": "草地狗明显运动模糊"
+      }
+    },
+    {
+      "query_id": "recall-142",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-007"
+      ],
+      "hard_negative_ids": [
+        "p-086",
+        "p-027"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-007": "无人巧克力生日蛋糕、点燃蜡烛",
+        "p-027": "白色草莓蛋糕与茶具",
+        "p-086": "朋友围寿星点蜡烛生日蛋糕"
+      }
+    },
+    {
+      "query_id": "recall-143",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-086"
+      ],
+      "hard_negative_ids": [
+        "p-007",
+        "p-082"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-007": "无人巧克力生日蛋糕、点燃蜡烛",
+        "p-082": "朋友餐桌举酒杯自拍",
+        "p-086": "朋友围寿星点蜡烛生日蛋糕"
+      }
+    },
+    {
+      "query_id": "recall-144",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-081"
+      ],
+      "hard_negative_ids": [
+        "p-041",
+        "p-074"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-041": "窗边穿毛衣女生读书",
+        "p-074": "台灯下男人写作业",
+        "p-081": "女生被窝台灯看书"
+      }
+    },
+    {
+      "query_id": "recall-145",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-075"
+      ],
+      "hard_negative_ids": [
+        "p-085",
+        "p-122"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-075": "女生向电脑多人视频会议挥手",
+        "p-085": "白板会议室围桌讨论",
+        "p-122": "笔记本代码hello world"
+      }
+    },
+    {
+      "query_id": "recall-146",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-107"
+      ],
+      "hard_negative_ids": [
+        "p-082",
+        "p-121"
+      ],
+      "decision": "query_revised_labels_retained",
+      "evidence": {
+        "p-082": "朋友餐桌举酒杯自拍",
+        "p-107": "乱发手机镜面自拍、背后床",
+        "p-121": "手机锁屏9:41"
+      }
+    },
+    {
+      "query_id": "recall-147",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-066"
+      ],
+      "hard_negative_ids": [
+        "p-068",
+        "p-118"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-066": "电视前盒装面条、可乐",
+        "p-068": "沙发毯子腿部爆米花看电视",
+        "p-118": "电脑前CUP NOODLES杯面筷子"
+      }
+    },
+    {
+      "query_id": "recall-148",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-104"
+      ],
+      "hard_negative_ids": [
+        "p-157",
+        "p-127"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-104": "雨刷夹黄单、PARKING VIOLATION",
+        "p-127": "蓝火车票北京南上海虹桥G1",
+        "p-157": "前挡雨滴雨刷前方车辆公路"
+      }
+    },
+    {
+      "query_id": "recall-149",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-099"
+      ],
+      "hard_negative_ids": [
+        "p-015",
+        "p-056"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-015": "窗边整洁木桌、电脑白杯盆栽",
+        "p-056": "双显示器代码工作桌",
+        "p-099": "凌乱办公桌纸张便签键盘杯子"
+      }
+    },
+    {
+      "query_id": "recall-150",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-106"
+      ],
+      "hard_negative_ids": [
+        "p-136",
+        "p-117"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-106": "暗厨房人物打开近空冰箱、钟12:17",
+        "p-117": "伊利纯牛奶蓝白盒",
+        "p-136": "冰箱贴与买牛奶手写便签"
+      }
+    },
+    {
+      "query_id": "recall-151",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-108"
+      ],
+      "hard_negative_ids": [
+        "p-147",
+        "p-146"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-108": "家门口堆品牌快递箱",
+        "p-146": "床面堆满衣服",
+        "p-147": "地上插头数据线充电器缠绕"
+      }
+    },
+    {
+      "query_id": "recall-152",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-098"
+      ],
+      "hard_negative_ids": [
+        "p-105",
+        "p-008"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-008": "草地徒步路与远处雪山",
+        "p-098": "白鞋伸向蓝绿山湖",
+        "p-105": "牛仔裤白鞋俯拍"
+      }
+    },
+    {
+      "query_id": "recall-153",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-147"
+      ],
+      "hard_negative_ids": [
+        "p-099",
+        "p-146"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-099": "凌乱办公桌纸张便签键盘杯子",
+        "p-146": "床面堆满衣服",
+        "p-147": "地上插头数据线充电器缠绕"
+      }
+    },
+    {
+      "query_id": "recall-154",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-154"
+      ],
+      "hard_negative_ids": [
+        "p-153",
+        "p-039"
+      ],
+      "decision": "query_revised_labels_retained",
+      "evidence": {
+        "p-039": "棱角蓝玻璃高楼",
+        "p-153": "倾斜蓝路牌西四南大街、不含环",
+        "p-154": "倾斜天花板日光灯"
+      }
+    },
+    {
+      "query_id": "recall-155",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-156"
+      ],
+      "hard_negative_ids": [
+        "p-155",
+        "p-158"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-155": "反光玻璃外楼房树晴天",
+        "p-156": "鱼缸污渍反光及多条鱼",
+        "p-158": "起雾玻璃街灯模糊车影"
+      }
+    },
+    {
+      "query_id": "recall-156",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-159"
+      ],
+      "hard_negative_ids": [
+        "p-029",
+        "p-139"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-029": "清晰完整芝士汉堡近景",
+        "p-139": "黑暗桌面烛光照盘中食物",
+        "p-159": "指纹油膜彩色光晕遮汉堡薯条"
+      }
+    },
+    {
+      "query_id": "recall-157",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-150"
+      ],
+      "hard_negative_ids": [
+        "p-008",
+        "p-053"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-008": "草地徒步路与远处雪山",
+        "p-053": "银河山湖倒影",
+        "p-150": "近全白过曝雪地淡树影"
+      }
+    },
+    {
+      "query_id": "recall-158",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-109"
+      ],
+      "hard_negative_ids": [
+        "p-110",
+        "p-103"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-103": "恐龙三角路牌、DINOSAURS CROSSING",
+        "p-109": "红八角STOP",
+        "p-110": "禁烟标志、NO SMOKING"
+      }
+    },
+    {
+      "query_id": "recall-159",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-110"
+      ],
+      "hard_negative_ids": [
+        "p-109",
+        "p-112"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-109": "红八角STOP",
+        "p-110": "禁烟标志、NO SMOKING",
+        "p-112": "门上绿灯箱EXIT"
+      }
+    },
+    {
+      "query_id": "recall-160",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-111"
+      ],
+      "hard_negative_ids": [
+        "p-153"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-111": "蓝路牌中山路ZHONGSHAN LU",
+        "p-153": "倾斜蓝路牌西四南大街、不含环"
+      }
+    },
+    {
+      "query_id": "recall-161",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-153"
+      ],
+      "hard_negative_ids": [
+        "p-111"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-111": "蓝路牌中山路ZHONGSHAN LU",
+        "p-153": "倾斜蓝路牌西四南大街、不含环"
+      }
+    },
+    {
+      "query_id": "recall-162",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-112"
+      ],
+      "hard_negative_ids": [
+        "p-110",
+        "p-109"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-109": "红八角STOP",
+        "p-110": "禁烟标志、NO SMOKING",
+        "p-112": "门上绿灯箱EXIT"
+      }
+    },
+    {
+      "query_id": "recall-163",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-103"
+      ],
+      "hard_negative_ids": [
+        "p-109",
+        "p-153"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-103": "恐龙三角路牌、DINOSAURS CROSSING",
+        "p-109": "红八角STOP",
+        "p-153": "倾斜蓝路牌西四南大街、不含环"
+      }
+    },
+    {
+      "query_id": "recall-164",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-104"
+      ],
+      "hard_negative_ids": [
+        "p-127",
+        "p-129"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-104": "雨刷夹黄单、PARKING VIOLATION",
+        "p-127": "蓝火车票北京南上海虹桥G1",
+        "p-129": "登机牌BOARDING PASS座位3A"
+      }
+    },
+    {
+      "query_id": "recall-165",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-113"
+      ],
+      "hard_negative_ids": [
+        "p-102",
+        "p-135"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-102": "手拿浅色咖啡杯、窗边木台植物",
+        "p-113": "星巴克外带纸杯与Starbucks文字",
+        "p-135": "白杯WORLD'S BEST BOSS"
+      }
+    },
+    {
+      "query_id": "recall-166",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-115"
+      ],
+      "hard_negative_ids": [
+        "p-119",
+        "p-117"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-115": "红色Coca-Cola罐近景",
+        "p-117": "伊利纯牛奶蓝白盒",
+        "p-119": "红盖农夫山泉瓶"
+      }
+    },
+    {
+      "query_id": "recall-167",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-116"
+      ],
+      "hard_negative_ids": [
+        "p-132"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-116": "黄色M与McDonald's门店",
+        "p-132": "夜间7-ELEVEN与OPEN 24 HOURS"
+      }
+    },
+    {
+      "query_id": "recall-168",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-117"
+      ],
+      "hard_negative_ids": [
+        "p-119",
+        "p-118"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-117": "伊利纯牛奶蓝白盒",
+        "p-118": "电脑前CUP NOODLES杯面筷子",
+        "p-119": "红盖农夫山泉瓶"
+      }
+    },
+    {
+      "query_id": "recall-169",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-118"
+      ],
+      "hard_negative_ids": [
+        "p-004",
+        "p-113"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-004": "黑碗拉面、切半鸡蛋、叉烧",
+        "p-113": "星巴克外带纸杯与Starbucks文字",
+        "p-118": "电脑前CUP NOODLES杯面筷子"
+      }
+    },
+    {
+      "query_id": "recall-170",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-119"
+      ],
+      "hard_negative_ids": [
+        "p-115",
+        "p-117"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-115": "红色Coca-Cola罐近景",
+        "p-117": "伊利纯牛奶蓝白盒",
+        "p-119": "红盖农夫山泉瓶"
+      }
+    },
+    {
+      "query_id": "recall-171",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-120"
+      ],
+      "hard_negative_ids": [
+        "p-118",
+        "p-117"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-117": "伊利纯牛奶蓝白盒",
+        "p-118": "电脑前CUP NOODLES杯面筷子",
+        "p-120": "银色HERSHEY'S包装与巧克力块"
+      }
+    },
+    {
+      "query_id": "recall-172",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-121"
+      ],
+      "hard_negative_ids": [
+        "p-160",
+        "p-161",
+        "p-141"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-121": "手机锁屏9:41",
+        "p-141": "暗床头亮手机闹钟水杯",
+        "p-160": "WEATHER天气温度列表应用截图",
+        "p-161": "MAPS蓝导航路线应用截图"
+      }
+    },
+    {
+      "query_id": "recall-173",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-122"
+      ],
+      "hard_negative_ids": [
+        "p-056",
+        "p-015"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-015": "窗边整洁木桌、电脑白杯盆栽",
+        "p-056": "双显示器代码工作桌",
+        "p-122": "笔记本代码hello world"
+      }
+    },
+    {
+      "query_id": "recall-174",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-124"
+      ],
+      "hard_negative_ids": [
+        "p-041",
+        "p-081"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-041": "窗边穿毛衣女生读书",
+        "p-081": "女生被窝台灯看书",
+        "p-124": "余华活着书封面"
+      }
+    },
+    {
+      "query_id": "recall-175",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-125"
+      ],
+      "hard_negative_ids": [
+        "p-124",
+        "p-126"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-124": "余华活着书封面",
+        "p-125": "人民日报报纸桌面",
+        "p-126": "中文手写会议纪要待办事项"
+      }
+    },
+    {
+      "query_id": "recall-176",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-126"
+      ],
+      "hard_negative_ids": [
+        "p-076",
+        "p-074"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-074": "台灯下男人写作业",
+        "p-076": "手持黑笔英文横线笔记",
+        "p-126": "中文手写会议纪要待办事项"
+      }
+    },
+    {
+      "query_id": "recall-177",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-127"
+      ],
+      "hard_negative_ids": [
+        "p-129",
+        "p-104"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-104": "雨刷夹黄单、PARKING VIOLATION",
+        "p-127": "蓝火车票北京南上海虹桥G1",
+        "p-129": "登机牌BOARDING PASS座位3A"
+      }
+    },
+    {
+      "query_id": "recall-178",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-129"
+      ],
+      "hard_negative_ids": [
+        "p-127"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-127": "蓝火车票北京南上海虹桥G1",
+        "p-129": "登机牌BOARDING PASS座位3A"
+      }
+    },
+    {
+      "query_id": "recall-179",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-132"
+      ],
+      "hard_negative_ids": [
+        "p-078",
+        "p-116"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-078": "便利店柜台前黑衣顾客",
+        "p-116": "黄色M与McDonald's门店",
+        "p-132": "夜间7-ELEVEN与OPEN 24 HOURS"
+      }
+    },
+    {
+      "query_id": "recall-180",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-133"
+      ],
+      "hard_negative_ids": [
+        "p-121",
+        "p-127"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-121": "手机锁屏9:41",
+        "p-127": "蓝火车票北京南上海虹桥G1",
+        "p-133": "台历八月2026与15"
+      }
+    },
+    {
+      "query_id": "recall-181",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-135"
+      ],
+      "hard_negative_ids": [
+        "p-113",
+        "p-102"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-102": "手拿浅色咖啡杯、窗边木台植物",
+        "p-113": "星巴克外带纸杯与Starbucks文字",
+        "p-135": "白杯WORLD'S BEST BOSS"
+      }
+    },
+    {
+      "query_id": "recall-182",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-136"
+      ],
+      "hard_negative_ids": [
+        "p-106",
+        "p-117"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-106": "暗厨房人物打开近空冰箱、钟12:17",
+        "p-117": "伊利纯牛奶蓝白盒",
+        "p-136": "冰箱贴与买牛奶手写便签"
+      }
+    },
+    {
+      "query_id": "recall-183",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-137"
+      ],
+      "hard_negative_ids": [
+        "p-064",
+        "p-134"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-064": "女生衣架前选衣服、599牌",
+        "p-134": "白T恤I红心NY",
+        "p-137": "衣服吊牌199元"
+      }
+    },
+    {
+      "query_id": "recall-184",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-138"
+      ],
+      "hard_negative_ids": [
+        "p-108",
+        "p-112"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-108": "家门口堆品牌快递箱",
+        "p-112": "门上绿灯箱EXIT",
+        "p-138": "棕门垫WELCOME"
+      }
+    },
+    {
+      "query_id": "recall-185",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-160"
+      ],
+      "hard_negative_ids": [
+        "p-161",
+        "p-121"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-121": "手机锁屏9:41",
+        "p-160": "WEATHER天气温度列表应用截图",
+        "p-161": "MAPS蓝导航路线应用截图"
+      }
+    },
+    {
+      "query_id": "recall-186",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-161"
+      ],
+      "hard_negative_ids": [
+        "p-160",
+        "p-121"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-121": "手机锁屏9:41",
+        "p-160": "WEATHER天气温度列表应用截图",
+        "p-161": "MAPS蓝导航路线应用截图"
+      }
+    },
+    {
+      "query_id": "recall-187",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-012"
+      ],
+      "hard_negative_ids": [
+        "p-089"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-012": "近景乐队舞台、LIVE LOUD",
+        "p-089": "音乐节巨大观众全景、远处小舞台"
+      }
+    },
+    {
+      "query_id": "recall-188",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-071",
+        "p-094",
+        "p-162",
+        "p-163"
+      ],
+      "hard_negative_ids": [
+        "p-096",
+        "p-021"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-021": "单只小金毛草地坐姿",
+        "p-071": "灰猫睡在电脑键盘",
+        "p-094": "橘猫爪碰倒透明玻璃杯、洒水",
+        "p-096": "金毛沙发仰躺睡觉",
+        "p-162": "背朝镜头窗台橘猫盆栽、窗外鸟",
+        "p-163": "侧脸朝镜头侧窗台橘猫"
+      }
+    },
+    {
+      "query_id": "recall-189",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-010",
+        "p-021",
+        "p-061",
+        "p-096",
+        "p-143"
+      ],
+      "hard_negative_ids": [
+        "p-071",
+        "p-094"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-010": "两只金毛在草地奔跑",
+        "p-021": "单只小金毛草地坐姿",
+        "p-061": "树荫道路牵金毛的人",
+        "p-071": "灰猫睡在电脑键盘",
+        "p-094": "橘猫爪碰倒透明玻璃杯、洒水",
+        "p-096": "金毛沙发仰躺睡觉",
+        "p-143": "草地狗明显运动模糊"
+      }
+    },
+    {
+      "query_id": "recall-190",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-162",
+        "p-163"
+      ],
+      "hard_negative_ids": [
+        "p-071",
+        "p-094"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-071": "灰猫睡在电脑键盘",
+        "p-094": "橘猫爪碰倒透明玻璃杯、洒水",
+        "p-162": "背朝镜头窗台橘猫盆栽、窗外鸟",
+        "p-163": "侧脸朝镜头侧窗台橘猫"
+      }
+    },
+    {
+      "query_id": "recall-191",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-010",
+        "p-021",
+        "p-143"
+      ],
+      "hard_negative_ids": [
+        "p-061",
+        "p-096"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-010": "两只金毛在草地奔跑",
+        "p-021": "单只小金毛草地坐姿",
+        "p-061": "树荫道路牵金毛的人",
+        "p-096": "金毛沙发仰躺睡觉",
+        "p-143": "草地狗明显运动模糊"
+      }
+    },
+    {
+      "query_id": "recall-192",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-010",
+        "p-143"
+      ],
+      "hard_negative_ids": [
+        "p-021",
+        "p-096"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-010": "两只金毛在草地奔跑",
+        "p-021": "单只小金毛草地坐姿",
+        "p-096": "金毛沙发仰躺睡觉",
+        "p-143": "草地狗明显运动模糊"
+      }
+    },
+    {
+      "query_id": "recall-193",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-071",
+        "p-162",
+        "p-163"
+      ],
+      "hard_negative_ids": [
+        "p-094",
+        "p-096"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-071": "灰猫睡在电脑键盘",
+        "p-094": "橘猫爪碰倒透明玻璃杯、洒水",
+        "p-096": "金毛沙发仰躺睡觉",
+        "p-162": "背朝镜头窗台橘猫盆栽、窗外鸟",
+        "p-163": "侧脸朝镜头侧窗台橘猫"
+      }
+    },
+    {
+      "query_id": "recall-194",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-010",
+        "p-021",
+        "p-096"
+      ],
+      "hard_negative_ids": [
+        "p-061",
+        "p-143"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-010": "两只金毛在草地奔跑",
+        "p-021": "单只小金毛草地坐姿",
+        "p-061": "树荫道路牵金毛的人",
+        "p-096": "金毛沙发仰躺睡觉",
+        "p-143": "草地狗明显运动模糊"
+      }
+    },
+    {
+      "query_id": "recall-195",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-160",
+        "p-161"
+      ],
+      "hard_negative_ids": [
+        "p-121",
+        "p-122",
+        "p-075"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-075": "女生向电脑多人视频会议挥手",
+        "p-121": "手机锁屏9:41",
+        "p-122": "笔记本代码hello world",
+        "p-160": "WEATHER天气温度列表应用截图",
+        "p-161": "MAPS蓝导航路线应用截图"
+      }
+    },
+    {
+      "query_id": "recall-196",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-103",
+        "p-109",
+        "p-111",
+        "p-153"
+      ],
+      "hard_negative_ids": [
+        "p-110",
+        "p-112",
+        "p-100"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-100": "驾驶位看堵车尾灯与晚霞",
+        "p-103": "恐龙三角路牌、DINOSAURS CROSSING",
+        "p-109": "红八角STOP",
+        "p-110": "禁烟标志、NO SMOKING",
+        "p-111": "蓝路牌中山路ZHONGSHAN LU",
+        "p-112": "门上绿灯箱EXIT",
+        "p-153": "倾斜蓝路牌西四南大街、不含环"
+      }
+    },
+    {
+      "query_id": "recall-197",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-100"
+      ],
+      "hard_negative_ids": [
+        "p-060",
+        "p-144",
+        "p-157",
+        "p-158"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-060": "公交侧窗雨滴、银白汽车",
+        "p-100": "驾驶位看堵车尾灯与晚霞",
+        "p-144": "公交侧窗拍城市车辆拖影",
+        "p-157": "前挡雨滴雨刷前方车辆公路",
+        "p-158": "起雾玻璃街灯模糊车影"
+      }
+    },
+    {
+      "query_id": "recall-198",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-084",
+        "p-091"
+      ],
+      "hard_negative_ids": [
+        "p-083",
+        "p-082"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-082": "朋友餐桌举酒杯自拍",
+        "p-083": "毕业合影抛学士帽",
+        "p-084": "户外婚礼花拱门亲友合影",
+        "p-091": "新娘与浅色晨袍伴娘准备"
+      }
+    },
+    {
+      "query_id": "recall-199",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-041",
+        "p-081"
+      ],
+      "hard_negative_ids": [
+        "p-074",
+        "p-124"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-041": "窗边穿毛衣女生读书",
+        "p-074": "台灯下男人写作业",
+        "p-081": "女生被窝台灯看书",
+        "p-124": "余华活着书封面"
+      }
+    },
+    {
+      "query_id": "recall-200",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-007",
+        "p-086"
+      ],
+      "hard_negative_ids": [
+        "p-027",
+        "p-139"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-007": "无人巧克力生日蛋糕、点燃蜡烛",
+        "p-027": "白色草莓蛋糕与茶具",
+        "p-086": "朋友围寿星点蜡烛生日蛋糕",
+        "p-139": "黑暗桌面烛光照盘中食物"
+      }
+    },
+    {
+      "query_id": "recall-201",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-012",
+        "p-089"
+      ],
+      "hard_negative_ids": [
+        "p-055",
+        "p-077"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-012": "近景乐队舞台、LIVE LOUD",
+        "p-055": "城市水边烟花",
+        "p-077": "影院银幕人物、前景爆米花",
+        "p-089": "音乐节巨大观众全景、远处小舞台"
+      }
+    },
+    {
+      "query_id": "recall-202",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-127",
+        "p-129"
+      ],
+      "hard_negative_ids": [
+        "p-104",
+        "p-133"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-104": "雨刷夹黄单、PARKING VIOLATION",
+        "p-127": "蓝火车票北京南上海虹桥G1",
+        "p-129": "登机牌BOARDING PASS座位3A",
+        "p-133": "台历八月2026与15"
+      }
+    },
+    {
+      "query_id": "recall-203",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-111",
+        "p-153"
+      ],
+      "hard_negative_ids": [
+        "p-103",
+        "p-109"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-103": "恐龙三角路牌、DINOSAURS CROSSING",
+        "p-109": "红八角STOP",
+        "p-111": "蓝路牌中山路ZHONGSHAN LU",
+        "p-153": "倾斜蓝路牌西四南大街、不含环"
+      }
+    },
+    {
+      "query_id": "recall-204",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-034",
+        "p-035"
+      ],
+      "hard_negative_ids": [
+        "p-019",
+        "p-006"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-006": "粉樱花与公园步道",
+        "p-019": "石屋花园拱门小路",
+        "p-034": "紫薰衣草条带花田",
+        "p-035": "彩色郁金香花田风车"
+      }
+    },
+    {
+      "query_id": "recall-205",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-143",
+        "p-145"
+      ],
+      "hard_negative_ids": [
+        "p-010",
+        "p-080"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-010": "两只金毛在草地奔跑",
+        "p-080": "小孩蜡笔画房子太阳",
+        "p-143": "草地狗明显运动模糊",
+        "p-145": "客厅沙发前小孩跑动拖影"
+      }
+    },
+    {
+      "query_id": "recall-206",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-007",
+        "p-027",
+        "p-086"
+      ],
+      "hard_negative_ids": [
+        "p-028",
+        "p-004"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-004": "黑碗拉面、切半鸡蛋、叉烧",
+        "p-007": "无人巧克力生日蛋糕、点燃蜡烛",
+        "p-027": "白色草莓蛋糕与茶具",
+        "p-028": "咖啡馆可颂",
+        "p-086": "朋友围寿星点蜡烛生日蛋糕"
+      }
+    },
+    {
+      "query_id": "recall-207",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [
+        "p-076",
+        "p-126"
+      ],
+      "hard_negative_ids": [
+        "p-122",
+        "p-125"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-076": "手持黑笔英文横线笔记",
+        "p-122": "笔记本代码hello world",
+        "p-125": "人民日报报纸桌面",
+        "p-126": "中文手写会议纪要待办事项"
+      }
+    },
+    {
+      "query_id": "recall-208",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [],
+      "hard_negative_ids": [
+        "p-150",
+        "p-008"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-008": "草地徒步路与远处雪山",
+        "p-150": "近全白过曝雪地淡树影"
+      }
+    },
+    {
+      "query_id": "recall-209",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [],
+      "hard_negative_ids": [
+        "p-013",
+        "p-079"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-013": "候机厅行李箱、窗外飞机",
+        "p-079": "湿街道彩虹伞人物背影"
+      }
+    },
+    {
+      "query_id": "recall-210",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [],
+      "hard_negative_ids": [
+        "p-010",
+        "p-094",
+        "p-162"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-010": "两只金毛在草地奔跑",
+        "p-094": "橘猫爪碰倒透明玻璃杯、洒水",
+        "p-162": "背朝镜头窗台橘猫盆栽、窗外鸟"
+      }
+    },
+    {
+      "query_id": "recall-211",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [],
+      "hard_negative_ids": [
+        "p-115",
+        "p-119"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-115": "红色Coca-Cola罐近景",
+        "p-119": "红盖农夫山泉瓶"
+      }
+    },
+    {
+      "query_id": "recall-212",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [],
+      "hard_negative_ids": [
+        "p-153",
+        "p-111"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-111": "蓝路牌中山路ZHONGSHAN LU",
+        "p-153": "倾斜蓝路牌西四南大街、不含环"
+      }
+    },
+    {
+      "query_id": "recall-213",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [],
+      "hard_negative_ids": [
+        "p-127",
+        "p-129"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-127": "蓝火车票北京南上海虹桥G1",
+        "p-129": "登机牌BOARDING PASS座位3A"
+      }
+    },
+    {
+      "query_id": "recall-214",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [],
+      "hard_negative_ids": [
+        "p-129",
+        "p-127"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-127": "蓝火车票北京南上海虹桥G1",
+        "p-129": "登机牌BOARDING PASS座位3A"
+      }
+    },
+    {
+      "query_id": "recall-215",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [],
+      "hard_negative_ids": [
+        "p-135",
+        "p-113"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-113": "星巴克外带纸杯与Starbucks文字",
+        "p-135": "白杯WORLD'S BEST BOSS"
+      }
+    },
+    {
+      "query_id": "recall-216",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [],
+      "hard_negative_ids": [
+        "p-138",
+        "p-112"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-112": "门上绿灯箱EXIT",
+        "p-138": "棕门垫WELCOME"
+      }
+    },
+    {
+      "query_id": "recall-217",
+      "reviewed_corpus_size": 137,
+      "positive_ids": [],
+      "hard_negative_ids": [
+        "p-160",
+        "p-161"
+      ],
+      "decision": "retained_after_visual_review",
+      "evidence": {
+        "p-160": "WEATHER天气温度列表应用截图",
+        "p-161": "MAPS蓝导航路线应用截图"
+      }
+    }
+  ]
+}

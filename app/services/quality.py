@@ -5,6 +5,7 @@
 - 输出质量关卡基于已有 AI 产物做快速校验，不调用 LLM"反思"；
 - 所有失败都给出 reason 码，便于分级存储和离线统计。
 """
+
 from __future__ import annotations
 
 import io
@@ -20,14 +21,14 @@ from app.schemas.analysis import ImageAnalysis
 logger = logging.getLogger(__name__)
 
 # 输入预检阈值
-_MIN_PIXELS = 64 * 64          # 过小的图无法做有效 VL 分析
-_MAX_PIXELS = 40_000_000       # 4000 万像素，超过可能 OOM 或超时
-_MIN_UNIQUE_COLORS = 16        # 纯色/渐变极少色的图
-_SOLID_COLOR_RATIO = 0.98      # 单一颜色占比超过 98% 视为纯色
+_MIN_PIXELS = 64 * 64  # 过小的图无法做有效 VL 分析
+_MAX_PIXELS = 40_000_000  # 4000 万像素，超过可能 OOM 或超时
+_MIN_UNIQUE_COLORS = 16  # 纯色/渐变极少色的图
+_SOLID_COLOR_RATIO = 0.98  # 单一颜色占比超过 98% 视为纯色
 
 # 输出质量阈值
-_MIN_DESCRIPTION_LEN = 10      # ai_description 至少 10 个字符
-_MAX_EMBEDDING_NORM = 10.0     # 超过该值视为异常向量
+_MIN_DESCRIPTION_LEN = 10  # ai_description 至少 10 个字符
+_MAX_EMBEDDING_NORM = 10.0  # 超过该值视为异常向量
 
 
 @dataclass

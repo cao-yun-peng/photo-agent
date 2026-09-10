@@ -23,6 +23,11 @@ from app.services.generation_service import (
     release_reserved_quota,
 )
 from app.services.metrics import metrics
+from app.services.package_execution import (
+    validate_execution,
+    review_output,
+    PackageExecutionError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +64,12 @@ async def generate_photo(ctx: dict[str, Any], generation_id: str) -> dict[str, A
         gen = row.scalar_one_or_none()
         if gen is None:
             return {"ok": False, "reason": "generation_not_found"}
+        if gen.execution_snapshot:
+            # Release the legacy session lock before the fenced package worker.
+            await db.rollback()
+            from app.workers.package_tasks import run_package
+
+            return await run_package(AsyncSessionLocal, generation_id)
         if gen.status == "done":
             return {
                 "ok": True,
@@ -66,6 +77,8 @@ async def generate_photo(ctx: dict[str, Any], generation_id: str) -> dict[str, A
                 "result_oss_key": gen.result_oss_key,
                 "reason": "already_done",
             }
+        if gen.execution_snapshot and gen.attempt_count:
+            return {"ok": False, "reason": "package_attempt_already_consumed"}
 
         # --- 1) 状态机校验 ----------------------------------
         if gen.status not in {"pending", "failed", "retryable_failed"}:
@@ -92,6 +105,14 @@ async def generate_photo(ctx: dict[str, Any], generation_id: str) -> dict[str, A
             if gen.skill_id:
                 sk_row = await db.execute(select(Skill).where(Skill.id == gen.skill_id))
                 skill = sk_row.scalar_one_or_none()
+                if (
+                    skill is not None
+                    and getattr(skill, "kind", "template") == "package"
+                    and not gen.execution_snapshot
+                ):
+                    raise NonRetryableError(
+                        "package requires a confirmed execution snapshot"
+                    )
 
             source = None
             if gen.source_photo_id:
@@ -120,6 +141,20 @@ async def generate_photo(ctx: dict[str, Any], generation_id: str) -> dict[str, A
             # 从 Skill 读取 function 和 strength，实现按 Skill 精细控制风格变化幅度
             gen_function = skill.function if skill else "description_edit"
             gen_strength = skill.strength if skill else 0.7
+            frozen = None
+            extra_args = {}
+            if gen.execution_snapshot:
+                try:
+                    frozen = await validate_execution(db, gen)
+                except PackageExecutionError as exc:
+                    raise NonRetryableError(str(exc)) from exc
+                prompt = gen.execution_snapshot["prompt"]
+                source_url, ref_urls = "", []
+                gen_function, gen_strength = "description_edit", 0.7
+                extra_args = {
+                    "image_inputs": frozen,
+                    "size": gen.execution_snapshot["size"],
+                }
             async with metrics.timeit("image_gen", tags={"model": gen.model}):
                 result = await image_gen_breaker.call(
                     image_gen.generate,
@@ -129,6 +164,7 @@ async def generate_photo(ctx: dict[str, Any], generation_id: str) -> dict[str, A
                     model=gen.model,
                     function=gen_function,
                     strength=gen_strength,
+                    **extra_args,
                 )
 
             # 万相返回临时 URL，OpenAI 返回 Base64；统一转成 bytes 后存入 OSS。
@@ -155,6 +191,13 @@ async def generate_photo(ctx: dict[str, Any], generation_id: str) -> dict[str, A
                 raise RuntimeError("image generation returned no image data")
 
             new_key = _build_gen_key(gen.user_id, content_type)
+            if frozen is not None:
+                gen.verification = await review_output(
+                    gen.execution_snapshot,
+                    frozen,
+                    image_bytes,
+                    simulated=result.model == "mock",
+                )
             await oss.put_object(new_key, image_bytes, content_type=content_type)
 
             gen.result_oss_key = new_key
@@ -243,7 +286,11 @@ async def generate_photo(ctx: dict[str, Any], generation_id: str) -> dict[str, A
         except Exception as exc:  # noqa: BLE001
             # 可重试：网络超时、服务降级、OSS 抖动等
             # 标记 failed 后 re-raise，让 ARQ max_tries 机制触发重试
-            final_attempt = int(ctx.get("job_try", 1)) >= 2
+            # A provider timeout can already have incurred cost; packages never
+            # automatically repeat a paid call after an uncertain outcome.
+            final_attempt = (
+                bool(gen.execution_snapshot) or int(ctx.get("job_try", 1)) >= 2
+            )
             gen.status = "failed" if final_attempt else "retryable_failed"
             gen.error_message = "生成服务暂时不可用"[:500]
             gen.last_error_code = type(exc).__name__[:64]

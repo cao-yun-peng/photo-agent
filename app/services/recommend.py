@@ -7,6 +7,7 @@
 - 热门度：use_count 做 log 平滑，避免头部垄断；
 - 官方/公开 Skill 保底曝光。
 """
+
 from __future__ import annotations
 
 import logging
@@ -18,7 +19,7 @@ from sqlalchemy import and_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.photo import Photo
-from app.models.skill import Skill
+from app.models.skill import Skill, SkillVersion
 from app.models.user_profile import UserProfile
 from app.services.oss import sign_get_url
 
@@ -43,7 +44,9 @@ def _popularity_score(use_count: int) -> float:
     return math.log1p(use_count or 0) / 5.0  # 5 是一个经验参考值，可调整
 
 
-def _keyword_match_score(skill: Skill, tags: set[str], weights: dict[str, float]) -> float:
+def _keyword_match_score(
+    skill: Skill, tags: set[str], weights: dict[str, float]
+) -> float:
     """简单关键词匹配：tag 出现在 Skill 名称/描述/Prompt 中即得分。"""
     text = " ".join(
         filter(
@@ -81,23 +84,43 @@ async def recommend_skills(
     """
     # 1. 读取画像
     profile = (
-        await db.execute(
-            select(UserProfile).where(UserProfile.user_id == user_id)
-        )
+        await db.execute(select(UserProfile).where(UserProfile.user_id == user_id))
     ).scalar_one_or_none()
 
     # 2. 读取可访问 Skill（官方 + 公开 + 自己创建）
     skills = (
-        await db.execute(
-            select(Skill).where(
-                or_(
-                    Skill.is_official.is_(True),
-                    Skill.is_public.is_(True),
-                    Skill.owner_id == user_id,
+        (
+            await db.execute(
+                select(Skill).where(
+                    or_(
+                        and_(
+                            Skill.kind == "template",
+                            or_(
+                                Skill.is_official.is_(True),
+                                Skill.is_public.is_(True),
+                                Skill.owner_id == user_id,
+                            ),
+                        ),
+                        and_(
+                            Skill.kind == "package",
+                            Skill.owner_id == user_id,
+                            select(SkillVersion.id)
+                            .where(
+                                SkillVersion.id == Skill.current_version_id,
+                                SkillVersion.skill_id == Skill.id,
+                                SkillVersion.report["can_import"]
+                                .as_boolean()
+                                .is_(True),
+                            )
+                            .exists(),
+                        ),
+                    )
                 )
             )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
 
     if not skills:
         return []
@@ -114,16 +137,20 @@ async def recommend_skills(
 
     if photo_ids:
         photos = (
-            await db.execute(
-                select(Photo).where(
-                    and_(
-                        Photo.id.in_(photo_ids),
-                        Photo.user_id == user_id,
-                        Photo.ai_analysis.is_not(None),
+            (
+                await db.execute(
+                    select(Photo).where(
+                        and_(
+                            Photo.id.in_(photo_ids),
+                            Photo.user_id == user_id,
+                            Photo.ai_analysis.is_not(None),
+                        )
                     )
                 )
             )
-        ).scalars().all()
+            .scalars()
+            .all()
+        )
         for photo in photos:
             analysis = photo.ai_analysis or {}
             for obj in analysis.get("objects", []):
@@ -170,7 +197,9 @@ async def recommend_skills(
             score += 0.1
             reasons.append("官方推荐")
 
-        scored.append((skill, round(score, 4), ", ".join(reasons) if reasons else "为你推荐"))
+        scored.append(
+            (skill, round(score, 4), ", ".join(reasons) if reasons else "为你推荐")
+        )
 
     scored.sort(key=lambda x: x[1], reverse=True)
 
@@ -182,6 +211,11 @@ async def recommend_skills(
                 "id": str(skill.id),
                 "name": skill.name,
                 "description": skill.description,
+                "kind": skill.kind,
+                "current_version_id": str(skill.current_version_id)
+                if skill.current_version_id
+                else None,
+                "requires_plan_review": skill.kind == "package",
                 "cover_url": sign_get_url(skill.cover_key) if skill.cover_key else None,
                 "is_official": skill.is_official,
                 "score": score,

@@ -1,5 +1,5 @@
 import type { components } from './generated';
-import { clearSession, readSession } from '@/lib/auth/session';
+import { clearSessionIfCurrent, readSession, sessionEpoch, sessionSignal } from '@/lib/auth/session';
 import {
   API_ORIGIN,
   newRequestLogId,
@@ -7,7 +7,8 @@ import {
   type ApiFailure,
 } from './client';
 
-export type AgentRunRequest = components['schemas']['AgentRunRequest'];
+export type AgentUIAction = { action: 'reject_photo'; photo_id: string; batch_id: string } | { action: 'undo_feedback'; undo_id: string } | { action: 'continue_search' };
+export type AgentRunRequest = components['schemas']['AgentRunRequest'] & { ui_action?: AgentUIAction };
 
 export interface AgentEvent {
   type: string;
@@ -41,42 +42,38 @@ function parseEvent(data: string): AgentEvent {
   };
 }
 
-function frameBoundary(buffer: string): { index: number; length: number } | null {
-  const matches = [
-    { index: buffer.indexOf('\r\n\r\n'), length: 4 },
-    { index: buffer.indexOf('\n\n'), length: 2 },
-    { index: buffer.indexOf('\r\r'), length: 2 },
-  ].filter((match) => match.index >= 0);
-  matches.sort((left, right) => left.index - right.index);
-  return matches[0] || null;
-}
-
 export function createSseParser(onEvent: (event: AgentEvent) => void) {
-  let buffer = '';
-
-  const parseFrame = (frame: string) => {
-    const data = frame
-      .split(/\r\n|\r|\n/)
-      .filter((line) => line.startsWith('data:'))
-      .map((line) => line.slice(5).replace(/^ /, ''))
-      .join('\n');
-    if (data) onEvent(parseEvent(data));
-  };
-
+  const onData = (data: string) => { if (data) onEvent(parseEvent(data)); };
+  let line = '';
+  let data: string[] = [];
+  let skipLf = false;
+  function finishLine() {
+    if (line === '') {
+      if (data.length) onData(data.join('\n'));
+      data = [];
+    } else if (line === 'data' || line.startsWith('data:')) {
+      data.push(line === 'data' ? '' : line.slice(5).replace(/^ /, ''));
+    }
+    line = '';
+  }
   return {
     feed(text: string) {
-      buffer += text;
-      let boundary = frameBoundary(buffer);
-      while (boundary) {
-        const frame = buffer.slice(0, boundary.index);
-        buffer = buffer.slice(boundary.index + boundary.length);
-        if (frame.trim()) parseFrame(frame);
-        boundary = frameBoundary(buffer);
+      for (const char of text) {
+        if (skipLf) {
+          skipLf = false;
+          if (char === '\n') continue;
+        }
+        if (char === '\r' || char === '\n') {
+          finishLine();
+          skipLf = char === '\r';
+        } else line += char;
       }
     },
     flush() {
-      if (buffer.trim()) parseFrame(buffer);
-      buffer = '';
+      if (line) finishLine();
+      if (data.length) onData(data.join('\n'));
+      data = [];
+      skipLf = false;
     },
   };
 }
@@ -122,19 +119,21 @@ export async function streamAgent(
   options: AgentStreamOptions = {},
 ): Promise<AgentEvent[]> {
   const session = readSession();
+  const epoch = sessionEpoch();
   const response = await fetch(`${API_ORIGIN}/agent/stream`, {
     method: 'POST',
     headers: {
       Accept: 'text/event-stream',
+      'X-Timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
       'Content-Type': 'application/json',
       'X-Log-ID': newRequestLogId(),
       ...(session ? { Authorization: `Bearer ${session.accessToken}` } : {}),
     },
     body: JSON.stringify(request),
-    signal: options.signal,
+    signal: options.signal ? AbortSignal.any([options.signal, sessionSignal()]) : sessionSignal(),
   });
 
-  if (response.status === 401) clearSession();
+  if (response.status === 401) clearSessionIfCurrent(session?.accessToken, epoch);
   if (!response.ok) {
     let body: unknown;
     try {
@@ -156,6 +155,7 @@ export async function streamAgent(
   const events: AgentEvent[] = [];
   let streamError: ApiFailure | null = null;
   await parseAgentEventStream(response.body, (event) => {
+    if (epoch !== sessionEpoch()) throw new DOMException('Session changed', 'AbortError');
     events.push(event);
     options.onEvent?.(event);
     if (event.type === 'error') streamError = eventFailure(event.payload);

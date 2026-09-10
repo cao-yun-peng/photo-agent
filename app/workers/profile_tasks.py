@@ -4,6 +4,7 @@
 - 单用户：arq app.workers.tasks.WorkerSettings 后，通过 enqueue_profile_update(user_id) 入队；
 - 全量：命令行 `python -m app.workers.profile_tasks` 会遍历所有有事件的用户并更新画像。
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -39,11 +40,7 @@ async def aggregate_user_profile(ctx: dict, user_id: str) -> dict:
 async def aggregate_all_profiles(ctx: dict | None = None) -> dict:
     """ARQ 任务 / 管理命令：重建所有有事件用户的画像。"""
     async with AsyncSessionLocal() as db:
-        rows = (
-            await db.execute(
-                select(distinct(UserEvent.user_id))
-            )
-        ).scalars().all()
+        rows = (await db.execute(select(distinct(UserEvent.user_id)))).scalars().all()
 
     updated = 0
     failed = 0

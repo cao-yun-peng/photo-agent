@@ -2,58 +2,21 @@
 
 from __future__ import annotations
 
-import base64
-import hashlib
-import json
 import logging
 import math
 from datetime import datetime, timezone
 from uuid import UUID
 
-from redis.asyncio import Redis
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.services.search_budget import model_call
 from app.models.photo import Photo
 from app.models.user_profile import UserProfile
 from app.services.ai import embed_query
 
 logger = logging.getLogger(__name__)
-
-SEARCH_SELECTION_POOL_SIZE = 5
-SEARCH_RESULT_MODES = frozenset({"browse", "best", "select"})
-
-
-def resolve_search_result_limits(
-    result_mode: str,
-    requested_limit: int,
-    *,
-    complete_result_set: bool = False,
-) -> tuple[int | None, int | None]:
-    """返回（输出数量，判同候选数量）。
-
-    普通搜索最多展示 Top-5；最佳单图模式仍先比较 Top-5，再只输出第一张，
-    避免把“Top-1”错误实现为只检查向量召回的原始第一名。
-    用户自选模式按用户要求返回任意正整数数量；complete_result_set=True 时
-    两个返回值均为 None，表示不做 Top-N 截断并扫描全部符合硬条件的索引项。
-    """
-    if result_mode not in SEARCH_RESULT_MODES:
-        raise ValueError(f"unsupported search result mode: {result_mode}")
-    if result_mode == "select":
-        if complete_result_set:
-            return None, None
-        output_limit = max(1, int(requested_limit))
-        return output_limit, output_limit
-    output_limit = (
-        1
-        if result_mode == "best"
-        else min(
-            requested_limit,
-            SEARCH_SELECTION_POOL_SIZE,
-        )
-    )
-    return output_limit, SEARCH_SELECTION_POOL_SIZE
 
 
 def infer_complete_result_filters(query: str) -> dict[str, object]:
@@ -218,73 +181,60 @@ def build_search_coverage_hint(
     return "；".join(messages) or None
 
 
-# ------------------------------------------------------------------
-# Redis 连接（懒加载单例）
-# ------------------------------------------------------------------
-_redis: Redis | None = None
-
-
-async def _get_redis() -> Redis:
-    global _redis
-    if _redis is None:
-        _redis = Redis.from_url(settings.redis_url, decode_responses=True)
-    return _redis
-
-
-# ------------------------------------------------------------------
-# Embedding 缓存
-# ------------------------------------------------------------------
-_EMB_TTL = 24 * 3600
-_EMB_PREFIX = "emb:q:"
-
-
-def _emb_key(text: str) -> str:
-    """按查询文本的 sha1 存 key，跨用户共享（Embedding 与用户无关）。"""
-    digest = hashlib.sha1(text.strip().encode("utf-8")).hexdigest()
-    return f"{_EMB_PREFIX}{digest}"
+_EMB_TTL = 3600
 
 
 async def get_query_embedding(text: str) -> tuple[list[float], bool]:
-    """
-    返回 (向量, 是否命中缓存)。
-    - 命中 → 直接返回 Redis 里的值
-    - 未命中 → 调 DashScope，写回缓存
+    from app.services.search_cache import cache_key, cached_call
+    from app.services.ai import _EMB_URL, _is_mock
 
-    Redis 读容错：Redis 不可用时降级为 cache miss，不阻断搜索。
-    """
-    key = _emb_key(text)
-    try:
-        r = await _get_redis()
-        hit = await r.get(key)
-        if hit:
-            try:
-                return json.loads(hit), True
-            except json.JSONDecodeError:
-                # 数据损坏就当作未命中
-                await r.delete(key)
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("cache read failed, treating as miss: %s", exc)
+    key = cache_key(
+        "embedding",
+        [
+            _EMB_URL,
+            settings.qwen_embedding_model,
+            1024,
+            "query",
+            text.strip(),
+            _is_mock(),
+        ],
+    )
 
-    vec = await embed_query(text)
-    try:
-        r = await _get_redis()
-        await r.setex(key, _EMB_TTL, json.dumps(vec))
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("cache write failed: %s", exc)
-    return vec, False
+    def validate(value):
+        if (
+            not isinstance(value, list)
+            or len(value) != 1024
+            or any(
+                not isinstance(x, (int, float)) or not math.isfinite(x) for x in value
+            )
+        ):
+            raise ValueError("invalid embedding cache")
+        return value
+
+    return await cached_call(
+        key,
+        lambda: model_call("embedding", lambda: embed_query(text)),
+        ttl=_EMB_TTL,
+        validate=validate,
+    )
 
 
 # ------------------------------------------------------------------
 # 混合评分
 # ------------------------------------------------------------------
-def recency_score(taken_at: datetime | None, half_life_days: float = 30.0) -> float:
+def recency_score(
+    taken_at: datetime | None,
+    half_life_days: float = 30.0,
+    *,
+    now: datetime | None = None,
+) -> float:
     """
     时间新鲜度：越接近今天分数越高，指数衰减，半衰期 30 天。
     photos 没拍摄时间的按 0.3 计（保底，不至于完全沉底）。
     """
     if taken_at is None:
         return 0.3
-    now = datetime.now(timezone.utc)
+    now = now or datetime.now(timezone.utc)
     delta = (now - taken_at).total_seconds() / 86400.0
     if delta < 0:
         # 未来时间（EXIF 异常），当作今天
@@ -310,28 +260,11 @@ def combine(
 ) -> float:
     """加权求和；权重会归一。"""
     total = max(w_sem + w_rec + w_int, 1e-6)
-    return (sem * w_sem + rec * w_rec + interaction * w_int) / total
+    return round((sem * w_sem + rec * w_rec + interaction * w_int) / total, 8)
 
 
 # ------------------------------------------------------------------
 # 游标编解码
-# ------------------------------------------------------------------
-def encode_cursor(final_score: float, photo_id: UUID) -> str:
-    raw = f"{final_score:.8f}|{photo_id}"
-    return base64.urlsafe_b64encode(raw.encode("ascii")).decode("ascii")
-
-
-def decode_cursor(cursor: str) -> tuple[float, str] | None:
-    try:
-        raw = base64.urlsafe_b64decode(cursor.encode("ascii")).decode("ascii")
-        score_str, pid = raw.split("|", 1)
-        return float(score_str), pid
-    except Exception:  # noqa: BLE001
-        return None
-
-
-# ------------------------------------------------------------------
-# 个性化交互分 s_int
 # ------------------------------------------------------------------
 async def get_user_profile(
     db: AsyncSession,
@@ -401,69 +334,3 @@ def _cosine_distance(a: list[float], b: list[float]) -> float:
     if norm_a <= 1e-9 or norm_b <= 1e-9:
         return 2.0
     return 1.0 - dot / (norm_a * norm_b)
-
-
-async def smart_album_fallback(
-    db: AsyncSession,
-    user_id: UUID,
-    query: str | None = None,
-    limit: int = 20,
-    cursor: str | None = None,
-    w_semantic: float = 0.4,
-    w_recency: float = 0.35,
-    w_interaction: float = 0.25,
-) -> tuple[list[tuple[Photo, float, float, float, float]], str | None]:
-    """智能全量相册兜底：对用户全部照片按语义+新鲜度+个性化综合排序。
-
-    Args:
-        db: 数据库会话。
-        user_id: 用户 ID。
-        query: 可选查询文本；提供时按语义相似度排序，否则主要按新鲜度+个性化。
-        limit: 每页数量。
-        cursor: 复合游标。
-        w_semantic, w_recency, w_interaction: 排序权重。
-
-    Returns:
-        (排序后的照片及分数列表, next_cursor)
-    """
-    profile = await get_user_profile(db, user_id)
-    query_vec: list[float] | None = None
-    if query:
-        query_vec, _ = await get_query_embedding(query)
-
-    stmt = select(Photo).where(Photo.user_id == user_id)
-    result = await db.execute(stmt)
-    photos = result.scalars().all()
-
-    scored: list[tuple[Photo, float, float, float, float]] = []
-    for photo in photos:
-        s_sem = 0.0
-        if query_vec and photo.embedding:
-            s_sem = semantic_score(_cosine_distance(photo.embedding, query_vec))
-        s_rec = recency_score(photo.taken_at)
-        s_int = personalized_interaction_score(profile, photo)
-        final = combine(s_sem, s_rec, s_int, w_semantic, w_recency, w_interaction)
-        scored.append(
-            (photo, round(s_sem, 4), round(s_rec, 4), round(s_int, 4), round(final, 4))
-        )
-
-    scored.sort(key=lambda x: x[4], reverse=True)
-
-    if cursor:
-        parsed_cursor = decode_cursor(cursor)
-        if parsed_cursor is not None:
-            cur_score, cur_id = parsed_cursor
-            scored = [
-                (p, sem, rec, inter, fin)
-                for (p, sem, rec, inter, fin) in scored
-                if fin < cur_score
-                or (abs(fin - cur_score) < 1e-9 and str(p.id) > cur_id)
-            ]
-
-    page = scored[:limit]
-    next_cursor = None
-    if len(page) == limit and len(scored) > limit:
-        last_p, _, _, _, last_score = page[-1]
-        next_cursor = encode_cursor(last_score, last_p.id)
-
-    return page, next_cursor

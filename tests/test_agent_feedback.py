@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from app.services.agent_runtime import _apply_result_feedback_to_state
+from app.services.agent_actions import _apply_result_feedback_to_state
 from app.services.agent_state import AgentState
 
 

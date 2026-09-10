@@ -61,6 +61,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/workspace": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Workspace */
+        get: operations["get_workspace_workspace_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workspace/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply */
+        post: operations["apply_workspace_actions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workspace/actions/{operation_id}/undo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Undo */
+        post: operations["undo_workspace_actions__operation_id__undo_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workspace/albums/{album_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Album */
+        get: operations["get_album_workspace_albums__album_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/wechat": {
         parameters: {
             query?: never;
@@ -274,11 +342,76 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * 智能全量相册兜底（语义+新鲜度+个性化排序）
-         * @description 当普通搜索无结果时，返回用户全量相册的智能排序结果。
-         */
+        /** 智能全量相册兜底（语义+新鲜度+个性化排序） */
         post: operations["album_fallback_search_album_fallback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/skills/packages/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Preview Package */
+        post: operations["preview_package_skills_packages_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/skills/packages/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import Package */
+        post: operations["import_package_skills_packages_import_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/skills/{skill_id}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Versions */
+        get: operations["list_versions_skills__skill_id__versions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/skills/{skill_id}/versions/{version_id}/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Asset */
+        get: operations["get_asset_skills__skill_id__versions__version_id__assets_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -416,6 +549,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/provider-calls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 当前用户最近调用费用，包含未能创建方案的调用 */
+        get: operations["recent_provider_calls_provider_calls_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/generations/{generation_id}/cost": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 规划、生图和核验的逐次用量与费用估算 */
+        get: operations["generation_call_cost_generations__generation_id__cost_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/photos/{photo_id}/generate": {
         parameters: {
             query?: never;
@@ -478,6 +645,57 @@ export interface paths {
         get: operations["get_generation_generations__generation_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/generations/{generation_id}/inputs/{position}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Generation Input */
+        get: operations["get_generation_input_generations__generation_id__inputs__position__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/generations/{generation_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Generation Route */
+        post: operations["cancel_generation_route_generations__generation_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/generations/{generation_id}/iterations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Iterate Generation Route */
+        post: operations["iterate_generation_route_generations__generation_id__iterations_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -577,11 +795,25 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ActionOut */
+        ActionOut: {
+            workspace: components["schemas"]["WorkspaceOut"];
+            /**
+             * Operation Id
+             * Format: uuid
+             */
+            operation_id: string;
+            /** Can Undo */
+            can_undo: boolean;
+            /** Report */
+            report?: Record<string, never> | null;
+        };
         /**
          * AgentRunRequest
          * @description 运行 Agent 的请求。
          */
         AgentRunRequest: {
+            ui_action?: components["schemas"]["AgentUIAction"] | null;
             /** Query */
             query: string;
             /**
@@ -589,6 +821,11 @@ export interface components {
              * @description 续接已有会话 ID
              */
             session_id?: string | null;
+            /**
+             * Feedback Batch Id
+             * @description 用户反馈所针对的结果批次；旧客户端可省略
+             */
+            feedback_batch_id?: string | null;
             /**
              * Selected Photo Id
              * @description 用户在当前候选列表中明确点击选择的照片 ID
@@ -611,6 +848,20 @@ export interface components {
             state: Record<string, never>;
             /** Status */
             status: string;
+        };
+        /** AgentUIAction */
+        AgentUIAction: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "reject_photo" | "undo_feedback" | "continue_search";
+            /** Photo Id */
+            photo_id?: string | null;
+            /** Batch Id */
+            batch_id?: string | null;
+            /** Undo Id */
+            undo_id?: string | null;
         };
         /**
          * AlbumFallbackQuery
@@ -642,8 +893,87 @@ export interface components {
              */
             w_interaction: number;
         };
+        /** AlbumSummary */
+        AlbumSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Count */
+            count: number;
+        };
+        /** CreativePlan */
+        CreativePlan: {
+            /** Observation */
+            observation: string;
+            /** Concept */
+            concept: string;
+            /** Retain */
+            retain: string[];
+            /** Transform */
+            transform: string[];
+            /** Discard */
+            discard: string[];
+            /** Title */
+            title: string;
+            /** Production Prompt */
+            production_prompt: string;
+        };
+        /** ExecutionImage */
+        ExecutionImage: {
+            /** Position */
+            position: number;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "subject" | "style";
+            /** Path */
+            path: string;
+            /** Sha256 */
+            sha256: string;
+        };
+        /** ExecutionSnapshot */
+        ExecutionSnapshot: {
+            /** Contract */
+            contract: string;
+            /** Skill Name */
+            skill_name: string;
+            /** Skill Version Id */
+            skill_version_id: string;
+            /** Model */
+            model: string;
+            /** Size */
+            size: string;
+            /** Planner Mode */
+            planner_mode: string;
+            plan: components["schemas"]["CreativePlan"];
+            /** Inputs */
+            inputs: components["schemas"]["ExecutionImage"][];
+        } & {
+            [key: string]: unknown;
+        };
+        /** ExplicitPreferences */
+        ExplicitPreferences: {
+            /**
+             * Preferred Subject
+             * @default none
+             * @enum {string}
+             */
+            preferred_subject: "none" | "people" | "landscape";
+            /**
+             * Title Mode
+             * @default auto
+             * @enum {string}
+             */
+            title_mode: "auto" | "none";
+        };
         /** GenerateRequest */
         GenerateRequest: {
+            package_options?: components["schemas"]["PackageOptions"] | null;
             /** Skill Id */
             skill_id?: string | null;
             /** Extra Prompt */
@@ -660,6 +990,15 @@ export interface components {
              * Format: uuid
              */
             confirmation_token: string;
+            /** Execution Digest */
+            execution_digest?: string | null;
+        };
+        /** GenerationIterationRequest */
+        GenerationIterationRequest: {
+            /** Feedback */
+            feedback: string;
+            /** Idempotency Key */
+            idempotency_key: string;
         };
         /** GenerationOut */
         GenerationOut: {
@@ -668,6 +1007,25 @@ export interface components {
              * Format: uuid
              */
             id: string;
+            /**
+             * Progress Stage
+             * @default awaiting_confirmation
+             */
+            progress_stage: string;
+            /** Parent Generation Id */
+            parent_generation_id?: string | null;
+            /** Root Generation Id */
+            root_generation_id?: string | null;
+            /**
+             * Iteration Index
+             * @default 0
+             */
+            iteration_index: number;
+            execution_snapshot?: components["schemas"]["ExecutionSnapshot"] | null;
+            /** Execution Digest */
+            execution_digest?: string | null;
+            /** Verification */
+            verification?: Record<string, never> | null;
             /** Source Photo Id */
             source_photo_id: string | null;
             /** Skill Id */
@@ -731,6 +1089,116 @@ export interface components {
             /** Avatar Url */
             avatar_url?: string | null;
         };
+        /** PackageAssetInfo */
+        PackageAssetInfo: {
+            /** Path */
+            path: string;
+            /** Media Type */
+            media_type: string;
+            /** Size */
+            size: number;
+            /** Sha256 */
+            sha256: string;
+        };
+        /** PackageImportOut */
+        PackageImportOut: {
+            /**
+             * Skill Id
+             * Format: uuid
+             */
+            skill_id: string;
+            /**
+             * Version Id
+             * Format: uuid
+             */
+            version_id: string;
+            /** Deduplicated */
+            deduplicated: boolean;
+        };
+        /** PackageOptions */
+        PackageOptions: {
+            /**
+             * Title Mode
+             * @default auto
+             * @enum {string}
+             */
+            title_mode: "none" | "auto" | "exact";
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+        };
+        /** PackageReport */
+        PackageReport: {
+            /**
+             * Schema Version
+             * @default 1
+             * @constant
+             * @enum {integer}
+             */
+            schema_version: 1;
+            /**
+             * Importer Version
+             * @default skill-zip-v1
+             */
+            importer_version: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description: string;
+            /** Root */
+            root: string;
+            /** Content Sha256 */
+            content_sha256: string;
+            /** Source */
+            source?: string | null;
+            /** License */
+            license?: string | null;
+            /** Assets */
+            assets: components["schemas"]["PackageAssetInfo"][];
+            /** References */
+            references: {
+                [key: string]: string[];
+            };
+            /** Cover Path */
+            cover_path?: string | null;
+            /** Cover Data Url */
+            cover_data_url?: string | null;
+            /** Warnings */
+            warnings?: string[];
+            /** Errors */
+            errors?: string[];
+            /** Supported */
+            supported?: string[];
+            /**
+             * Execution Status
+             * @default planning_available
+             * @enum {string}
+             */
+            execution_status: "not_available" | "planning_available";
+            /**
+             * Can Import
+             * @default true
+             */
+            can_import: boolean;
+        };
+        /** PackageVersionOut */
+        PackageVersionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Skill Id
+             * Format: uuid
+             */
+            skill_id: string;
+            report: components["schemas"]["PackageReport"];
+            /** Instructions */
+            instructions: string;
+        };
         /**
          * ParsedQuery
          * @description query_parser 拆解后的结构化条件。留白位可以让 auto_parse=True 时生效。
@@ -738,6 +1206,10 @@ export interface components {
         ParsedQuery: {
             /** Semantic */
             semantic: string;
+            /** Date Kind */
+            date_kind?: "capture_time_range" | null;
+            /** Date Source */
+            date_source?: string | null;
             /** From Date */
             from_date?: string | null;
             /** To Date */
@@ -882,6 +1354,38 @@ export interface components {
         PhotoProcessingStatusBatchResponse: {
             /** Items */
             items: components["schemas"]["PhotoProcessingStatus"][];
+        };
+        /** ProviderCostOut */
+        ProviderCostOut: {
+            /** Currency */
+            currency: string;
+            /** Scope */
+            scope: string;
+            /** Call Count */
+            call_count: number;
+            /** Estimated Yuan Known */
+            estimated_yuan_known: number;
+            /** Unknown Estimate Count */
+            unknown_estimate_count: number;
+            /** Actual Yuan */
+            actual_yuan: number | null;
+            /** Complete */
+            complete: boolean;
+            /** Billing Status */
+            billing_status: string;
+            /** Calls */
+            calls: Record<string, never>[];
+            /** Generation Id */
+            generation_id?: string | null;
+            /** Scope Note */
+            scope_note?: string | null;
+            /**
+             * Truncated
+             * @default false
+             */
+            truncated: boolean;
+            /** Limit */
+            limit?: number | null;
         };
         /** QuotaInfo */
         QuotaInfo: {
@@ -1138,6 +1642,11 @@ export interface components {
              */
             zero_match_filtered: boolean;
             /**
+             * Unverified Count
+             * @default 0
+             */
+            unverified_count: number;
+            /**
              * Unjudged Filtered Count
              * @default 0
              */
@@ -1201,6 +1710,19 @@ export interface components {
         };
         /** SearchResult */
         SearchResult: {
+            /** Search Id */
+            search_id?: string | null;
+            /** Stop Reason */
+            stop_reason?: string | null;
+            /**
+             * Unverified Count
+             * @default 0
+             */
+            unverified_count: number;
+            /** Search Usage */
+            search_usage?: {
+                [key: string]: number;
+            };
             /** Items */
             items: components["schemas"]["SearchResultItem"][];
             /** Total */
@@ -1272,6 +1794,12 @@ export interface components {
             /** Status */
             status: string;
             /**
+             * Verification Status
+             * @default unverified
+             * @enum {string}
+             */
+            verification_status: "match" | "uncertain" | "contradiction" | "unverified";
+            /**
              * Score Semantic
              * @default 0
              */
@@ -1332,6 +1860,13 @@ export interface components {
              * Format: uuid
              */
             id: string;
+            /**
+             * Kind
+             * @default template
+             */
+            kind: string;
+            /** Current Version Id */
+            current_version_id?: string | null;
             /** Owner Id */
             owner_id: string | null;
             /** Name */
@@ -1385,6 +1920,33 @@ export interface components {
             /** Is Public */
             is_public?: boolean | null;
         };
+        /** TaskMemory */
+        TaskMemory: {
+            /**
+             * Goal
+             * @default
+             */
+            goal: string;
+            /**
+             * Target Count
+             * @default 12
+             */
+            target_count: number;
+            /**
+             * Min Group Count
+             * @default 0
+             */
+            min_group_count: number;
+            /**
+             * Prefer Landscape
+             * @default false
+             */
+            prefer_landscape: boolean;
+            /** Locked Ids */
+            locked_ids?: string[];
+            /** Excluded Ids */
+            excluded_ids?: string[];
+        };
         /** TokenResponse */
         TokenResponse: {
             /** Access Token */
@@ -1396,6 +1958,21 @@ export interface components {
             token_type: string;
             /** Expires In */
             expires_in: number;
+        };
+        /** UndoCommand */
+        UndoCommand: {
+            /** Expected Revision */
+            expected_revision: number;
+        };
+        /** UndoInfo */
+        UndoInfo: {
+            /**
+             * Operation Id
+             * Format: uuid
+             */
+            operation_id: string;
+            /** Expires At */
+            expires_at: string;
         };
         /**
          * UploadUrlRequest
@@ -1464,6 +2041,77 @@ export interface components {
             /** Error Type */
             type: string;
         };
+        /** WorkspaceCommand */
+        WorkspaceCommand: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "add_selection" | "remove_selection" | "clear_selection" | "set_task" | "set_preferences" | "set_fact" | "clear_fact" | "clear_facts" | "curate" | "save_album" | "load_album" | "delete_album";
+            /** Expected Revision */
+            expected_revision: number;
+            /** Idempotency Key */
+            idempotency_key: string;
+            /** Photo Ids */
+            photo_ids?: string[];
+            /** Album Id */
+            album_id?: string | null;
+            /** Title */
+            title?: string | null;
+            task?: components["schemas"]["TaskMemory"] | null;
+            preferences?: components["schemas"]["ExplicitPreferences"] | null;
+            /** Photo Version */
+            photo_version?: string | null;
+            /** Fact */
+            fact?: string | null;
+        };
+        /** WorkspaceOut */
+        WorkspaceOut: {
+            /** Revision */
+            revision: number;
+            /** Selection */
+            selection: components["schemas"]["WorkspacePhoto"][];
+            task: components["schemas"]["TaskMemory"];
+            preferences: components["schemas"]["ExplicitPreferences"];
+            /** Memory Source */
+            memory_source: string;
+            /** Updated At */
+            updated_at?: string | null;
+            /** Task Updated At */
+            task_updated_at?: string | null;
+            /** Preferences Updated At */
+            preferences_updated_at?: string | null;
+            /** Albums */
+            albums: components["schemas"]["AlbumSummary"][];
+            /** Missing Selection Count */
+            missing_selection_count: number;
+            undo?: components["schemas"]["UndoInfo"] | null;
+            /** Selection Report */
+            selection_report?: Record<string, never> | null;
+            /** Facts */
+            facts?: Record<string, never>[];
+        };
+        /** WorkspacePhoto */
+        WorkspacePhoto: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Version */
+            version: string;
+            /** Thumb Url */
+            thumb_url?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Correction */
+            correction?: Record<string, never> | null;
+            /**
+             * Correction Stale
+             * @default false
+             */
+            correction_stale: boolean;
+        };
     };
     responses: never;
     parameters: never;
@@ -1529,6 +2177,125 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_workspace_workspace_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkspaceOut"];
+                };
+            };
+        };
+    };
+    apply_workspace_actions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkspaceCommand"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    undo_workspace_actions__operation_id__undo_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                operation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UndoCommand"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_album_workspace_albums__album_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                album_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1969,6 +2736,131 @@ export interface operations {
             };
         };
     };
+    preview_package_skills_packages_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/zip": string;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackageReport"];
+                };
+            };
+        };
+    };
+    import_package_skills_packages_import_post: {
+        parameters: {
+            query: {
+                expected_hash: string;
+                skill_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/zip": string;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackageImportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_versions_skills__skill_id__versions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                skill_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackageVersionOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_asset_skills__skill_id__versions__version_id__assets_get: {
+        parameters: {
+            query: {
+                path: string;
+            };
+            header?: never;
+            path: {
+                skill_id: string;
+                version_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_my_skills_skills_get: {
         parameters: {
             query?: never;
@@ -2235,6 +3127,57 @@ export interface operations {
             };
         };
     };
+    recent_provider_calls_provider_calls_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProviderCostOut"];
+                };
+            };
+        };
+    };
+    generation_call_cost_generations__generation_id__cost_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                generation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProviderCostOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     create_generation_photos__photo_id__generate_post: {
         parameters: {
             query?: never;
@@ -2368,6 +3311,102 @@ export interface operations {
             };
         };
     };
+    get_generation_input_generations__generation_id__inputs__position__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                generation_id: string;
+                position: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_generation_route_generations__generation_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                generation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenerationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    iterate_generation_route_generations__generation_id__iterations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                generation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerationIterationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenerationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     refresh_config_admin_refresh_post: {
         parameters: {
             query?: {
@@ -2478,15 +3517,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": Record<string, never>;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

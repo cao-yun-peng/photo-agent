@@ -177,6 +177,9 @@ class SearchResultItem(BaseModel):
     ai_description: str | None = None
     status: str
     # 分数拆解，前端可选择显示
+    verification_status: Literal[
+        "match", "uncertain", "contradiction", "unverified"
+    ] = "unverified"
     score_semantic: float = 0.0
     score_recency: float = 0.0
     score_interaction: float = 0.0
@@ -187,6 +190,8 @@ class ParsedQuery(BaseModel):
     """query_parser 拆解后的结构化条件。留白位可以让 auto_parse=True 时生效。"""
 
     semantic: str
+    date_kind: Literal["capture_time_range"] | None = None
+    date_source: str | None = None
     from_date: date | None = None
     to_date: date | None = None
     place: str | None = None
@@ -218,6 +223,7 @@ class SearchRerankCheck(BaseModel):
     contradiction_count: int = 0
     rejected_count: int = 0
     zero_match_filtered: bool = False
+    unverified_count: int = 0
     unjudged_filtered_count: int = 0
     cache_hit: bool = False
     latency_ms: float = 0.0
@@ -248,6 +254,10 @@ class SearchIndexCoverage(BaseModel):
 
 
 class SearchResult(BaseModel):
+    search_id: str | None = None
+    stop_reason: str | None = None
+    unverified_count: int = 0
+    search_usage: dict[str, float] = Field(default_factory=dict)
     items: list[SearchResultItem]
     total: int
     result_mode: Literal["browse", "best", "select"] = "browse"

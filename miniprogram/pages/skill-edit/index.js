@@ -11,7 +11,7 @@ Page({
     reference_keys: [],
     reference_urls: [],   // 展示用
     is_public: false,
-    model: 'wanx-v1',
+    model: 'wanx2.1-imageedit',
     saving: false,
   },
 
@@ -34,7 +34,7 @@ Page({
           k.startsWith('http') ? k : `${API_BASE}/_mock/oss/${k}`
         ),
         is_public: s.is_public,
-        model: s.model,
+        model: ['wanx2.1-imageedit', 'gpt-image-2'].includes(s.model) ? s.model : '',
       });
     } catch (err) {
       wx.showToast({ title: err.detail || '加载失败', icon: 'none' });
@@ -96,6 +96,10 @@ Page({
   async onSave() {
     if (!this.data.name.trim() || !this.data.prompt_template.trim()) {
       wx.showToast({ title: '名字和提示词必填', icon: 'none' });
+      return;
+    }
+    if (!['wanx2.1-imageedit', 'gpt-image-2'].includes(this.data.model)) {
+      wx.showToast({ title: '请选择支持的模型', icon: 'none' });
       return;
     }
     this.setData({ saving: true });

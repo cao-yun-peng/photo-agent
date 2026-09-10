@@ -1,0 +1,113 @@
+{
+  "concept": "snow_mountain",
+  "slot": 25,
+  "rank": 3,
+  "search": "intitle:snow mountain landscape filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Vera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg/1280px-Vera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg",
+  "commons_page": {
+    "pageid": 177421411,
+    "ns": 6,
+    "title": "File:Vera C Rubin Observatory in the Snow (IMG 0315-CC).jpg",
+    "index": 3,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 13415335,
+        "width": 5829,
+        "height": 3218,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Vera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg/1280px-Vera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 707,
+        "responsiveUrls": {
+          "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Vera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg/3840px-Vera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Vera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg/1280px-Vera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 707,
+          "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Vera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg/3840px-Vera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/64/Vera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Vera_C_Rubin_Observatory_in_the_Snow_(IMG_0315-CC).jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=177421411",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2025-11-05 05:33:05",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Vera C Rubin Observatory in the Snow (IMG 0315-CC)",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Retouched pictures|Vera C. Rubin Observatory|Featured pictures of Chile|Featured pictures by others nominated by Yann Forget|Mountains at sunset|Featured pictures of sunsets|Snowy landscapes in Chile|Mountains with clouds|Featured pictures of mountains|NOIRLab Images|Mountains with snow in Chile|Clouds at sunset in Chile|NOIRLab files uploaded by OptimusPrimeBot|Chile photographs taken on 2024-06-15",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "featured",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "<a href=\"https://en.wikipedia.org/wiki/Vera_C._Rubin_Observatory\" class=\"extiw\" title=\"en:Vera C. Rubin Observatory\">Vera C. Rubin Observatory</a> on Cerro Pachón during a snowy day.",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "29 July 2024, 13:15:00 (upload date)",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://noirlab.edu/public/images/IMG_0315-CC\">Vera C. Rubin Observatory in the Snow</a>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "NOIRLab/NSF/AURA/C. Corco",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY 4.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution 4.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by/4.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-4.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,582 @@
+{
+  "batchcomplete": "",
+  "continue": {
+    "gsroffset": 5,
+    "continue": "gsroffset||"
+  },
+  "query": {
+    "pages": {
+      "117706694": {
+        "pageid": 117706694,
+        "ns": 6,
+        "title": "File:Busstation Amsterdam behind train station Amsterdam Centraal. The long glass station roof is located parallel to the river IJ water and the train track. Free city photo by Fons Heijnsbroek, 30 March 2022.tif",
+        "index": 2,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 40715864,
+            "width": 4252,
+            "height": 3189,
+            "pagecount": 1,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Busstation_Amsterdam_behind_train_station_Amsterdam_Centraal._The_long_glass_station_roof_is_located_parallel_to_the_river_IJ_water_and_the_train_track._Free_city_photo_by_Fons_Heijnsbroek%2C_30_March_2022.tif/lossy-page1-1280px-thumbnail.tif.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 960,
+            "responsiveUrls": {
+              "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Busstation_Amsterdam_behind_train_station_Amsterdam_Centraal._The_long_glass_station_roof_is_located_parallel_to_the_river_IJ_water_and_the_train_track._Free_city_photo_by_Fons_Heijnsbroek%2C_30_March_2022.tif/lossy-page1-3840px-thumbnail.tif.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Busstation_Amsterdam_behind_train_station_Amsterdam_Centraal._The_long_glass_station_roof_is_located_parallel_to_the_river_IJ_water_and_the_train_track._Free_city_photo_by_Fons_Heijnsbroek%2C_30_March_2022.tif/lossy-page1-1280px-thumbnail.tif.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 960,
+              "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Busstation_Amsterdam_behind_train_station_Amsterdam_Centraal._The_long_glass_station_roof_is_located_parallel_to_the_river_IJ_water_and_the_train_track._Free_city_photo_by_Fons_Heijnsbroek%2C_30_March_2022.tif/lossy-page1-3840px-thumbnail.tif.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/9/90/Busstation_Amsterdam_behind_train_station_Amsterdam_Centraal._The_long_glass_station_roof_is_located_parallel_to_the_river_IJ_water_and_the_train_track._Free_city_photo_by_Fons_Heijnsbroek%2C_30_March_2022.tif?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Busstation_Amsterdam_behind_train_station_Amsterdam_Centraal._The_long_glass_station_roof_is_located_parallel_to_the_river_IJ_water_and_the_train_track._Free_city_photo_by_Fons_Heijnsbroek,_30_March_2022.tif",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=117706694",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2022-05-05 14:30:49",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Busstation Amsterdam behind train station Amsterdam Centraal. The long glass station roof is located parallel to the river IJ water and the train track. Free city photo by Fons Heijnsbroek, 30 March 2022",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "IJ|Concrete bridges in the Netherlands|Modernist architecture in Amsterdam|Busstation Amsterdam CS (high level)|Infrastructure in Amsterdam|Concrete columns|Self-published work|Roads in Amsterdam|Platforms in the Netherlands|Netherlands photographs taken on 2022-03-30|March 2022 in Amsterdam|Roofs in the Netherlands (structural systems)|Concrete buildings in Amsterdam|Transparent roofs in Amsterdam|Steel constructions|Photographs by Fons Heijnsbroek in Amsterdam (2022)|Stationsplein area, neighbourhood of Amsterdam, in photos by Fons Heijnsbroek",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Busstation Amsterdam behind train station Amsterdam Centraal. The long bowed glass station roof is located parallel to the river IJ water and the train track - modern and spatial architecture. Free city photo by Fons Heijnsbroek, 30 March 2022",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2022-03-30",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a href=\"//commons.wikimedia.org/wiki/User:FotoDutch\" title=\"User:FotoDutch\">Fons Heijnsbroek</a>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 4.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 4.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/4.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-4.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "144112699": {
+        "pageid": 144112699,
+        "ns": 6,
+        "title": "File:Metro Trains Melbourne X'Trapolis 100 At Union Station Platform 1.jpg",
+        "index": 4,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 11339996,
+            "width": 5184,
+            "height": 3456,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Metro_Trains_Melbourne_X%27Trapolis_100_At_Union_Station_Platform_1.jpg/1280px-Metro_Trains_Melbourne_X%27Trapolis_100_At_Union_Station_Platform_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 853,
+            "responsiveUrls": {
+              "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Metro_Trains_Melbourne_X%27Trapolis_100_At_Union_Station_Platform_1.jpg/3840px-Metro_Trains_Melbourne_X%27Trapolis_100_At_Union_Station_Platform_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Metro_Trains_Melbourne_X%27Trapolis_100_At_Union_Station_Platform_1.jpg/1280px-Metro_Trains_Melbourne_X%27Trapolis_100_At_Union_Station_Platform_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 853,
+              "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Metro_Trains_Melbourne_X%27Trapolis_100_At_Union_Station_Platform_1.jpg/3840px-Metro_Trains_Melbourne_X%27Trapolis_100_At_Union_Station_Platform_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/2/24/Metro_Trains_Melbourne_X%27Trapolis_100_At_Union_Station_Platform_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Metro_Trains_Melbourne_X%27Trapolis_100_At_Union_Station_Platform_1.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=144112699",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2024-01-17 05:33:12",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Metro Trains Melbourne X'Trapolis 100 At Union Station Platform 1",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Union railway station, Melbourne|Self-published work|January 2024 in rail transport in Victoria, Australia|Australia photographs taken on 2024-01-15|2024 in rail transport in Melbourne|Passenger trains in Victoria, Australia|Trains at train stations in Victoria, Australia|Rail vehicles in Australia photographed in 2024|Railway photographs taken on 2024-01-15|X'Trapolis 100 in Melbourne",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "An X'Trapolis 100 operated by Metro Trains Melbourne On Platform 1 of Union Station Heading Towards Flinders Street Station On The Belgrave &amp; Lillydale Lines",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "Taken on 15 January 2024, 12:32:05",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "Esc.Trains",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY 4.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution 4.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by/4.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-4.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "135306720": {
+        "pageid": 135306720,
+        "ns": 6,
+        "title": "File:One platform, two trains - geograph.org.uk - 5202532.jpg",
+        "index": 3,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 152946,
+            "width": 1024,
+            "height": 768,
+            "thumburl": "https://upload.wikimedia.org/wikipedia/commons/0/0e/One_platform%2C_two_trains_-_geograph.org.uk_-_5202532.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+            "thumbwidth": 1280,
+            "thumbheight": 960,
+            "thumbattribs": {
+              "src": "https://upload.wikimedia.org/wikipedia/commons/0/0e/One_platform%2C_two_trains_-_geograph.org.uk_-_5202532.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 960
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/0/0e/One_platform%2C_two_trains_-_geograph.org.uk_-_5202532.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:One_platform,_two_trains_-_geograph.org.uk_-_5202532.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=135306720",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2023-07-31 00:39:22",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "One platform, two trains - geograph.org.uk - 5202532",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Images from Geograph Britain and Ireland|Two trains at the same platform|Platforms at Leeds railway station|Trains at Leeds railway station",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "53.793634",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "-1.549413",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "One platform, two trains <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:One_platform,_two_trains_-_geograph.org.uk_-_5202532.jpg#ooui-php-4\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2016-11-22",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/photo/5202532\">Geograph Britain and Ireland</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:One_platform,_two_trains_-_geograph.org.uk_-_5202532.jpg#P7482\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/6597\">Stephen Craven</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:One_platform,_two_trains_-_geograph.org.uk_-_5202532.jpg#P170\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 2.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 2.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Attribution": {
+                "value": "<i>One platform, two trains</i> by Stephen Craven",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/2.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-2.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "148730328": {
+        "pageid": 148730328,
+        "ns": 6,
+        "title": "File:Platform at Mishima Station, with arriving Tōkaidō Shinkansen train, Mishima, 2016.jpg",
+        "index": 5,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 10531124,
+            "width": 5887,
+            "height": 3914,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Platform_at_Mishima_Station%2C_with_arriving_T%C5%8Dkaid%C5%8D_Shinkansen_train%2C_Mishima%2C_2016.jpg/1280px-Platform_at_Mishima_Station%2C_with_arriving_T%C5%8Dkaid%C5%8D_Shinkansen_train%2C_Mishima%2C_2016.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 851,
+            "responsiveUrls": {
+              "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Platform_at_Mishima_Station%2C_with_arriving_T%C5%8Dkaid%C5%8D_Shinkansen_train%2C_Mishima%2C_2016.jpg/3840px-Platform_at_Mishima_Station%2C_with_arriving_T%C5%8Dkaid%C5%8D_Shinkansen_train%2C_Mishima%2C_2016.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Platform_at_Mishima_Station%2C_with_arriving_T%C5%8Dkaid%C5%8D_Shinkansen_train%2C_Mishima%2C_2016.jpg/1280px-Platform_at_Mishima_Station%2C_with_arriving_T%C5%8Dkaid%C5%8D_Shinkansen_train%2C_Mishima%2C_2016.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 851,
+              "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Platform_at_Mishima_Station%2C_with_arriving_T%C5%8Dkaid%C5%8D_Shinkansen_train%2C_Mishima%2C_2016.jpg/3840px-Platform_at_Mishima_Station%2C_with_arriving_T%C5%8Dkaid%C5%8D_Shinkansen_train%2C_Mishima%2C_2016.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/3/30/Platform_at_Mishima_Station%2C_with_arriving_T%C5%8Dkaid%C5%8D_Shinkansen_train%2C_Mishima%2C_2016.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Platform_at_Mishima_Station,_with_arriving_T%C5%8Dkaid%C5%8D_Shinkansen_train,_Mishima,_2016.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=148730328",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2024-05-26 09:28:19",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Platform at Mishima Station, with arriving Tōkaidō Shinkansen train, Mishima, 2016",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Taken with Nikon D3200|CC-Zero|Self-published work|Train station platforms in Shizuoka prefecture|March 2016 in rail transport in Shizuoka prefecture|Files with coordinates missing SDC location of creation|Japan photographs taken on 2016-03-28|Tokaido Shinkansen platforms|2016 photos by User:DimiTalen|Trains of Tōkaidō Shinkansen|Platforms of Mishima Station (Tōkaidō Shinkansen)",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "35.126744",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "138.909592",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Platform at Mishima Station, with arriving Tōkaidō Shinkansen train, Mishima, 2016",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2016-03-28 11:20:08",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a href=\"//commons.wikimedia.org/wiki/User:DimiTalen\" title=\"User:DimiTalen\">DimiTalen</a>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Zero, Public Domain Dedication",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "false",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "88179730": {
+        "pageid": 88179730,
+        "ns": 6,
+        "title": "File:Train station platform shelter at Corinda railway station, Queensland, Australia.jpg",
+        "index": 1,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 3673685,
+            "width": 3670,
+            "height": 2753,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5d/Train_station_platform_shelter_at_Corinda_railway_station%2C_Queensland%2C_Australia.jpg/1280px-Train_station_platform_shelter_at_Corinda_railway_station%2C_Queensland%2C_Australia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 960,
+            "responsiveUrls": {
+              "2": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Train_station_platform_shelter_at_Corinda_railway_station%2C_Queensland%2C_Australia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5d/Train_station_platform_shelter_at_Corinda_railway_station%2C_Queensland%2C_Australia.jpg/1280px-Train_station_platform_shelter_at_Corinda_railway_station%2C_Queensland%2C_Australia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 960,
+              "srcset": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Train_station_platform_shelter_at_Corinda_railway_station%2C_Queensland%2C_Australia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Train_station_platform_shelter_at_Corinda_railway_station%2C_Queensland%2C_Australia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Train_station_platform_shelter_at_Corinda_railway_station,_Queensland,_Australia.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=88179730",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2020-03-16 22:27:28",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Train station platform shelter at Corinda railway station, Queensland, Australia",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Taken with iPhone XS Max|2020 in rail transport in Australia|Corinda railway station|Self-published work|Number 293 on rail vehicles|Files with coordinates missing SDC location of creation|Photographs by Kgbo taken in 2020|March 2020 in Brisbane|Australia photographs taken on 2020-03-17|Photographs of Brisbane by Kgbo in 2020|Photos by User:Kgbo|Train station shelters in Australia",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "-27.539322",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "152.980531",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Train station platform shelter at Corinda railway station, Queensland, Australia",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2020-03-17 08:01:29",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a href=\"//commons.wikimedia.org/wiki/User:Kgbo\" title=\"User:Kgbo\">Kgbo</a>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 4.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 4.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/4.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-4.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

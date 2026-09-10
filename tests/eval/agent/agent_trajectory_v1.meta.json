@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "dataset_version": "1.0.0-development-seed",
+  "annotation_status": "single_pass_pending_independent_review",
+  "split_counts": {
+    "development": 11
+  },
+  "evidence": "scripted model responses are orchestration tests, not model quality",
+  "reference_date": "2026-08-28",
+  "scope": "synthetic UUIDs and text; no real photos"
+}

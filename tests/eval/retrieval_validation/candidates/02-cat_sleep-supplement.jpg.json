@@ -1,0 +1,105 @@
+{
+  "concept": "cat_sleep",
+  "slot": 2,
+  "rank": "supplement",
+  "search": "File:Cat sleeping on bed.jpg",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Cat_sleeping_on_bed.jpg",
+  "commons_page": {
+    "pageid": 10531112,
+    "ns": 6,
+    "title": "File:Cat sleeping on bed.jpg",
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 61075,
+        "width": 640,
+        "height": 480,
+        "thumburl": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Cat_sleeping_on_bed.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "thumbwidth": 1280,
+        "thumbheight": 960,
+        "thumbattribs": {
+          "src": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Cat_sleeping_on_bed.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 960
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Cat_sleeping_on_bed.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Cat_sleeping_on_bed.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=10531112",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2010-06-03 00:13:45",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Cat sleeping on bed",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Self-published work|Taken with Sony Ericsson K800i|Sleeping cats (indoor)|Curled up cats",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Fluffy cat taking a nap on a bed",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a href=\"//commons.wikimedia.org/wiki/User:VEO15\" title=\"User:VEO15\">VEO15</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY 3.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution 3.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by/3.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-3.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  },
+  "selection_reason": "Original Commons search failed twice; public web search for the same sleeping-cat concept identified this real-photo source."
+}

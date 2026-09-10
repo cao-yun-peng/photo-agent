@@ -1,6 +1,11 @@
 services:
   api:
     environment:
+      APP_ENV: dev
+      WECHAT_APPID: ""
+      WECHAT_SECRET: ""
+      OSS_BACKEND: mock
+      MOCK_OSS_ENABLED: "true"
       OSS_BUCKET: photo-agent-dev
       OSS_KEY_ID: LTAI_xxx
       OSS_KEY_SECRET: xxx
@@ -9,6 +14,11 @@ services:
 
   worker:
     environment:
+      APP_ENV: dev
+      WECHAT_APPID: ""
+      WECHAT_SECRET: ""
+      OSS_BACKEND: mock
+      MOCK_OSS_ENABLED: "true"
       OSS_BUCKET: photo-agent-dev
       OSS_KEY_ID: LTAI_xxx
       OSS_KEY_SECRET: xxx

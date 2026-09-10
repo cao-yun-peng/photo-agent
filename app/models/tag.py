@@ -1,4 +1,5 @@
 """Tag 与 Photo-Tag 多对多关系表."""
+
 from datetime import datetime
 from uuid import UUID
 
@@ -18,9 +19,7 @@ from app.database import Base
 
 class Tag(Base):
     __tablename__ = "tags"
-    __table_args__ = (
-        UniqueConstraint("user_id", "name", name="uq_tags_user_name"),
-    )
+    __table_args__ = (UniqueConstraint("user_id", "name", name="uq_tags_user_name"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[UUID] = mapped_column(

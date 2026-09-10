@@ -1,0 +1,585 @@
+{
+  "batchcomplete": "",
+  "continue": {
+    "gsroffset": 5,
+    "continue": "gsroffset||"
+  },
+  "query": {
+    "pages": {
+      "20066003": {
+        "pageid": 20066003,
+        "ns": 6,
+        "title": "File:HK Sheung Wan Tai Ping Shan Street Man-made Rain Umbrella June-2012.JPG",
+        "index": 3,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 1097332,
+            "width": 2592,
+            "height": 1944,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_June-2012.JPG/1280px-HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_June-2012.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 960,
+            "responsiveUrls": {
+              "2": "https://upload.wikimedia.org/wikipedia/commons/9/98/HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_June-2012.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_June-2012.JPG/1280px-HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_June-2012.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 960,
+              "srcset": "https://upload.wikimedia.org/wikipedia/commons/9/98/HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_June-2012.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_June-2012.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_June-2012.JPG",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=20066003",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2012-06-29 01:24:23",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "HK Sheung Wan Tai Ping Shan Street Man-made Rain Umbrella June-2012",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Taken with Ricoh R10|Files with no machine-readable source|Self-published work|Assumed own work|Film production in Hong Kong|Tai Ping Shan Kwun Yum Tong|People with umbrellas in Hong Kong|Hong Kong photographs taken on 2012-06-28|Photographs by Anonymous Hong Kong Photographer 1|Location shooting in Hong Kong|2012 in Tai Ping Shan Street|2012 in Tai Shan House|2012 in Upper Station Street|Visitors in Upper Station Street|June 2012 in Tai Ping Shan Street",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "<a href=\"https://zh.wikipedia.org/wiki/%E4%B8%8A%E7%92%B0\" class=\"extiw\" title=\"zh:上環\">zh:上環</a> <a href=\"https://zh.wikipedia.org/wiki/%E5%A4%AA%E5%B9%B3%E5%B1%B1%E8%A1%97\" class=\"extiw\" title=\"zh:太平山街\">太平山街</a>",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "28 June 2012 (according to <span lang=\"en\" dir=\"ltr\"><a href=\"https://en.wikipedia.org/wiki/Exif\" class=\"extiw\" title=\"en:Exif\">Exif</a></span> data)",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "No machine-readable source provided. Own work assumed (based on copyright claims).",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "No machine-readable author provided. <a href=\"//commons.wikimedia.org/w/index.php?title=User:Harconerfel&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Harconerfel (page does not exist)\">Harconerfel</a> assumed (based on copyright claims).",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 3.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 3.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/3.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-3.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "20066001": {
+        "pageid": 20066001,
+        "ns": 6,
+        "title": "File:HK Sheung Wan Tai Ping Shan Street Man-made Rain Umbrella action June-2012.JPG",
+        "index": 1,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 1133570,
+            "width": 1944,
+            "height": 2592,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_action_June-2012.JPG/1280px-HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_action_June-2012.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 1707,
+            "responsiveUrls": {
+              "2": "https://upload.wikimedia.org/wikipedia/commons/d/d4/HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_action_June-2012.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_action_June-2012.JPG/1280px-HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_action_June-2012.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 1707,
+              "srcset": "https://upload.wikimedia.org/wikipedia/commons/d/d4/HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_action_June-2012.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/d/d4/HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_action_June-2012.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:HK_Sheung_Wan_Tai_Ping_Shan_Street_Man-made_Rain_Umbrella_action_June-2012.JPG",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=20066001",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2012-06-29 01:23:50",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "HK Sheung Wan Tai Ping Shan Street Man-made Rain Umbrella action June-2012",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Rain showers|Taken with Ricoh R10|Files with no machine-readable source|Self-published work|Assumed own work|Film production in Hong Kong|Tai Ping Shan Kwun Yum Tong|People with umbrellas in Hong Kong|Hong Kong photographs taken on 2012-06-28|Photographs by Anonymous Hong Kong Photographer 1|Rain in the Northern Hemisphere in June 2012|Location shooting in Hong Kong|2012 in Tai Ping Shan Street|2012 in Tai Shan House|2012 in Upper Station Street|June 2012 in Tai Ping Shan Street|Man-made rain",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "<a href=\"https://zh.wikipedia.org/wiki/%E4%B8%8A%E7%92%B0\" class=\"extiw\" title=\"zh:上環\">zh:上環</a> <a href=\"https://zh.wikipedia.org/wiki/%E5%A4%AA%E5%B9%B3%E5%B1%B1%E8%A1%97\" class=\"extiw\" title=\"zh:太平山街\">太平山街</a>",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "28 June 2012 (according to <span lang=\"en\" dir=\"ltr\"><a href=\"https://en.wikipedia.org/wiki/Exif\" class=\"extiw\" title=\"en:Exif\">Exif</a></span> data)",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "No machine-readable source provided. Own work assumed (based on copyright claims).",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "No machine-readable author provided. <a href=\"//commons.wikimedia.org/w/index.php?title=User:Harconerfel&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Harconerfel (page does not exist)\">Harconerfel</a> assumed (based on copyright claims).",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 3.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 3.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/3.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-3.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "17526120": {
+        "pageid": 17526120,
+        "ns": 6,
+        "title": "File:Rain-boots and Umbrellas..jpg",
+        "index": 5,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 1068737,
+            "width": 1936,
+            "height": 2592,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Rain-boots_and_Umbrellas..jpg/1280px-Rain-boots_and_Umbrellas..jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 1714,
+            "responsiveUrls": {
+              "2": "https://upload.wikimedia.org/wikipedia/commons/1/12/Rain-boots_and_Umbrellas..jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Rain-boots_and_Umbrellas..jpg/1280px-Rain-boots_and_Umbrellas..jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 1714,
+              "srcset": "https://upload.wikimedia.org/wikipedia/commons/1/12/Rain-boots_and_Umbrellas..jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/1/12/Rain-boots_and_Umbrellas..jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Rain-boots_and_Umbrellas..jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=17526120",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2011-11-30 00:02:29",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Rain-boots and Umbrellas.",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Taken with iPhone 4|Self-published work|Files with coordinates missing SDC location of creation|Rain in Vancouver|Women wearing black rubber boots|Women wearing pink rubber boots",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "49.266500",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "-123.253667",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Typical day in Vancouver",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2011-11-24",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Tungyi&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Tungyi (page does not exist)\">Tungyi</a>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 3.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 3.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/3.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-3.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "156242846": {
+        "pageid": 156242846,
+        "ns": 6,
+        "title": "File:Rain on a blue umbrella.jpg",
+        "index": 4,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 2185060,
+            "width": 4000,
+            "height": 1848,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Rain_on_a_blue_umbrella.jpg/1280px-Rain_on_a_blue_umbrella.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 591,
+            "responsiveUrls": {
+              "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Rain_on_a_blue_umbrella.jpg/3840px-Rain_on_a_blue_umbrella.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Rain_on_a_blue_umbrella.jpg/1280px-Rain_on_a_blue_umbrella.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 591,
+              "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Rain_on_a_blue_umbrella.jpg/3840px-Rain_on_a_blue_umbrella.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Rain_on_a_blue_umbrella.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Rain_on_a_blue_umbrella.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=156242846",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2024-12-04 17:46:14",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Rain on a blue umbrella",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "CC-Zero|Self-published work|Files with coordinates missing SDC location of creation|Raindrops",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "-22.293299",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "-49.053537",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Rain on a blue umbrella",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2024-12-03 17:06:13",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a href=\"//commons.wikimedia.org/wiki/User:CorraleH\" title=\"User:CorraleH\">CorraleH</a>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Zero, Public Domain Dedication",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "false",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "140869811": {
+        "pageid": 140869811,
+        "ns": 6,
+        "title": "File:Rainbow of umbrellas art, in the wind and rain, Exeter High Street - geograph.org.uk - 5741615.jpg",
+        "index": 2,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 1654213,
+            "width": 1728,
+            "height": 2880,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Rainbow_of_umbrellas_art%2C_in_the_wind_and_rain%2C_Exeter_High_Street_-_geograph.org.uk_-_5741615.jpg/1280px-Rainbow_of_umbrellas_art%2C_in_the_wind_and_rain%2C_Exeter_High_Street_-_geograph.org.uk_-_5741615.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 2133,
+            "responsiveUrls": {
+              "2": "https://upload.wikimedia.org/wikipedia/commons/6/61/Rainbow_of_umbrellas_art%2C_in_the_wind_and_rain%2C_Exeter_High_Street_-_geograph.org.uk_-_5741615.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Rainbow_of_umbrellas_art%2C_in_the_wind_and_rain%2C_Exeter_High_Street_-_geograph.org.uk_-_5741615.jpg/1280px-Rainbow_of_umbrellas_art%2C_in_the_wind_and_rain%2C_Exeter_High_Street_-_geograph.org.uk_-_5741615.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 2133,
+              "srcset": "https://upload.wikimedia.org/wikipedia/commons/6/61/Rainbow_of_umbrellas_art%2C_in_the_wind_and_rain%2C_Exeter_High_Street_-_geograph.org.uk_-_5741615.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/6/61/Rainbow_of_umbrellas_art%2C_in_the_wind_and_rain%2C_Exeter_High_Street_-_geograph.org.uk_-_5741615.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Rainbow_of_umbrellas_art,_in_the_wind_and_rain,_Exeter_High_Street_-_geograph.org.uk_-_5741615.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=140869811",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2023-11-16 04:38:41",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Rainbow of umbrellas art, in the wind and rain, Exeter High Street - geograph.org.uk - 5741615",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Images from Geograph Britain and Ireland|High Street, Exeter|Taken with ZTE Rook from EE",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "50.724144",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "-3.529871",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Rainbow of umbrellas art, in the wind and rain, Exeter High Street <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Rainbow_of_umbrellas_art,_in_the_wind_and_rain,_Exeter_High_Street_-_geograph.org.uk_-_5741615.jpg#ooui-php-4\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2018-04-17",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/photo/5741615\">Geograph Britain and Ireland</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Rainbow_of_umbrellas_art,_in_the_wind_and_rain,_Exeter_High_Street_-_geograph.org.uk_-_5741615.jpg#P7482\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/708\">David Smith</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Rainbow_of_umbrellas_art,_in_the_wind_and_rain,_Exeter_High_Street_-_geograph.org.uk_-_5741615.jpg#P170\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 2.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 2.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Attribution": {
+                "value": "<i>Rainbow of umbrellas art, in the wind and rain, Exeter High Street</i> by David Smith",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/2.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-2.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

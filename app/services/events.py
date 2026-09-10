@@ -5,6 +5,7 @@
 - 使用独立 Session 提交，避免干扰业务事务；
 - payload 保持扁平、可 JSON 序列化，便于画像聚合和离线分析。
 """
+
 from __future__ import annotations
 
 import logging
@@ -21,10 +22,10 @@ logger = logging.getLogger(__name__)
 EVENT_TYPES = frozenset(
     {
         "generation_complete",  # AI 改造完成（含成功/失败）
-        "search_click",         # 用户点击搜索结果
-        "skill_browse",         # 浏览 Skill 详情/广场
-        "photo_interact",       # 与单张照片交互（查看/收藏等）
-        "agent_feedback",       # Agent 结果负反馈（仅结构化、脱敏字段）
+        "search_click",  # 用户点击搜索结果
+        "skill_browse",  # 浏览 Skill 详情/广场
+        "photo_interact",  # 与单张照片交互（查看/收藏等）
+        "agent_feedback",  # Agent 结果负反馈（仅结构化、脱敏字段）
     }
 )
 

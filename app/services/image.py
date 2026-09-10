@@ -2,6 +2,7 @@
 
 worker 从 OSS 读原图字节流后调用这里；结果由 worker 决定回写哪些字段。
 """
+
 from __future__ import annotations
 
 import io
@@ -24,7 +25,7 @@ class ProcessedImage:
     height: int
     taken_at: datetime | None
     location: dict[str, Any] | None
-    thumb_bytes: bytes           # JPEG 缩略图字节
+    thumb_bytes: bytes  # JPEG 缩略图字节
     thumb_size: tuple[int, int]  # (w, h)
 
 

@@ -16,6 +16,7 @@ from __future__ import annotations
 import logging
 import math
 import time
+import asyncio
 from typing import Any, Callable
 
 from app.config import settings
@@ -65,7 +66,8 @@ class CircuitBreaker:
                 )
 
         # half-open 只允许一个真实探测请求，其他调用立即降级。
-        if self.state == "half_open":
+        is_probe = self.state == "half_open"
+        if is_probe:
             if self._half_open_probe_in_flight:
                 raise ServiceDegradedError(self.name, "recovery probe is in progress")
             self._half_open_probe_in_flight = True
@@ -75,7 +77,19 @@ class CircuitBreaker:
             result = await fn(*args, **kwargs)
             self._on_success()
             return result
-        except Exception:
+        except asyncio.CancelledError:
+            # Local request cancellation is not evidence of provider failure.
+            # Only release the probe owned by this call, not another in-flight call.
+            if is_probe:
+                self._half_open_probe_in_flight = False
+            raise
+        except Exception as exc:
+            from app.services.search_budget import BudgetExhausted, RequestTimeout
+
+            if isinstance(exc, (BudgetExhausted, RequestTimeout)):
+                if is_probe:
+                    self._half_open_probe_in_flight = False
+                raise
             self._on_failure()
             raise
 

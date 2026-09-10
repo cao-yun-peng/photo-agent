@@ -1,0 +1,1600 @@
+{
+  "retrieval_outcomes_observed": false,
+  "images": [
+    {
+      "photo_id": "v-001",
+      "candidate": "01-cat_portrait-2.jpg",
+      "observation": "无毛猫正面近照，蓝色眼睛、大耳朵，趴在浅色织物上。",
+      "selection_reason": "首名为纸上版画非真实照片；第二名为真实无毛猫照片。",
+      "group_id": "validation-source-001"
+    },
+    {
+      "photo_id": "v-002",
+      "candidate": "02-cat_sleep-supplement.jpg",
+      "observation": "黑白花猫蜷成一团，闭着眼躺在条纹床单上。",
+      "selection_reason": "原搜索两次网络失败，按同一睡猫类别补充公开实拍来源。",
+      "group_id": "validation-source-002"
+    },
+    {
+      "photo_id": "v-003",
+      "candidate": "03-dog_agility-2.jpg",
+      "observation": "草地围栏内设置犬类障碍设施，一只棕色狗跑向镜头；背景有住宅。",
+      "selection_reason": "首名没有可见狗；第二名有狗和障碍训练场景。",
+      "group_id": "validation-source-003"
+    },
+    {
+      "photo_id": "v-004",
+      "candidate": "04-dog_sleep-supplement.jpg",
+      "observation": "一只黑色狗侧躺在室内黑色垫子上，背后有花色窗帘。",
+      "selection_reason": "原搜索两次网络失败，按同一睡狗类别补充公开实拍来源。",
+      "group_id": "validation-source-004"
+    },
+    {
+      "photo_id": "v-005",
+      "candidate": "05-coffee_pour-supplement.jpg",
+      "observation": "咖啡机的出液口正向白色杯子流出两股咖啡，背景较暗。",
+      "selection_reason": "原搜索两次网络失败，按倒出咖啡的同一类别补充真实咖啡制作照片。",
+      "group_id": "validation-source-005"
+    },
+    {
+      "photo_id": "v-006",
+      "candidate": "06-coffee_latte-1.jpg",
+      "observation": "俯拍一杯浅棕色咖啡，中间有一大片白色奶泡，周边布满细泡。",
+      "selection_reason": "首名为真实奶泡咖啡照片；不以标题推定无法可靠辨别的苹果拉花形状。",
+      "group_id": "validation-source-006"
+    },
+    {
+      "photo_id": "v-007",
+      "candidate": "07-reading_person-1.jpg",
+      "observation": "格子衬衣人物的手托着一本打开的书，画面为身体与双手近景，书页朝向人物。",
+      "selection_reason": "首名为真实人物读书近照；不推测人物身份。",
+      "group_id": "validation-source-007"
+    },
+    {
+      "photo_id": "v-008",
+      "candidate": "08-book_stack-1.jpg",
+      "observation": "一大摞不同颜色的书横向叠放，书脊可见非拉丁文字，背景较暗。",
+      "selection_reason": "首名符合书堆概念；不以无法可靠识别的文字作OCR标签。",
+      "group_id": "validation-source-008"
+    },
+    {
+      "photo_id": "v-009",
+      "candidate": "09-cycling_person-1.jpg",
+      "observation": "几位骑行者正在建筑旁的街道上骑自行车，前景一人穿蓝白骑行服，路边有白色酒馆。",
+      "selection_reason": "复核首名完整原图后确认骑行人物清楚，按预定首次适合规则选择首名。",
+      "group_id": "validation-source-009"
+    },
+    {
+      "photo_id": "v-010",
+      "candidate": "10-bicycle_parked-1.jpg",
+      "observation": "一辆蓝色自行车停在涂鸦密布的建筑门窗前，未见骑车人。",
+      "selection_reason": "首名清楚显示静止自行车。",
+      "group_id": "validation-source-010"
+    },
+    {
+      "photo_id": "v-011",
+      "candidate": "11-apple_fruit-1.jpg",
+      "observation": "草地上一个藤编提篮盛满红色苹果，阳光下篮子与苹果清楚可见。",
+      "selection_reason": "首名为真实水果照片；第二名为同一拍摄族相邻照片，不同时收录。",
+      "group_id": "validation-source-011"
+    },
+    {
+      "photo_id": "v-012",
+      "candidate": "12-orange_fruit-1.jpg",
+      "observation": "白色背景上放着三个橘子，其中左右两个带有绿叶，未剥皮。",
+      "selection_reason": "首名为完整柑橘实拍，第二名是绘画不收录。",
+      "group_id": "validation-source-012"
+    },
+    {
+      "photo_id": "v-013",
+      "candidate": "13-croissant-1.jpg",
+      "observation": "一只手托着表面有浅色奶油的可颂面包，背景为交通工具里的红色座椅。",
+      "selection_reason": "首名为真实可颂照片。",
+      "group_id": "validation-source-013"
+    },
+    {
+      "photo_id": "v-014",
+      "candidate": "14-doughnut-3.jpg",
+      "observation": "玻璃食品柜里有多层不同糖霜与装饰的甜甜圈，柜子底部有价格牌。",
+      "selection_reason": "前两名是经济模型示意图；第三名才为真实甜甜圈展示柜。",
+      "group_id": "validation-source-014"
+    },
+    {
+      "photo_id": "v-015",
+      "candidate": "15-train_platform-1.jpg",
+      "observation": "火车站月台有金属雨棚，右侧轨道停有黄色车头的列车，画面中未见近处乘客。",
+      "selection_reason": "首名清楚显示列车与站台。",
+      "group_id": "validation-source-015"
+    },
+    {
+      "photo_id": "v-016",
+      "candidate": "16-bus_stop-1.jpg",
+      "observation": "路边有青绿色弧形候车亭和一排座椅，背景为树木；亭内未见候车人。",
+      "selection_reason": "首名清楚显示室外公交候车亭。",
+      "group_id": "validation-source-016"
+    },
+    {
+      "photo_id": "v-017",
+      "candidate": "17-stop_sign-supplement.jpg",
+      "observation": "红色八角STOP牌立在道路边，牌面文字清楚，后方可见停放车辆。",
+      "selection_reason": "原搜索网络失败；补充的真实路牌具有清晰OCR，排除标志设计图。",
+      "group_id": "validation-source-017"
+    },
+    {
+      "photo_id": "v-018",
+      "candidate": "18-yield_sign-2.jpg",
+      "observation": "黄色牌面写有 TURNING VEHICLES 并有右转箭头，下方白底牌有 YIELD 小三角、TO 和行人图案。",
+      "selection_reason": "首名为交通标志设计图，不是真实场景照片；第二名为真实路牌照片。",
+      "group_id": "validation-source-018"
+    },
+    {
+      "photo_id": "v-019",
+      "candidate": "19-speed_30-1.jpg",
+      "observation": "草木部分遮住的白色矩形路牌，SPEED LIMIT 和数字30清晰，下方还有KEEP字样。",
+      "selection_reason": "首名清楚显示实拍限速30牌。",
+      "group_id": "validation-source-019"
+    },
+    {
+      "photo_id": "v-020",
+      "candidate": "20-speed_50-supplement.jpg",
+      "observation": "白色矩形路牌中有红圆圈与黑色数字50，后面是街道与树木。",
+      "selection_reason": "原候选中一张是20、另一张是设计图；同类补充真实50牌。",
+      "group_id": "validation-source-020"
+    },
+    {
+      "photo_id": "v-021",
+      "candidate": "21-sunflower-1.jpg",
+      "observation": "晴天蓝天下大片黄色向日葵花田，远处有树和小房子。",
+      "selection_reason": "首名清楚显示真实向日葵花田。",
+      "group_id": "validation-source-021"
+    },
+    {
+      "photo_id": "v-022",
+      "candidate": "22-rose-1.jpg",
+      "observation": "一朵红玫瑰的近照，背景为纯黑色，花瓣层次清楚。",
+      "selection_reason": "首名为玫瑰近照。",
+      "group_id": "validation-source-022"
+    },
+    {
+      "photo_id": "v-023",
+      "candidate": "23-waterfall-1.jpg",
+      "observation": "岩石间多股白色瀑布，周围绿树，远处山形与晚霞天空；未见石桥。",
+      "selection_reason": "首名清楚显示自然瀑布。",
+      "group_id": "validation-source-023"
+    },
+    {
+      "photo_id": "v-024",
+      "candidate": "24-river_bridge-1.jpg",
+      "observation": "石拱桥横跨小河，桥两侧有枯枝和绿草，桥上未见火车。",
+      "selection_reason": "首名清楚显示河上石桥。",
+      "group_id": "validation-source-024"
+    },
+    {
+      "photo_id": "v-025",
+      "candidate": "25-snow_mountain-1.jpg",
+      "observation": "积雪覆盖群山和岩石，前景有蓝绿色小湖与几个很小的徒步人物。",
+      "selection_reason": "首名为雪山真实景观。",
+      "group_id": "validation-source-025"
+    },
+    {
+      "photo_id": "v-026",
+      "candidate": "26-beach-1.jpg",
+      "observation": "阴天下空旷沙滩连接灰色海面，地面留有痕迹，未见遮阳伞。",
+      "selection_reason": "首名清楚显示海与沙滩。",
+      "group_id": "validation-source-026"
+    },
+    {
+      "photo_id": "v-027",
+      "candidate": "27-guitar_player-1.jpg",
+      "observation": "街边一位戴墨镜、穿黑色外套的人正弹木吉他，背后有建筑与树木。",
+      "selection_reason": "首名清楚显示人物弹吉他；不以来源标题推测人物身份。",
+      "group_id": "validation-source-027"
+    },
+    {
+      "photo_id": "v-028",
+      "candidate": "28-piano_player-supplement.jpg",
+      "observation": "黑白照片中双手正在弹钢琴，前景手腕上戴着圆形手表，人物脸部不在画面内。",
+      "selection_reason": "原搜索结果全是自动演奏钢琴，无人物弹奏；同类精确文件名补充真实双手弹琴照片。",
+      "group_id": "validation-source-028"
+    },
+    {
+      "photo_id": "v-029",
+      "candidate": "29-cooking_person-1.jpg",
+      "observation": "一个人坐在轮椅上，在白色厨房灶台前伸手操作锅具，桌上有蔬果。",
+      "selection_reason": "首名清楚显示人物在厨房做饭；不推测医疗状况。",
+      "group_id": "validation-source-029"
+    },
+    {
+      "photo_id": "v-030",
+      "candidate": "30-washing_dishes-1.jpg",
+      "observation": "水槽前一位戴浅色帽子的人用绿色海绵清洗白盘，水龙头流出大量水，旁边还有人在洗东西。",
+      "selection_reason": "首名清楚显示洗碗动作与水流。",
+      "group_id": "validation-source-030"
+    },
+    {
+      "photo_id": "v-031",
+      "candidate": "31-umbrella_rain-1.jpg",
+      "observation": "湿漉漉的街道上有人撑着蓝色雨伞，画面里有水雾与架设的强光灯。",
+      "selection_reason": "首名是真实摄影中的人工造雨场景；查询只描述可见湿地、水雾与撑伞，不声称天然降雨。",
+      "group_id": "validation-source-031"
+    },
+    {
+      "photo_id": "v-032",
+      "candidate": "32-umbrella_beach-3.jpg",
+      "observation": "海边排列三把草编遮阳伞，伞下形成圆形阴影，远处海水蓝绿。",
+      "selection_reason": "同槽前两名分别为人物持便携伞的摆拍及收拢的伞；选择明确展开的海滩遮阳伞，支撑预定晴天遮阳/雨中撑伞对照。",
+      "group_id": "validation-source-032"
+    },
+    {
+      "photo_id": "v-033",
+      "candidate": "33-basketball-1.jpg",
+      "observation": "几个人在室外碎石地面打篮球，一人弯身控橙色球，一人穿粉色上衣防守。",
+      "selection_reason": "首名清楚呈现篮球运动。",
+      "group_id": "validation-source-033"
+    },
+    {
+      "photo_id": "v-034",
+      "candidate": "34-football-3.jpg",
+      "observation": "草地足球场上红白两队球员正在踢球，背景有看台和建筑。",
+      "selection_reason": "前两名是合影或步行，第三名才清楚呈现预定足球比赛场景。",
+      "group_id": "validation-source-034"
+    },
+    {
+      "photo_id": "v-035",
+      "candidate": "35-laptop-3.jpg",
+      "observation": "一台打开屏幕的笔记本电脑放在桌面，键盘和触控板可见，黑屏上有光线反射。",
+      "selection_reason": "首名是便携光盘播放器，第二名是拆机内部；第三名是打开上盖的笔记本电脑。",
+      "group_id": "validation-source-035"
+    },
+    {
+      "photo_id": "v-036",
+      "candidate": "36-keyboard-2.jpg",
+      "observation": "黑色电脑键盘按键的近照，按键边缘有灰尘，英文大写字母清楚可见。",
+      "selection_reason": "首名变焦拖影使主要物体不清晰；第二名清楚呈现键盘。",
+      "group_id": "validation-source-036"
+    },
+    {
+      "photo_id": "v-037",
+      "candidate": "37-shopping_cart-supplement.jpg",
+      "observation": "超市里绿色有孔塑料购物推车，车内有蔬菜盒和包装食品，地板上有保持距离圆形贴纸。",
+      "selection_reason": "恢复原搜索首名下载后按首个适合候选规则选择。",
+      "group_id": "validation-source-037"
+    },
+    {
+      "photo_id": "v-038",
+      "candidate": "38-shopping_basket-2.jpg",
+      "observation": "红砖墙前摆着数个不同形状的藤编提篮，其中有长提手和圆口篮。",
+      "selection_reason": "首名主体是价目表，第三名是目录图；第二名清楚显示可提的真实篮子。",
+      "group_id": "validation-source-038"
+    },
+    {
+      "photo_id": "v-039",
+      "candidate": "39-parking_sign-2.jpg",
+      "observation": "白色停车牌有蓝底P，写着Mon-Sat、8 am-6 pm、2 hours和No return within 2 hours。",
+      "selection_reason": "首名以禁止驶入和远处难读文字为主；第二名符合预定清晰停车OCR。",
+      "group_id": "validation-source-039"
+    },
+    {
+      "photo_id": "v-040",
+      "candidate": "40-no_parking_sign-4.jpg",
+      "observation": "木柱上的旧路牌有红色NO PARKING ANY TIME文字和双向箭头，表面有大量裂纹。",
+      "selection_reason": "前两名只有远处禁停图形，第三名下载失败；第四名符合预定清晰禁停OCR。",
+      "group_id": "validation-source-040"
+    }
+  ],
+  "queries": [
+    {
+      "id": "val-001",
+      "query": "找蓝眼睛无毛猫趴在浅色织物上的近照",
+      "relevant_photo_ids": [
+        "v-001"
+      ],
+      "hard_negative_photo_ids": [
+        "v-002"
+      ],
+      "family_id": "validation-cats",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-002",
+      "query": "找黑白花猫蜷缩在条纹床单上睡觉的照片",
+      "relevant_photo_ids": [
+        "v-002"
+      ],
+      "hard_negative_photo_ids": [
+        "v-001",
+        "v-004"
+      ],
+      "family_id": "validation-cats",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-003",
+      "query": "找草地障碍训练场里棕色狗朝镜头跑来的照片",
+      "relevant_photo_ids": [
+        "v-003"
+      ],
+      "hard_negative_photo_ids": [
+        "v-004"
+      ],
+      "family_id": "validation-dogs",
+      "tags": [
+        "visual_semantic",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-004",
+      "query": "找黑色狗躺在室内黑色垫子上休息的照片",
+      "relevant_photo_ids": [
+        "v-004"
+      ],
+      "hard_negative_photo_ids": [
+        "v-002",
+        "v-003"
+      ],
+      "family_id": "validation-dogs",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-005",
+      "query": "找咖啡机正把两股咖啡流入白色杯子的照片",
+      "relevant_photo_ids": [
+        "v-005"
+      ],
+      "hard_negative_photo_ids": [
+        "v-006"
+      ],
+      "family_id": "validation-coffee",
+      "tags": [
+        "visual_semantic",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-006",
+      "query": "找俯拍一杯咖啡，中间有大片白色奶泡的照片",
+      "relevant_photo_ids": [
+        "v-006"
+      ],
+      "hard_negative_photo_ids": [
+        "v-005"
+      ],
+      "family_id": "validation-coffee",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-007",
+      "query": "找穿格子衣服的人用手托着打开的书阅读的近照",
+      "relevant_photo_ids": [
+        "v-007"
+      ],
+      "hard_negative_photo_ids": [
+        "v-008",
+        "v-028"
+      ],
+      "family_id": "validation-books",
+      "tags": [
+        "visual_semantic",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-008",
+      "query": "找许多不同颜色的书横着叠成一大摞的照片",
+      "relevant_photo_ids": [
+        "v-008"
+      ],
+      "hard_negative_photo_ids": [
+        "v-007"
+      ],
+      "family_id": "validation-books",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-009",
+      "query": "找几个人在白色酒馆旁的街道上骑自行车的照片",
+      "relevant_photo_ids": [
+        "v-009"
+      ],
+      "hard_negative_photo_ids": [
+        "v-010"
+      ],
+      "family_id": "validation-bicycles",
+      "tags": [
+        "visual_semantic",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-010",
+      "query": "找蓝色自行车停在涂鸦门窗前的照片",
+      "relevant_photo_ids": [
+        "v-010"
+      ],
+      "hard_negative_photo_ids": [
+        "v-009"
+      ],
+      "family_id": "validation-bicycles",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-011",
+      "query": "找草地上藤编提篮装满红苹果的照片",
+      "relevant_photo_ids": [
+        "v-011"
+      ],
+      "hard_negative_photo_ids": [
+        "v-012",
+        "v-038"
+      ],
+      "family_id": "validation-fruit",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-012",
+      "query": "找白色背景上三个完整橘子，其中有带绿叶的橘子",
+      "relevant_photo_ids": [
+        "v-012"
+      ],
+      "hard_negative_photo_ids": [
+        "v-011"
+      ],
+      "family_id": "validation-fruit",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-013",
+      "query": "找一只手托着加了浅色奶油的可颂，背后有红色座椅",
+      "relevant_photo_ids": [
+        "v-013"
+      ],
+      "hard_negative_photo_ids": [
+        "v-014"
+      ],
+      "family_id": "validation-pastry",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-014",
+      "query": "找玻璃柜里分层展示许多不同糖霜甜甜圈的照片",
+      "relevant_photo_ids": [
+        "v-014"
+      ],
+      "hard_negative_photo_ids": [
+        "v-013"
+      ],
+      "family_id": "validation-pastry",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-015",
+      "query": "找有金属雨棚的月台旁停着黄色车头列车的照片",
+      "relevant_photo_ids": [
+        "v-015"
+      ],
+      "hard_negative_photo_ids": [
+        "v-016"
+      ],
+      "family_id": "validation-transit",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-016",
+      "query": "找路边青绿色弧形候车亭，亭子里有一排座椅但没人",
+      "relevant_photo_ids": [
+        "v-016"
+      ],
+      "hard_negative_photo_ids": [
+        "v-015"
+      ],
+      "family_id": "validation-transit",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-017",
+      "query": "找路旁红色八角形牌子写着STOP的照片",
+      "relevant_photo_ids": [
+        "v-017"
+      ],
+      "hard_negative_photo_ids": [
+        "v-018",
+        "v-040"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "visual_semantic",
+        "ocr"
+      ],
+      "required_visible_text": [
+        "STOP"
+      ]
+    },
+    {
+      "id": "val-018",
+      "query": "找写有TURNING VEHICLES、右转箭头和行人图案的路牌",
+      "relevant_photo_ids": [
+        "v-018"
+      ],
+      "hard_negative_photo_ids": [
+        "v-017",
+        "v-039"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "visual_semantic",
+        "ocr"
+      ],
+      "required_visible_text": [
+        "TURNING VEHICLES"
+      ]
+    },
+    {
+      "id": "val-019",
+      "query": "找被草木部分遮住、写SPEED LIMIT 30的白色路牌",
+      "relevant_photo_ids": [
+        "v-019"
+      ],
+      "hard_negative_photo_ids": [
+        "v-020"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "visual_semantic",
+        "ocr"
+      ],
+      "required_visible_text": [
+        "SPEED LIMIT",
+        "30"
+      ]
+    },
+    {
+      "id": "val-020",
+      "query": "找白色牌面红色圆圈里写着50的限速标志",
+      "relevant_photo_ids": [
+        "v-020"
+      ],
+      "hard_negative_photo_ids": [
+        "v-019"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "visual_semantic",
+        "ocr"
+      ],
+      "required_visible_text": [
+        "50"
+      ]
+    },
+    {
+      "id": "val-021",
+      "query": "找晴朗蓝天下大片黄色向日葵花田的照片",
+      "relevant_photo_ids": [
+        "v-021"
+      ],
+      "hard_negative_photo_ids": [
+        "v-022"
+      ],
+      "family_id": "validation-flowers",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-022",
+      "query": "找黑色背景上一朵红玫瑰的特写",
+      "relevant_photo_ids": [
+        "v-022"
+      ],
+      "hard_negative_photo_ids": [
+        "v-021"
+      ],
+      "family_id": "validation-flowers",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-023",
+      "query": "找岩石间分成多股白色水流的瀑布，周围有绿树",
+      "relevant_photo_ids": [
+        "v-023"
+      ],
+      "hard_negative_photo_ids": [
+        "v-024",
+        "v-025"
+      ],
+      "family_id": "validation-inland_water",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-024",
+      "query": "找石拱桥横跨小河、两岸有草和树枝的照片",
+      "relevant_photo_ids": [
+        "v-024"
+      ],
+      "hard_negative_photo_ids": [
+        "v-023"
+      ],
+      "family_id": "validation-inland_water",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-025",
+      "query": "找群山和岩石积雪、前景有蓝绿色小湖的照片",
+      "relevant_photo_ids": [
+        "v-025"
+      ],
+      "hard_negative_photo_ids": [
+        "v-023",
+        "v-024",
+        "v-026"
+      ],
+      "family_id": "validation-inland_water",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-026",
+      "query": "找阴天下空旷沙滩和灰色海面的照片",
+      "relevant_photo_ids": [
+        "v-026"
+      ],
+      "hard_negative_photo_ids": [
+        "v-032",
+        "v-023"
+      ],
+      "family_id": "validation-coast",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-027",
+      "query": "找街边戴墨镜、穿黑外套的人弹木吉他的照片",
+      "relevant_photo_ids": [
+        "v-027"
+      ],
+      "hard_negative_photo_ids": [
+        "v-028"
+      ],
+      "family_id": "validation-music",
+      "tags": [
+        "visual_semantic",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-028",
+      "query": "找黑白风格的双手弹钢琴近照，手腕上戴着圆形表",
+      "relevant_photo_ids": [
+        "v-028"
+      ],
+      "hard_negative_photo_ids": [
+        "v-027",
+        "v-036"
+      ],
+      "family_id": "validation-music",
+      "tags": [
+        "visual_semantic",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-029",
+      "query": "找有人坐在轮椅上在白色厨房灶台前操作锅具的照片",
+      "relevant_photo_ids": [
+        "v-029"
+      ],
+      "hard_negative_photo_ids": [
+        "v-030"
+      ],
+      "family_id": "validation-kitchen",
+      "tags": [
+        "visual_semantic",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-030",
+      "query": "找戴浅色帽子的人用绿色海绵在流水下洗白盘的照片",
+      "relevant_photo_ids": [
+        "v-030"
+      ],
+      "hard_negative_photo_ids": [
+        "v-029"
+      ],
+      "family_id": "validation-kitchen",
+      "tags": [
+        "visual_semantic",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-031",
+      "query": "找湿漉漉的街头有人撑蓝色雨伞，周围有水雾和强光灯",
+      "relevant_photo_ids": [
+        "v-031"
+      ],
+      "hard_negative_photo_ids": [
+        "v-032"
+      ],
+      "family_id": "validation-umbrellas",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-032",
+      "query": "找海边三把草编遮阳伞在地上投下圆形影子的照片",
+      "relevant_photo_ids": [
+        "v-032"
+      ],
+      "hard_negative_photo_ids": [
+        "v-031",
+        "v-026"
+      ],
+      "family_id": "validation-umbrellas",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-033",
+      "query": "找几个人在室外碎石地上打篮球，其中有人穿粉色上衣",
+      "relevant_photo_ids": [
+        "v-033"
+      ],
+      "hard_negative_photo_ids": [
+        "v-034"
+      ],
+      "family_id": "validation-sports",
+      "tags": [
+        "visual_semantic",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-034",
+      "query": "找草地足球场上红白两队球员踢球的照片",
+      "relevant_photo_ids": [
+        "v-034"
+      ],
+      "hard_negative_photo_ids": [
+        "v-033"
+      ],
+      "family_id": "validation-sports",
+      "tags": [
+        "visual_semantic",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-035",
+      "query": "找打开屏幕、黑屏上有反光的整台笔记本电脑",
+      "relevant_photo_ids": [
+        "v-035"
+      ],
+      "hard_negative_photo_ids": [
+        "v-036"
+      ],
+      "family_id": "validation-computers",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-036",
+      "query": "找黑色电脑键盘按键的近照，按键边缘有明显灰尘",
+      "relevant_photo_ids": [
+        "v-036"
+      ],
+      "hard_negative_photo_ids": [
+        "v-035",
+        "v-028"
+      ],
+      "family_id": "validation-computers",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-037",
+      "query": "找超市里的绿色有孔购物推车，里面放着蔬菜盒和包装食品",
+      "relevant_photo_ids": [
+        "v-037"
+      ],
+      "hard_negative_photo_ids": [
+        "v-038",
+        "v-011"
+      ],
+      "family_id": "validation-shopping",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-038",
+      "query": "找红砖墙前摆着几个不同形状藤编提篮的照片",
+      "relevant_photo_ids": [
+        "v-038"
+      ],
+      "hard_negative_photo_ids": [
+        "v-011",
+        "v-037"
+      ],
+      "family_id": "validation-shopping",
+      "tags": [
+        "visual_semantic"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-039",
+      "query": "找有蓝底P、写着Mon-Sat和2 hours的白色停车牌",
+      "relevant_photo_ids": [
+        "v-039"
+      ],
+      "hard_negative_photo_ids": [
+        "v-040",
+        "v-019"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "visual_semantic",
+        "ocr"
+      ],
+      "required_visible_text": [
+        "Mon-Sat",
+        "2 hours"
+      ]
+    },
+    {
+      "id": "val-040",
+      "query": "找木柱上有裂纹的旧牌子，写着NO PARKING ANY TIME",
+      "relevant_photo_ids": [
+        "v-040"
+      ],
+      "hard_negative_photo_ids": [
+        "v-039",
+        "v-017"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "visual_semantic",
+        "ocr"
+      ],
+      "required_visible_text": [
+        "NO PARKING",
+        "ANY TIME"
+      ]
+    },
+    {
+      "id": "val-041",
+      "query": "把猫的照片找出来",
+      "relevant_photo_ids": [
+        "v-001",
+        "v-002"
+      ],
+      "hard_negative_photo_ids": [
+        "v-003",
+        "v-004"
+      ],
+      "family_id": "validation-cats",
+      "tags": [
+        "multi_positive",
+        "colloquial"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-042",
+      "query": "我想看狗的照片",
+      "relevant_photo_ids": [
+        "v-003",
+        "v-004"
+      ],
+      "hard_negative_photo_ids": [
+        "v-001",
+        "v-002"
+      ],
+      "family_id": "validation-dogs",
+      "tags": [
+        "multi_positive",
+        "colloquial"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-043",
+      "query": "找和咖啡有关的照片，制作过程和做好的咖啡都要",
+      "relevant_photo_ids": [
+        "v-005",
+        "v-006"
+      ],
+      "hard_negative_photo_ids": [],
+      "family_id": "validation-coffee",
+      "tags": [
+        "multi_positive",
+        "colloquial"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-044",
+      "query": "找以书本为主要拍摄对象的照片",
+      "relevant_photo_ids": [
+        "v-007",
+        "v-008"
+      ],
+      "hard_negative_photo_ids": [],
+      "family_id": "validation-books",
+      "tags": [
+        "multi_positive"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-045",
+      "query": "找拍到自行车的照片，骑着的和停着的都要",
+      "relevant_photo_ids": [
+        "v-009",
+        "v-010"
+      ],
+      "hard_negative_photo_ids": [
+        "v-029"
+      ],
+      "family_id": "validation-bicycles",
+      "tags": [
+        "multi_positive",
+        "colloquial"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-046",
+      "query": "找以苹果或橘子为主体的水果照片",
+      "relevant_photo_ids": [
+        "v-011",
+        "v-012"
+      ],
+      "hard_negative_photo_ids": [
+        "v-037"
+      ],
+      "family_id": "validation-fruit",
+      "tags": [
+        "multi_positive"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-047",
+      "query": "找可颂面包或者甜甜圈的照片",
+      "relevant_photo_ids": [
+        "v-013",
+        "v-014"
+      ],
+      "hard_negative_photo_ids": [
+        "v-037"
+      ],
+      "family_id": "validation-pastry",
+      "tags": [
+        "multi_positive"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-048",
+      "query": "找有公共交通候车雨棚或候车亭的照片",
+      "relevant_photo_ids": [
+        "v-015",
+        "v-016"
+      ],
+      "hard_negative_photo_ids": [],
+      "family_id": "validation-transit",
+      "tags": [
+        "multi_positive"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-049",
+      "query": "找交通标志或停车标志作为主要拍摄对象的照片",
+      "relevant_photo_ids": [
+        "v-017",
+        "v-018",
+        "v-019",
+        "v-020",
+        "v-039",
+        "v-040"
+      ],
+      "hard_negative_photo_ids": [
+        "v-027"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "multi_positive"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-050",
+      "query": "找花朵作为主要拍摄对象的照片",
+      "relevant_photo_ids": [
+        "v-021",
+        "v-022"
+      ],
+      "hard_negative_photo_ids": [],
+      "family_id": "validation-flowers",
+      "tags": [
+        "multi_positive"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-051",
+      "query": "找河流、瀑布或者高山湖泊的自然风景照片",
+      "relevant_photo_ids": [
+        "v-023",
+        "v-024",
+        "v-025"
+      ],
+      "hard_negative_photo_ids": [
+        "v-026",
+        "v-032"
+      ],
+      "family_id": "validation-inland_water",
+      "tags": [
+        "multi_positive"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-052",
+      "query": "找人物正在弹奏乐器的照片",
+      "relevant_photo_ids": [
+        "v-027",
+        "v-028"
+      ],
+      "hard_negative_photo_ids": [
+        "v-036"
+      ],
+      "family_id": "validation-music",
+      "tags": [
+        "multi_positive",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-053",
+      "query": "找睡着的猫，不要睡着的狗",
+      "relevant_photo_ids": [
+        "v-002"
+      ],
+      "hard_negative_photo_ids": [
+        "v-001",
+        "v-004"
+      ],
+      "family_id": "validation-cats",
+      "tags": [
+        "exclusion",
+        "colloquial"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-054",
+      "query": "我只要眼睛睁着的猫，别给我睡觉的猫",
+      "relevant_photo_ids": [
+        "v-001"
+      ],
+      "hard_negative_photo_ids": [
+        "v-002"
+      ],
+      "family_id": "validation-cats",
+      "tags": [
+        "exclusion",
+        "colloquial"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-055",
+      "query": "要正在跑的狗，不要躺着的狗",
+      "relevant_photo_ids": [
+        "v-003"
+      ],
+      "hard_negative_photo_ids": [
+        "v-004"
+      ],
+      "family_id": "validation-dogs",
+      "tags": [
+        "exclusion",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-056",
+      "query": "找自行车停着而且没有人正在骑它的照片",
+      "relevant_photo_ids": [
+        "v-010"
+      ],
+      "hard_negative_photo_ids": [
+        "v-009"
+      ],
+      "family_id": "validation-bicycles",
+      "tags": [
+        "exclusion",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-057",
+      "query": "咖啡已经做好而且有白色奶泡，不要咖啡机正在出液的",
+      "relevant_photo_ids": [
+        "v-006"
+      ],
+      "hard_negative_photo_ids": [
+        "v-005"
+      ],
+      "family_id": "validation-coffee",
+      "tags": [
+        "exclusion",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-058",
+      "query": "找在水龙头下洗盘子，不要在灶台上做饭",
+      "relevant_photo_ids": [
+        "v-030"
+      ],
+      "hard_negative_photo_ids": [
+        "v-029"
+      ],
+      "family_id": "validation-kitchen",
+      "tags": [
+        "exclusion",
+        "action"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-059",
+      "query": "只找电脑键盘特写，不要整台笔记本，也不要钢琴键盘",
+      "relevant_photo_ids": [
+        "v-036"
+      ],
+      "hard_negative_photo_ids": [
+        "v-035",
+        "v-028"
+      ],
+      "family_id": "validation-computers",
+      "tags": [
+        "exclusion"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-060",
+      "query": "要海边的草编遮阳伞，不要街头蓝色雨伞",
+      "relevant_photo_ids": [
+        "v-032"
+      ],
+      "hard_negative_photo_ids": [
+        "v-031",
+        "v-026"
+      ],
+      "family_id": "validation-umbrellas",
+      "tags": [
+        "exclusion"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-061",
+      "query": "路牌上是STOP，不是YIELD",
+      "relevant_photo_ids": [
+        "v-017"
+      ],
+      "hard_negative_photo_ids": [
+        "v-018"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "ocr",
+        "exclusion"
+      ],
+      "required_visible_text": [
+        "STOP"
+      ]
+    },
+    {
+      "id": "val-062",
+      "query": "找能看到YIELD、TO文字和行人图案的路牌",
+      "relevant_photo_ids": [
+        "v-018"
+      ],
+      "hard_negative_photo_ids": [
+        "v-017"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "ocr"
+      ],
+      "required_visible_text": [
+        "YIELD",
+        "TO"
+      ]
+    },
+    {
+      "id": "val-063",
+      "query": "找限速数字30的牌子，不要50",
+      "relevant_photo_ids": [
+        "v-019"
+      ],
+      "hard_negative_photo_ids": [
+        "v-020"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "ocr",
+        "exclusion"
+      ],
+      "required_visible_text": [
+        "30"
+      ]
+    },
+    {
+      "id": "val-064",
+      "query": "找红圈里面写50的限速牌，不要写30的",
+      "relevant_photo_ids": [
+        "v-020"
+      ],
+      "hard_negative_photo_ids": [
+        "v-019"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "ocr",
+        "exclusion"
+      ],
+      "required_visible_text": [
+        "50"
+      ]
+    },
+    {
+      "id": "val-065",
+      "query": "找写着2 hours的停车标志",
+      "relevant_photo_ids": [
+        "v-039"
+      ],
+      "hard_negative_photo_ids": [
+        "v-040"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "ocr"
+      ],
+      "required_visible_text": [
+        "2 hours"
+      ]
+    },
+    {
+      "id": "val-066",
+      "query": "找有NO PARKING ANY TIME英文的路牌",
+      "relevant_photo_ids": [
+        "v-040"
+      ],
+      "hard_negative_photo_ids": [
+        "v-039"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "ocr"
+      ],
+      "required_visible_text": [
+        "NO PARKING",
+        "ANY TIME"
+      ]
+    },
+    {
+      "id": "val-067",
+      "query": "找写着8 am - 6 pm的停车牌",
+      "relevant_photo_ids": [
+        "v-039"
+      ],
+      "hard_negative_photo_ids": [
+        "v-040"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "ocr"
+      ],
+      "required_visible_text": [
+        "8 am",
+        "6 pm"
+      ]
+    },
+    {
+      "id": "val-068",
+      "query": "找圆形地面贴纸上写着WAIT HERE的照片",
+      "relevant_photo_ids": [
+        "v-037"
+      ],
+      "hard_negative_photo_ids": [
+        "v-039",
+        "v-014"
+      ],
+      "family_id": "validation-shopping",
+      "tags": [
+        "ocr"
+      ],
+      "required_visible_text": [
+        "WAIT HERE"
+      ]
+    },
+    {
+      "id": "val-069",
+      "query": "找戴墨镜的猫",
+      "relevant_photo_ids": [],
+      "hard_negative_photo_ids": [
+        "v-001",
+        "v-002",
+        "v-027"
+      ],
+      "family_id": "validation-cats",
+      "tags": [
+        "zero_result",
+        "object_conflict"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-070",
+      "query": "找雪地里奔跑的狗",
+      "relevant_photo_ids": [],
+      "hard_negative_photo_ids": [
+        "v-003",
+        "v-004",
+        "v-025"
+      ],
+      "family_id": "validation-dogs",
+      "tags": [
+        "zero_result",
+        "scene_conflict"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-071",
+      "query": "找咖啡奶泡上写着2026的照片",
+      "relevant_photo_ids": [],
+      "hard_negative_photo_ids": [
+        "v-006"
+      ],
+      "family_id": "validation-coffee",
+      "tags": [
+        "zero_result",
+        "ocr"
+      ],
+      "required_visible_text": [
+        "2026"
+      ]
+    },
+    {
+      "id": "val-072",
+      "query": "找有人一边骑自行车一边读书的照片",
+      "relevant_photo_ids": [],
+      "hard_negative_photo_ids": [
+        "v-007",
+        "v-009"
+      ],
+      "family_id": "validation-books",
+      "tags": [
+        "zero_result",
+        "action_conflict"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-073",
+      "query": "找同一个藤篮里同时装着苹果和橘子的照片",
+      "relevant_photo_ids": [],
+      "hard_negative_photo_ids": [
+        "v-011",
+        "v-012",
+        "v-038"
+      ],
+      "family_id": "validation-fruit",
+      "tags": [
+        "zero_result",
+        "object_conflict"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-074",
+      "query": "找蓝色糖霜甜甜圈上写着Happy Birthday的照片",
+      "relevant_photo_ids": [],
+      "hard_negative_photo_ids": [
+        "v-013",
+        "v-014"
+      ],
+      "family_id": "validation-pastry",
+      "tags": [
+        "zero_result",
+        "ocr"
+      ],
+      "required_visible_text": [
+        "Happy Birthday"
+      ]
+    },
+    {
+      "id": "val-075",
+      "query": "找黄色车头的火车从石拱桥上开过的照片",
+      "relevant_photo_ids": [],
+      "hard_negative_photo_ids": [
+        "v-015",
+        "v-024"
+      ],
+      "family_id": "validation-transit",
+      "tags": [
+        "zero_result",
+        "scene_conflict"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-076",
+      "query": "找限速数字80的路牌",
+      "relevant_photo_ids": [],
+      "hard_negative_photo_ids": [
+        "v-019",
+        "v-020"
+      ],
+      "family_id": "validation-signs",
+      "tags": [
+        "zero_result",
+        "ocr"
+      ],
+      "required_visible_text": [
+        "80"
+      ]
+    },
+    {
+      "id": "val-077",
+      "query": "找雪地里盛开的向日葵",
+      "relevant_photo_ids": [],
+      "hard_negative_photo_ids": [
+        "v-021",
+        "v-025"
+      ],
+      "family_id": "validation-flowers",
+      "tags": [
+        "zero_result",
+        "scene_conflict"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-078",
+      "query": "找有人在户外草地上弹钢琴的照片",
+      "relevant_photo_ids": [],
+      "hard_negative_photo_ids": [
+        "v-027",
+        "v-028"
+      ],
+      "family_id": "validation-music",
+      "tags": [
+        "zero_result",
+        "scene_conflict"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-079",
+      "query": "找有人做饭时怀里抱着狗的照片",
+      "relevant_photo_ids": [],
+      "hard_negative_photo_ids": [
+        "v-029",
+        "v-003",
+        "v-004"
+      ],
+      "family_id": "validation-kitchen",
+      "tags": [
+        "zero_result",
+        "object_conflict"
+      ],
+      "required_visible_text": []
+    },
+    {
+      "id": "val-080",
+      "query": "找有人在雪地上打篮球的照片",
+      "relevant_photo_ids": [],
+      "hard_negative_photo_ids": [
+        "v-033",
+        "v-025"
+      ],
+      "family_id": "validation-sports",
+      "tags": [
+        "zero_result",
+        "scene_conflict"
+      ],
+      "required_visible_text": []
+    }
+  ],
+  "review_method": "Inspect every selected source photograph, then compare every new query against all 40 selected images. Captions and all positive/negative labels are visual judgments by Codex, without production model labels or retrieval outputs. Source titles are used for provenance and candidate discovery only; explicit query conditions require visible evidence.",
+  "limitations": [
+    "AI visual annotation by one reviewer; no independent human adjudication.",
+    "Convenience-stratified Commons sample, not a random sample of a personal album.",
+    "Public image exposure in foundation-model training is unknown.",
+    "Predominantly clear photographs with some natural scene OCR; this validation does not establish performance for private faces, temporal queries or GPS."
+  ]
+}

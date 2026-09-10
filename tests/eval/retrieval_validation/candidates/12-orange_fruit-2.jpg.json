@@ -1,0 +1,105 @@
+{
+  "concept": "orange_fruit",
+  "slot": 12,
+  "rank": 2,
+  "search": "intitle:oranges fruit filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Aleksander_Gierymski_-_Jewish_woman_selling_oranges_-_Google_Art_Project.jpg/1280px-Aleksander_Gierymski_-_Jewish_woman_selling_oranges_-_Google_Art_Project.jpg",
+  "commons_page": {
+    "pageid": 54726543,
+    "ns": 6,
+    "title": "File:Aleksander Gierymski - Jewish woman selling oranges - Google Art Project.jpg",
+    "index": 2,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 3359952,
+        "width": 3386,
+        "height": 4051,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Aleksander_Gierymski_-_Jewish_woman_selling_oranges_-_Google_Art_Project.jpg/1280px-Aleksander_Gierymski_-_Jewish_woman_selling_oranges_-_Google_Art_Project.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 1531,
+        "responsiveUrls": {
+          "2": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Aleksander_Gierymski_-_Jewish_woman_selling_oranges_-_Google_Art_Project.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Aleksander_Gierymski_-_Jewish_woman_selling_oranges_-_Google_Art_Project.jpg/1280px-Aleksander_Gierymski_-_Jewish_woman_selling_oranges_-_Google_Art_Project.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 1531,
+          "srcset": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Aleksander_Gierymski_-_Jewish_woman_selling_oranges_-_Google_Art_Project.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Aleksander_Gierymski_-_Jewish_woman_selling_oranges_-_Google_Art_Project.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Aleksander_Gierymski_-_Jewish_woman_selling_oranges_-_Google_Art_Project.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=54726543",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2020-05-15 10:39:58",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "<div class=\"fn\">\n<div style=\"font-size:0.9em;display:inline-block;\">German:  <div style=\"display:inline-block\" dir=\"ltr\" lang=\"de\"><i>Die Jüdin mit den Orangen <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"https://www.wikidata.org/wiki/Q9397770#P1476\" title=\"Edit this at Wikidata\"><img alt=\"Edit this at Wikidata\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span></i></div></div><br><div style=\"font-weight:bold;display:inline-block;\"><div style=\"display:inline-block\" dir=\"ltr\" lang=\"en\"><i>Jewess with Oranges</i></div></div><div style=\"display: none;\">title QS:P1476,de:\"Die Jüdin mit den Orangen <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"https://www.wikidata.org/wiki/Q9397770#P1476\" title=\"Edit this at Wikidata\"><img alt=\"Edit this at Wikidata\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>\"</div><div style=\"display: none;\">label QS:Lde,\"Die Jüdin mit den Orangen <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"https://www.wikidata.org/wiki/Q9397770#P1476\" title=\"Edit this at Wikidata\"><img alt=\"Edit this at Wikidata\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>\"</div><div style=\"display: none;\">label QS:Les,\"Mujer judía vendiendo naranjas\"</div><div style=\"display: none;\">label QS:Lfr,\"Femme juive aux oranges\"</div><div style=\"display: none;\">label QS:Lru,\"Еврейка с апельсинами\"</div><div style=\"display: none;\">label QS:Lff,\"Jewess with Oranges\"</div><div style=\"display: none;\">label QS:Lfa,\"پرتقال‌فروش یهودی\"</div><div style=\"display: none;\">label QS:Lzh,\"拿著橘子的犹太人\"</div><div style=\"display: none;\">label QS:Lro,\"Evreică vânzând portocale\"</div><div style=\"display: none;\">label QS:Lmk,\"Еврејка со портокали\"</div><div style=\"display: none;\">label QS:Lar,\"يهودية مع برتقال\"</div><div style=\"display: none;\">label QS:Lel,\"Εβραία με πορτοκάλια\"</div><div style=\"display: none;\">label QS:Lcs,\"Židovská žena s pomeranči\"</div><div style=\"display: none;\">label QS:Lpl,\"Żydówka z pomarańczami\"</div><div style=\"display: none;\">label QS:Lml,\"ജൂവസ് വിത് ഓറഞ്ച്\"</div><div style=\"display: none;\">label QS:Luk,\"Перекупка з апельсинами\"</div><div style=\"display: none;\">label QS:Lnb,\"Jødinne med appelsiner\"</div><div style=\"display: none;\">label QS:Lhe,\"יהודיה עם תפוזים\"</div><div style=\"display: none;\">label QS:Lhy,\"Նարինջներով հրեա կինը\"</div><div style=\"display: none;\">label QS:Len,\"Jewess with Oranges\"</div><div style=\"display: none;\">label QS:Leo,\"Judino kun oranĝoj\"</div><div style=\"display: none;\">label QS:Lbs,\"Jevrejka s narančama\"</div></div>",
+            "source": "commons-desc-page"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "PD-old-100-expired|Featured pictures on Wikipedia, English|PD-Art (PD-old-auto-expired)|Artworks with Wikidata item|Artworks with known accession number|Objects with inscriptions in Polish needing translation|Featured pictures on Wikipedia, Persian|CC-PD-Mark|Artworks with accession number from Wikidata|Featured pictures of Warsaw|Featured pictures of paintings from Poland|Featured pictures of women|Featured pictures in the public domain|Featured pictures of Jewish history|Artworks digital representation of 2D work|Files from Google Arts & Culture|Pictures of the Year/2020 (finalist)|Featured pictures from the Google Art Project|Jewish woman selling oranges by Aleksander Gierymski|Google Art Project works by Aleksander Gierymski|Google Art Project works in National Museum in Warsaw",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "featured|poty|potd",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Artist": {
+            "value": "<bdi><a href=\"https://en.wikipedia.org/wiki/en:Aleksander_Gierymski\" class=\"extiw\" title=\"w:en:Aleksander Gierymski\"><span title=\"Polish painter (1850–1901)\">Aleksander Gierymski</span></a></bdi>",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "from 1880 until 1881<div style=\"display: none;\">date QS:P,+1880-00-00T00:00:00Z/8,P580,+1880-00-00T00:00:00Z/9,P582,+1881-00-00T00:00:00Z/9</div> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"https://www.wikidata.org/wiki/Q9397770#P571\" title=\"Edit this at Wikidata\"><img alt=\"Edit this at Wikidata\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<a href=\"https://en.wikipedia.org/wiki/en:Google_Arts_%26_Culture\" class=\"extiw\" title=\"w:en:Google Arts &amp; Culture\"><span title=\"app and website exploring partner museums\">Google Arts &amp; Culture</span></a>  — <a rel=\"nofollow\" class=\"external text\" href=\"//www.google.com/culturalinstitute/asset-viewer/fgFHFZ6NFcnlog\">fgFHFZ6NFcnlog</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "Public domain",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Public domain",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "false",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Copyrighted": {
+            "value": "False",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "pd",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,14 +1,7 @@
-"""Top-K 查询-候选判同重排。
-
-第一阶段只使用已冻结的 ``ai_analysis`` 与 ``ai_description``，不重复上传原图。
-高置信度 contradiction 会被删除；match 排在 uncertain 前；任何外部服务、缓存或
-解析错误都 fail-open，原排序继续返回，不能把搜索链路变成 5xx。
-"""
+"""Text evidence judging and pure decision helpers; SearchService owns policy."""
 
 from __future__ import annotations
 
-import asyncio
-import hashlib
 import json
 import logging
 import time
@@ -18,22 +11,18 @@ from typing import Any, Sequence, TypeVar
 import httpx
 
 from app.config import settings
+from app.services.search_budget import model_call, record_provider_usage
 from app.core.telemetry import traced_async
 from app.services.circuit_breaker import ServiceDegradedError, search_rerank_breaker
-from app.services.metrics import metrics
-from app.services.lock import get_redis
+from app.services.search_decisions import DECISION_CONTRACT_VERSION, parse_decision_rows
 from app.services.search_visual_verifier import (
-    VISUAL_VERIFY_PROMPT_VERSION,
     VisualCandidate,
-    judge_visual_candidates,
 )
 from app.utils.json_parser import parse_as_dict
 
 logger = logging.getLogger(__name__)
 
 RERANK_PROMPT_VERSION = "topk_match_v1"
-_VERDICTS = {"match", "contradiction", "uncertain"}
-_CACHE_PREFIX = "search:rerank:"
 _Scored = TypeVar("_Scored", bound=tuple[Any, ...])
 _FINE_GRAINED_VISUAL_TERMS = (
     "左边",
@@ -236,6 +225,10 @@ def evidence_from_scored(scored: Sequence[_Scored], top_k: int) -> list[dict[str
             {
                 "candidate_key": f"c{index}",
                 "photo_id": str(photo.id),
+                "content_version": [
+                    getattr(photo, "hash", None),
+                    str(getattr(photo, "updated_at", None)),
+                ],
                 "analysis": _compact_analysis(getattr(photo, "ai_analysis", None)),
                 "description": getattr(photo, "ai_description", None),
             }
@@ -243,75 +236,12 @@ def evidence_from_scored(scored: Sequence[_Scored], top_k: int) -> list[dict[str
     return evidence
 
 
-def _cache_key(query: str, candidates: list[dict[str, Any]], model: str) -> str:
-    payload = {
-        "query": query.strip(),
-        "candidates": candidates,
-        "model": model,
-        "prompt_version": RERANK_PROMPT_VERSION,
-    }
-    digest = hashlib.sha256(
-        json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
-    ).hexdigest()
-    return f"{_CACHE_PREFIX}{digest}"
-
-
-async def _read_cache(key: str) -> list[RerankDecision] | None:
-    try:
-        raw = await (await get_redis()).get(key)
-        if not raw:
-            return None
-        parsed = parse_as_dict(raw)
-        return _parse_decisions(parsed, expected_keys=None)
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("rerank cache read failed, treating as miss: %s", exc)
-        return None
-
-
-async def _write_cache(key: str, decisions: list[RerankDecision]) -> None:
-    try:
-        payload = {"decisions": [decision.as_dict() for decision in decisions]}
-        await (await get_redis()).setex(
-            key,
-            settings.search_rerank_cache_ttl_seconds,
-            json.dumps(payload, ensure_ascii=False),
-        )
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("rerank cache write failed: %s", exc)
-
-
 def _parse_decisions(
-    payload: dict[str, Any],
+    payload: Any,
     expected_keys: set[str] | None,
 ) -> list[RerankDecision] | None:
-    raw_decisions = payload.get("decisions")
-    if not isinstance(raw_decisions, list):
-        return None
-    parsed: list[RerankDecision] = []
-    seen: set[str] = set()
-    for raw in raw_decisions:
-        if not isinstance(raw, dict):
-            continue
-        key = str(raw.get("candidate_key", ""))
-        verdict = str(raw.get("verdict", "")).lower()
-        if not key or key in seen or verdict not in _VERDICTS:
-            continue
-        try:
-            confidence = max(0.0, min(1.0, float(raw.get("confidence", 0.0))))
-        except (TypeError, ValueError):
-            confidence = 0.0
-        parsed.append(
-            RerankDecision(
-                candidate_key=key,
-                verdict=verdict,
-                confidence=confidence,
-                rationale=str(raw.get("rationale", ""))[:240],
-            )
-        )
-        seen.add(key)
-    if expected_keys is not None and seen != expected_keys:
-        return None
-    return parsed
+    rows = parse_decision_rows(payload, expected_keys)
+    return None if rows is None else [RerankDecision(**row) for row in rows]
 
 
 @traced_async(
@@ -319,7 +249,7 @@ def _parse_decisions(
     kind="client",
     attributes={"gen_ai.operation.name": "rerank"},
 )
-async def judge_candidate_evidence(
+async def _judge_candidate_evidence(
     query: str,
     candidates: list[dict[str, Any]],
     *,
@@ -335,13 +265,6 @@ async def judge_candidate_evidence(
         )
 
     model = settings.search_rerank_model or settings.qwen_chat_model
-    key = _cache_key(query, candidates, model)
-    if use_cache:
-        cached = await _read_cache(key)
-        expected = {str(candidate["candidate_key"]) for candidate in candidates}
-        if cached is not None and {item.candidate_key for item in cached} == expected:
-            return cached, {"cache_hit": True, "model": model, "latency_ms": 0.0}
-
     user_payload = {
         "query": query,
         "candidates": candidates,
@@ -390,22 +313,22 @@ async def judge_candidate_evidence(
                 f"Search reranker HTTP {response.status_code}: {response.text[:300]}"
             )
         data = response.json()
+        await record_provider_usage(data.get("usage"))
         try:
             content = data["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
             raise RuntimeError(f"Search reranker unexpected response: {data}") from exc
-        parsed_payload = parse_as_dict(content)
         expected_keys = {str(candidate["candidate_key"]) for candidate in candidates}
-        decisions = _parse_decisions(parsed_payload, expected_keys)
+        decisions = _parse_decisions(content, expected_keys)
         if decisions is None:
             raise ValueError(
                 "Search reranker returned incomplete or malformed decisions"
             )
         return decisions, (time.monotonic() - started) * 1000
 
-    decisions, latency_ms = await search_rerank_breaker.call(_do_call)
-    if use_cache:
-        await _write_cache(key, decisions)
+    decisions, latency_ms = await search_rerank_breaker.call(
+        lambda: model_call("text", _do_call)
+    )
     return decisions, {
         "cache_hit": False,
         "model": model,
@@ -450,291 +373,43 @@ def apply_rerank_decisions(
     }
 
 
-async def verify_scored_candidate_pool(
-    scored: Sequence[_Scored],
-    query: str,
-    *,
-    enabled: bool,
-    max_candidates: int,
-    max_results: int,
-    force_visual_on_zero_match: bool = False,
-) -> tuple[list[_Scored], dict[str, Any]]:
-    """分批验证更大的候选池，只返回明确 ``match`` 的候选。"""
+async def judge_candidate_evidence(query, candidates, *, use_cache=True):
+    from app.services.search_cache import cache_key, cached_call
 
-    pool = list(scored[: max(0, max_candidates)])
-    batch_size = max(1, int(settings.search_rerank_top_k))
-    summary: dict[str, Any] = {
-        "applied": bool(enabled and settings.search_rerank_enabled),
-        "degraded": False,
-        "prompt_version": RERANK_PROMPT_VERSION,
-        "candidates_checked": 0,
-        "match_count": 0,
-        "uncertain_count": 0,
-        "contradiction_count": 0,
-        "visual_candidates_checked": 0,
-        "visual_match_count": 0,
-        "batch_count": 0,
+    if not use_cache:
+        return await _judge_candidate_evidence(query, candidates, use_cache=False)
+    model = settings.search_rerank_model or settings.qwen_chat_model
+    key = cache_key(
+        "text",
+        [
+            settings.dashscope_chat_url,
+            model,
+            RERANK_PROMPT_VERSION,
+            DECISION_CONTRACT_VERSION,
+            query,
+            candidates,
+        ],
+    )
+
+    async def compute():
+        decisions, meta = await _judge_candidate_evidence(
+            query, candidates, use_cache=False
+        )
+        return {"decisions": [x.as_dict() for x in decisions], "meta": meta}
+
+    def validate(value):
+        decisions = _parse_decisions(
+            {"decisions": value["decisions"]},
+            {str(c["candidate_key"]) for c in candidates},
+        )
+        if decisions is None or not isinstance(value.get("meta"), dict):
+            raise ValueError("invalid decisions cache")
+        return {"decisions": [x.as_dict() for x in decisions], "meta": value["meta"]}
+
+    value, hit = await cached_call(
+        key, compute, ttl=settings.search_rerank_cache_ttl_seconds, validate=validate
+    )
+    return [RerankDecision(**x) for x in value["decisions"]], {
+        **value["meta"],
+        "cache_hit": hit,
     }
-    if not pool or max_results <= 0:
-        return [], summary
-    if not enabled or not settings.search_rerank_enabled:
-        summary.update({"degraded": True, "degraded_reason": "reranker_disabled"})
-        return [], summary
-
-    verified: list[_Scored] = []
-    degraded_reasons: list[str] = []
-    for offset in range(0, len(pool), batch_size):
-        if len(verified) >= max_results:
-            break
-        batch = pool[offset : offset + batch_size]
-        summary["batch_count"] += 1
-        candidates = evidence_from_scored(batch, len(batch))
-        try:
-            decisions, _call_meta = await judge_candidate_evidence(query, candidates)
-        except Exception as exc:  # noqa: BLE001
-            degraded_reasons.append(type(exc).__name__)
-            continue
-
-        counts = {
-            verdict: sum(item.verdict == verdict for item in decisions)
-            for verdict in ("match", "uncertain", "contradiction")
-        }
-        summary["candidates_checked"] += len(batch)
-        for verdict, count in counts.items():
-            summary[f"{verdict}_count"] += count
-
-        if (
-            force_visual_on_zero_match
-            and counts["match"] == 0
-            and counts["uncertain"] > 0
-        ):
-            visual_candidates = _visual_candidates(batch, decisions)
-            summary["visual_candidates_checked"] += len(visual_candidates)
-            if visual_candidates:
-                try:
-                    visual_decisions, _visual_meta = await asyncio.wait_for(
-                        judge_visual_candidates(query, visual_candidates),
-                        timeout=settings.agent_search_visual_budget_seconds,
-                    )
-                    summary["visual_match_count"] += sum(
-                        item.verdict == "match" for item in visual_decisions
-                    )
-                    decisions = merge_visual_decisions(
-                        decisions,
-                        visual_decisions,
-                        reject_confidence=settings.search_rerank_reject_confidence,
-                    )
-                except Exception as exc:  # noqa: BLE001
-                    degraded_reasons.append(f"visual:{type(exc).__name__}")
-
-        by_key = {item.candidate_key: item for item in decisions}
-        for index, item in enumerate(batch):
-            decision = by_key.get(f"c{index}")
-            if decision is not None and decision.verdict == "match":
-                verified.append(item)
-                if len(verified) >= max_results:
-                    break
-
-    if degraded_reasons:
-        summary.update(
-            {
-                "degraded": True,
-                "degraded_reason": ",".join(dict.fromkeys(degraded_reasons))[:240],
-            }
-        )
-    verified.sort(key=lambda item: float(item[4]), reverse=True)
-    return verified[:max_results], summary
-
-
-async def rerank_scored_candidates(
-    scored: Sequence[_Scored],
-    query: str,
-    *,
-    enabled: bool,
-    page_limit: int,
-) -> tuple[list[_Scored], dict[str, Any] | None]:
-    if not enabled or not settings.search_rerank_enabled:
-        return list(scored), None
-    top_k = min(settings.search_rerank_top_k, page_limit, len(scored))
-    if top_k <= 0:
-        return list(scored), {
-            "applied": True,
-            "degraded": False,
-            "prompt_version": RERANK_PROMPT_VERSION,
-            "candidates_checked": 0,
-            "match_count": 0,
-            "uncertain_count": 0,
-            "contradiction_count": 0,
-            "rejected_count": 0,
-            "cache_hit": False,
-            "latency_ms": 0.0,
-        }
-
-    candidates = evidence_from_scored(scored, top_k)
-    try:
-        decisions, call_meta = await judge_candidate_evidence(query, candidates)
-        strict_verification = settings.search_rerank_require_match
-        rerank_input = scored[:top_k] if strict_verification else scored
-        visual_meta: dict[str, Any] = {
-            "visual_verification_applied": False,
-            "visual_prompt_version": VISUAL_VERIFY_PROMPT_VERSION,
-            "visual_trigger_reason": None,
-            "visual_candidates_checked": 0,
-            "visual_match_count": 0,
-            "visual_uncertain_count": 0,
-            "visual_contradiction_count": 0,
-            "visual_cache_hit": False,
-            "visual_degraded": False,
-            "visual_degraded_reason": None,
-            "visual_latency_ms": 0.0,
-        }
-        trigger_reason = None
-        if settings.search_visual_verify_enabled:
-            trigger_reason = visual_trigger_reason(
-                query,
-                rerank_input,
-                decisions,
-                reject_confidence=settings.search_rerank_reject_confidence,
-            )
-        if trigger_reason:
-            visual_candidates = _visual_candidates(rerank_input, decisions)
-            visual_meta.update(
-                {
-                    "visual_verification_applied": bool(visual_candidates),
-                    "visual_trigger_reason": trigger_reason,
-                    "visual_candidates_checked": len(visual_candidates),
-                }
-            )
-            if visual_candidates:
-                try:
-                    visual_decisions, visual_call_meta = await judge_visual_candidates(
-                        query, visual_candidates
-                    )
-                    decisions = merge_visual_decisions(
-                        decisions,
-                        visual_decisions,
-                        reject_confidence=settings.search_rerank_reject_confidence,
-                    )
-                    visual_counts = {
-                        verdict: sum(
-                            item.verdict == verdict for item in visual_decisions
-                        )
-                        for verdict in ("match", "uncertain", "contradiction")
-                    }
-                    visual_meta.update(
-                        {
-                            "visual_match_count": visual_counts["match"],
-                            "visual_uncertain_count": visual_counts["uncertain"],
-                            "visual_contradiction_count": visual_counts["contradiction"],
-                            "visual_cache_hit": visual_call_meta["cache_hit"],
-                            "visual_latency_ms": visual_call_meta["latency_ms"],
-                        }
-                    )
-                    metrics.counter(
-                        "search_visual_verify_total",
-                        tags={
-                            "status": "ok",
-                            "detail": trigger_reason,
-                        },
-                    )
-                    metrics.histogram(
-                        "search_visual_verify_latency_ms",
-                        float(visual_call_meta["latency_ms"]),
-                    )
-                except Exception as visual_exc:  # noqa: BLE001
-                    # 局部降级：保留文本判同结论，不触发外层的全链路 fail-open。
-                    logger.warning(
-                        "visual verifier degraded; preserving text decisions | error=%s: %s",
-                        type(visual_exc).__name__,
-                        visual_exc,
-                    )
-                    visual_meta.update(
-                        {
-                            "visual_degraded": True,
-                            "visual_degraded_reason": type(visual_exc).__name__,
-                        }
-                    )
-                    metrics.counter(
-                        "search_visual_verify_total",
-                        tags={
-                            "status": "degraded",
-                            "detail": type(visual_exc).__name__,
-                        },
-                    )
-
-        reordered, counts = apply_rerank_decisions(
-            rerank_input,
-            decisions,
-            top_k=top_k,
-            reject_confidence=settings.search_rerank_reject_confidence,
-        )
-        # A strict verifier should not manufacture a result when it found no
-        # supported candidate. Uncertain items remain useful only when at
-        # least one positive anchor exists.
-        zero_match_filtered = bool(
-            settings.search_rerank_require_match and counts["match"] == 0
-        )
-        if zero_match_filtered:
-            reordered = []
-        unjudged_filtered_count = (
-            max(0, len(scored) - top_k) if strict_verification else 0
-        )
-        metrics.counter(
-            "search_rerank_total",
-            tags={
-                "status": "ok",
-                "detail": "cache_hit" if call_meta["cache_hit"] else "cache_miss",
-            },
-        )
-        metrics.histogram("search_rerank_latency_ms", float(call_meta["latency_ms"]))
-        return reordered, {
-            "applied": True,
-            "degraded": False,
-            "prompt_version": RERANK_PROMPT_VERSION,
-            "model": call_meta["model"],
-            "candidates_checked": top_k,
-            "match_count": counts["match"],
-            "uncertain_count": counts["uncertain"],
-            "contradiction_count": counts["contradiction"],
-            "rejected_count": counts["rejected"],
-            "zero_match_filtered": zero_match_filtered,
-            "unjudged_filtered_count": unjudged_filtered_count,
-            "cache_hit": call_meta["cache_hit"],
-            "latency_ms": call_meta["latency_ms"],
-            **visual_meta,
-        }
-    except Exception as exc:  # noqa: BLE001
-        logger.warning(
-            "search reranker degraded; preserving original ranking | error=%s: %s",
-            type(exc).__name__,
-            exc,
-        )
-        metrics.counter(
-            "search_rerank_total",
-            tags={"status": "degraded", "detail": type(exc).__name__},
-        )
-        return list(scored), {
-            "applied": True,
-            "degraded": True,
-            "degraded_reason": type(exc).__name__,
-            "prompt_version": RERANK_PROMPT_VERSION,
-            "model": settings.search_rerank_model or settings.qwen_chat_model,
-            "candidates_checked": top_k,
-            "match_count": 0,
-            "uncertain_count": top_k,
-            "contradiction_count": 0,
-            "rejected_count": 0,
-            "cache_hit": False,
-            "latency_ms": 0.0,
-            "visual_verification_applied": False,
-            "visual_prompt_version": VISUAL_VERIFY_PROMPT_VERSION,
-            "visual_trigger_reason": None,
-            "visual_candidates_checked": 0,
-            "visual_match_count": 0,
-            "visual_uncertain_count": 0,
-            "visual_contradiction_count": 0,
-            "visual_cache_hit": False,
-            "visual_degraded": False,
-            "visual_degraded_reason": None,
-            "visual_latency_ms": 0.0,
-        }

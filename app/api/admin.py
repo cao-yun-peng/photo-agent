@@ -1,12 +1,15 @@
 """管理端API: 配置热刷新、状态查看等运维接口.
 
-注意: 生产环境应在网关层限制访问来源，或添加管理员认证.
+默认关闭；启用后需要 JWT 和服务端管理员白名单。
 """
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from app.core.errors import ApiError, AUTH_PERMISSION_DENIED
+from app.config import settings
+from app.core.security import get_current_user
+from app.models.user import User
 from app.core.logger import get_logger
 from app.core.registry import (
     get_registry_stats,
@@ -17,26 +20,19 @@ from app.core.registry import (
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/admin", tags=["admin"])
 
-
-# ---------- 简单的开发模式认证（生产环境应替换为正式的管理员认证）----------
-async def _verify_admin(dev_mode: bool = Query(default=False, include_in_schema=False)):
-    """验证管理员权限.
-
-    简化版本: 开发环境(dev_mode=true)直接放行,
-    生产环境需要X-Admin-Token头匹配settings.admin_token.
-    """
-    from app.config import settings
-
-    if settings.app_env == "dev" or dev_mode:
-        return True
-
-    # TODO: 生产环境实现正式的管理员认证
-    # admin_token = request.headers.get("X-Admin-Token")
-    # if admin_token != settings.admin_token:
-    #     raise ApiError(AUTH_PERMISSION_DENIED)
+async def _verify_admin(user: User = Depends(get_current_user)):
+    if not settings.admin_enabled:
+        raise HTTPException(status_code=404, detail="Not found")
+    if user.id not in settings.admin_user_ids:
+        raise HTTPException(status_code=403, detail="Administrator permission required")
+    logger.warning("admin access authorized | user=%s", user.id)
     return True
+
+
+router = APIRouter(
+    prefix="/admin", tags=["admin"], dependencies=[Depends(_verify_admin)]
+)
 
 
 @router.post("/refresh", summary="刷新所有配置（热更新）")

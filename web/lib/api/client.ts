@@ -1,5 +1,5 @@
 import createClient, { type Middleware } from 'openapi-fetch';
-import { clearSession, readSession } from '@/lib/auth/session';
+import { clearSessionIfCurrent, readSession, sessionEpoch, sessionSignal } from '@/lib/auth/session';
 import type { paths } from './generated';
 
 export const API_ORIGIN = (
@@ -11,19 +11,27 @@ export function newRequestLogId(): string {
   return `web-${Date.now().toString(36)}-${random.slice(0, 8)}`;
 }
 
+const requestEpochs = new Map<string, number>();
 const requestMiddleware: Middleware = {
-  async onRequest({ request }) {
+  async onRequest({ request, id }) {
     const session = readSession();
+    requestEpochs.set(id, sessionEpoch());
+    request.headers.set('X-Timezone', Intl.DateTimeFormat().resolvedOptions().timeZone);
     request.headers.set('X-Log-ID', newRequestLogId());
     if (session) {
       request.headers.set('Authorization', `Bearer ${session.accessToken}`);
     }
-    return request;
+    return new Request(request, { signal: AbortSignal.any([request.signal, sessionSignal()]) });
   },
-  async onResponse({ response }) {
-    if (response.status === 401) clearSession();
+  async onResponse({ response, request, id }) {
+    const epoch = requestEpochs.get(id);
+    requestEpochs.delete(id);
+    if (response.status === 401 && epoch !== undefined) {
+      clearSessionIfCurrent(request.headers.get('Authorization')?.replace(/^Bearer /, ''), epoch);
+    }
     return response;
   },
+  onError({ id }) { requestEpochs.delete(id); },
 };
 
 export const apiClient = createClient<paths>({ baseUrl: API_ORIGIN });

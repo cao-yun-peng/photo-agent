@@ -1,0 +1,113 @@
+{
+  "concept": "cat_portrait",
+  "slot": 1,
+  "rank": 2,
+  "search": "intitle:cat portrait filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Sphynx_-_studio_portrait_photographs_of_cats.jpg/1280px-Sphynx_-_studio_portrait_photographs_of_cats.jpg",
+  "commons_page": {
+    "pageid": 79162873,
+    "ns": 6,
+    "title": "File:Sphynx - studio portrait photographs of cats.jpg",
+    "index": 2,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 4708364,
+        "width": 3500,
+        "height": 3500,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Sphynx_-_studio_portrait_photographs_of_cats.jpg/1280px-Sphynx_-_studio_portrait_photographs_of_cats.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 1280,
+        "responsiveUrls": {
+          "2": "https://upload.wikimedia.org/wikipedia/commons/4/41/Sphynx_-_studio_portrait_photographs_of_cats.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Sphynx_-_studio_portrait_photographs_of_cats.jpg/1280px-Sphynx_-_studio_portrait_photographs_of_cats.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 1280,
+          "srcset": "https://upload.wikimedia.org/wikipedia/commons/4/41/Sphynx_-_studio_portrait_photographs_of_cats.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/41/Sphynx_-_studio_portrait_photographs_of_cats.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sphynx_-_studio_portrait_photographs_of_cats.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=79162873",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2019-05-23 15:44:22",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Sphynx - studio portrait photographs of cats",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Catloaf|Self-published work|Photographs by Dmitry Makeev|Studio portrait photographs of Sphynx cats|Images of Russia by Dmitry Makeev|Photographs by Dmitry Makeev taken in 2019",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "quality",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Sphynx - studio portrait photographs of cats.",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2019-05-14",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a href=\"//commons.wikimedia.org/wiki/User:Knopik-som\" title=\"User:Knopik-som\">Dmitry Makeev</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 4.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 4.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/4.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-4.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

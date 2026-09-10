@@ -1,4 +1,5 @@
 """JWT 签发与校验、当前用户依赖."""
+
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
@@ -16,7 +17,6 @@ from app.core.errors import (
     ApiError,
     AUTH_JWT_EXPIRED,
     AUTH_JWT_INVALID,
-    AUTH_PERMISSION_DENIED,
     AUTH_USER_NOT_FOUND,
 )
 from app.core.logger import get_logger, set_logging_context
@@ -59,9 +59,7 @@ def decode_token(token: str) -> UUID:
 
 async def get_current_user(
     request: Request,
-    credentials: Annotated[
-        HTTPAuthorizationCredentials | None, Depends(bearer_scheme)
-    ],
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> User:
     """FastAPI Depends：从 Authorization 头解析并加载 User。
@@ -87,9 +85,7 @@ async def get_current_user(
 
 async def get_current_user_optional(
     request: Request,
-    credentials: Annotated[
-        HTTPAuthorizationCredentials | None, Depends(bearer_scheme)
-    ],
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> User | None:
     """可选认证：不强制要求登录，未登录时返回None。"""

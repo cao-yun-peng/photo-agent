@@ -1,0 +1,110 @@
+{
+  "concept": "shopping_basket",
+  "slot": 38,
+  "rank": 3,
+  "search": "intitle:shopping basket filetype:bitmap",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Ye_Olde_Curiosity_Shop_1916_catalog_-_basket_page.jpg",
+  "commons_page": {
+    "pageid": 5185851,
+    "ns": 6,
+    "title": "File:Ye Olde Curiosity Shop 1916 catalog - basket page.jpg",
+    "index": 3,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 718677,
+        "width": 1215,
+        "height": 1764,
+        "thumburl": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Ye_Olde_Curiosity_Shop_1916_catalog_-_basket_page.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "thumbwidth": 1280,
+        "thumbheight": 1858,
+        "thumbattribs": {
+          "src": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Ye_Olde_Curiosity_Shop_1916_catalog_-_basket_page.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 1858
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Ye_Olde_Curiosity_Shop_1916_catalog_-_basket_page.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Ye_Olde_Curiosity_Shop_1916_catalog_-_basket_page.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=5185851",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2008-11-12 04:48:45",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Ye Olde Curiosity Shop 1916 catalog - basket page",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "PD US|Skokomish|Klamath|Makah|Ye Olde Curiosity Shop|Native American baskets|Tlingit baskets|Taku|History of the Aleutian Islands|Attu|Haida baskets|Yakutat",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Page 27 of Ye Olde Curiosity Shop (Seattle) 1916 catalog, with illustration depicting a variety of Indian baskets. Includes baskets from the Skokomish (#4), Attu (#6, 9), Klamath (#10), \"Thlinket and Hidah\" / Tlingit and Haida (#12), Taku, \"Thlinket\", or Yakutat (#13, 14), and Shasta (#16).",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "1916",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "Page 27 of Ye Olde Curiosity Shop (Seattle) 1916 catalog, scanned from reproduction in Kate C. Duncan, <i>1001 Curious Things</i>, University of Washington Press, 2000, <span lang=\"en\" dir=\"ltr\"><a href=\"https://en.wikipedia.org/wiki/ISBN\" class=\"extiw\" title=\"en:ISBN\"><span lang=\"en\" dir=\"ltr\">ISBN</span></a></span> <a href=\"//commons.wikimedia.org/wiki/Special:BookSources/0295980109\" title=\"Special:BookSources/0295980109\">0295980109</a>, p. 204.",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "Ye Olde Curiosity Shop",
+            "source": "commons-desc-page"
+          },
+          "Permission": {
+            "value": "PD-US",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseShortName": {
+            "value": "Public domain",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Public domain",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "false",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Copyrighted": {
+            "value": "False",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "pd",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

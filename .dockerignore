@@ -13,7 +13,22 @@
 .venv
 __pycache__
 .pytest_cache
+.pytest_tmp*
+.pytest-*
 .ruff_cache
+.mypy_cache
+.project-to-act
+.understand-anything
+.codex
+.agents
+**/node_modules
+web/dist
+web/.next
+web/.vinext
+**/test-results
+**/playwright-report
+docs/benchmarks
+backups
 artifacts
 *.log
 

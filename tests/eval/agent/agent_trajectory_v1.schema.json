@@ -1,0 +1,222 @@
+{
+  "$defs": {
+    "ArgumentAssertion": {
+      "additionalProperties": false,
+      "properties": {
+        "tool": {
+          "title": "Tool",
+          "type": "string"
+        },
+        "index": {
+          "minimum": 0,
+          "title": "Index",
+          "type": "integer"
+        },
+        "fields": {
+          "title": "Fields",
+          "type": "object"
+        }
+      },
+      "required": [
+        "tool",
+        "index",
+        "fields"
+      ],
+      "title": "ArgumentAssertion",
+      "type": "object"
+    },
+    "TrajectoryExpected": {
+      "additionalProperties": false,
+      "properties": {
+        "required_tools": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Tools",
+          "type": "array"
+        },
+        "forbidden_tools": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Forbidden Tools",
+          "type": "array"
+        },
+        "before": {
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": "Before",
+          "type": "array"
+        },
+        "max_tool_calls": {
+          "minimum": 0,
+          "title": "Max Tool Calls",
+          "type": "integer"
+        },
+        "state": {
+          "title": "State",
+          "type": "object"
+        },
+        "arguments": {
+          "items": {
+            "$ref": "#/$defs/ArgumentAssertion"
+          },
+          "title": "Arguments",
+          "type": "array"
+        },
+        "terminal": {
+          "enum": [
+            "final",
+            "clarify",
+            "error"
+          ],
+          "title": "Terminal",
+          "type": "string"
+        },
+        "final_contains": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Final Contains",
+          "type": "array"
+        },
+        "simulated_writes": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Simulated Writes"
+        }
+      },
+      "required": [
+        "max_tool_calls",
+        "terminal"
+      ],
+      "title": "TrajectoryExpected",
+      "type": "object"
+    },
+    "Turn": {
+      "additionalProperties": false,
+      "properties": {
+        "user_input": {
+          "title": "User Input",
+          "type": "string"
+        },
+        "decisions": {
+          "items": {
+            "type": "object"
+          },
+          "title": "Decisions",
+          "type": "array"
+        },
+        "expected": {
+          "$ref": "#/$defs/TrajectoryExpected"
+        }
+      },
+      "required": [
+        "user_input",
+        "expected"
+      ],
+      "title": "Turn",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "split": {
+      "enum": [
+        "development",
+        "validation",
+        "test"
+      ],
+      "title": "Split",
+      "type": "string"
+    },
+    "reference_date": {
+      "title": "Reference Date",
+      "type": "string"
+    },
+    "tags": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Tags",
+      "type": "array"
+    },
+    "risk": {
+      "enum": [
+        "normal",
+        "safety_critical"
+      ],
+      "title": "Risk",
+      "type": "string"
+    },
+    "variant": {
+      "enum": [
+        "control",
+        "v2"
+      ],
+      "title": "Variant",
+      "type": "string"
+    },
+    "initial_state": {
+      "title": "Initial State",
+      "type": "object"
+    },
+    "tool_fixtures": {
+      "additionalProperties": {
+        "items": {
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "title": "Tool Fixtures",
+      "type": "object"
+    },
+    "turns": {
+      "items": {
+        "$ref": "#/$defs/Turn"
+      },
+      "maxItems": 10,
+      "minItems": 1,
+      "title": "Turns",
+      "type": "array"
+    },
+    "max_model_calls": {
+      "maximum": 20,
+      "minimum": 1,
+      "title": "Max Model Calls",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id",
+    "split",
+    "reference_date",
+    "tags",
+    "risk",
+    "variant",
+    "initial_state",
+    "tool_fixtures",
+    "turns",
+    "max_model_calls"
+  ],
+  "title": "TrajectoryCase",
+  "type": "object"
+}

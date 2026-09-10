@@ -1,0 +1,113 @@
+{
+  "concept": "doughnut",
+  "slot": 14,
+  "rank": 3,
+  "search": "intitle:doughnut filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/Many_Kinds_of_Doughnuts_on_Disolay_At_the_Doughnut_Shop_West_of_Melbourne.jpg/1280px-Many_Kinds_of_Doughnuts_on_Disolay_At_the_Doughnut_Shop_West_of_Melbourne.jpg",
+  "commons_page": {
+    "pageid": 191776737,
+    "ns": 6,
+    "title": "File:Many Kinds of Doughnuts on Disolay At the Doughnut Shop West of Melbourne.jpg",
+    "index": 3,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 2759510,
+        "width": 4032,
+        "height": 3024,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/Many_Kinds_of_Doughnuts_on_Disolay_At_the_Doughnut_Shop_West_of_Melbourne.jpg/1280px-Many_Kinds_of_Doughnuts_on_Disolay_At_the_Doughnut_Shop_West_of_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 960,
+        "responsiveUrls": {
+          "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/Many_Kinds_of_Doughnuts_on_Disolay_At_the_Doughnut_Shop_West_of_Melbourne.jpg/3840px-Many_Kinds_of_Doughnuts_on_Disolay_At_the_Doughnut_Shop_West_of_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/Many_Kinds_of_Doughnuts_on_Disolay_At_the_Doughnut_Shop_West_of_Melbourne.jpg/1280px-Many_Kinds_of_Doughnuts_on_Disolay_At_the_Doughnut_Shop_West_of_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 960,
+          "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/Many_Kinds_of_Doughnuts_on_Disolay_At_the_Doughnut_Shop_West_of_Melbourne.jpg/3840px-Many_Kinds_of_Doughnuts_on_Disolay_At_the_Doughnut_Shop_West_of_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Many_Kinds_of_Doughnuts_on_Disolay_At_the_Doughnut_Shop_West_of_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Many_Kinds_of_Doughnuts_on_Disolay_At_the_Doughnut_Shop_West_of_Melbourne.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=191776737",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2026-05-11 08:36:00",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Many Kinds of Doughnuts on Disolay At the Doughnut Shop West of Melbourne",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Doughnuts|CC-Zero|Creative Commons CC0 1.0 Universal Public Domain Dedication missing SDC copyright license|Self-published work|Self-published work missing SDC copyright license",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Many Kinds of Doughnuts with different Colours on Disolay At the Doughnut Shop West of Melbourne",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2024-11-23 13:57:13",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a href=\"//commons.wikimedia.org/wiki/User:Brassluff\" title=\"User:Brassluff\">Brassluff</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Zero, Public Domain Dedication",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "false",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

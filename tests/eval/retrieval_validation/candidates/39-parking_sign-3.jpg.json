@@ -1,0 +1,109 @@
+{
+  "concept": "parking_sign",
+  "slot": 39,
+  "rank": 3,
+  "search": "intitle:parking sign street filetype:bitmap",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/7/72/Alternate-parking_sign_Barcelona_left.jpg",
+  "commons_page": {
+    "pageid": 83354064,
+    "ns": 6,
+    "title": "File:Alternate-parking sign Barcelona left.jpg",
+    "index": 3,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 321347,
+        "width": 750,
+        "height": 1000,
+        "thumburl": "https://upload.wikimedia.org/wikipedia/commons/7/72/Alternate-parking_sign_Barcelona_left.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "thumbwidth": 1280,
+        "thumbheight": 1707,
+        "thumbattribs": {
+          "src": "https://upload.wikimedia.org/wikipedia/commons/7/72/Alternate-parking_sign_Barcelona_left.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 1707
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/7/72/Alternate-parking_sign_Barcelona_left.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Alternate-parking_sign_Barcelona_left.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=83354064",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2019-10-25 08:58:20",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Alternate-parking sign Barcelona left",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Self-published work|Road transport in Barcelona|Parking signs in Catalonia|Road signs in Barcelona|Taken with TP-Link Neffos X1 Lite",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Alternate-side parking sign in Barcelona on left side of the street",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2019-10-24 09:13:48",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Fixierider&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Fixierider (page does not exist)\">Fixierider</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 4.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 4.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/4.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-4.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

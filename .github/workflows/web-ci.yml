@@ -4,10 +4,12 @@ on:
   pull_request:
     paths:
       - "web/**"
-      - "app/api/**"
-      - "app/schemas/**"
-      - "app/services/**"
-      - "app/workers/**"
+      - "miniprogram/**"
+      - "app/**"
+      - "tests/**"
+      - "alembic/**"
+      - "alembic.ini"
+      - "requirements.txt"
       - "docker-compose.yml"
       - "docker-compose.web.yml"
       - "docker-compose.e2e.yml"
@@ -20,10 +22,12 @@ on:
   push:
     paths:
       - "web/**"
-      - "app/api/**"
-      - "app/schemas/**"
-      - "app/services/**"
-      - "app/workers/**"
+      - "miniprogram/**"
+      - "app/**"
+      - "tests/**"
+      - "alembic/**"
+      - "alembic.ini"
+      - "requirements.txt"
       - "docker-compose.yml"
       - "docker-compose.web.yml"
       - "docker-compose.e2e.yml"

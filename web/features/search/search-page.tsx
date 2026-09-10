@@ -2,18 +2,21 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import Link from 'next/link';
+import { AddSelection } from '@/features/workspace/add-selection';
 import { AppShell } from '@/components/app-shell';
 import { AuthGate } from '@/components/auth-gate';
-import { streamAgent, type AgentEvent } from '@/lib/api/agent-stream';
+import { streamAgent, type AgentEvent, type AgentUIAction } from '@/lib/api/agent-stream';
 import type { ApiFailure } from '@/lib/api/client';
 import { resolveMediaUrl } from '@/lib/api/media-url';
 import { reportSearchClick } from '@/lib/api/search';
 import { formatPhotoDate } from '@/lib/format';
 import styles from './search-page.module.css';
+import { readConversations, saveConversation, removeConversation, type LocalConversation } from './conversation-storage';
 
 const SUGGESTIONS = ['最近一周的风景', '去年冬天的雪景', '有猫的照片', '还有一张'];
 const RESULT_BATCH = 24;
-const SEARCH_TOOLS = new Set(['search_photos', 'fallback_search', 'browse_candidates']);
+const SEARCH_TOOLS = new Set(['search_photos', 'continue_search', 'feedback_results', 'browse_album', 'fallback_search', 'browse_candidates']);
 
 interface ChatMessage {
   id: string;
@@ -30,6 +33,27 @@ interface AgentPhoto {
   score_semantic?: number;
   score_recency?: number;
   score_final?: number;
+}
+
+interface SearchSnapshot {
+  messages: ChatMessage[];
+  results: AgentPhoto[];
+  input: string;
+  sessionId: string | null;
+  sessionExpiresAt: number;
+  interrupted: boolean;
+  selectedPhotoId: string | null;
+  feedbackBatchId: string | null;
+  undoId: string | null;
+  generationReviewId: string | null;
+  visibleCount: number;
+  resultMode: string;
+  resultTotal: number;
+  resultComplete: boolean;
+  coverageHint: string;
+  batchLabels: Record<string, string>;
+  photoReferences: Record<string, { batch: string; order: number }>;
+  batchSequence: number;
 }
 
 interface ToolActivity {
@@ -70,6 +94,9 @@ function photoItems(value: unknown): AgentPhoto[] {
 function toolLabel(tool: string): string {
   return ({
     search_photos: '搜索相册',
+    continue_search: '继续查找',
+    feedback_results: '更新照片反馈',
+    browse_album: '浏览全部相册',
     fallback_search: '扩大搜索范围',
     browse_candidates: '整理候选照片',
     ask_clarification: '确认搜索条件',
@@ -98,14 +125,14 @@ export function SearchPageView() {
     <AuthGate>
       {(user) => (
         <AppShell user={user}>
-          <SearchWorkspace />
+          <SearchWorkspace key={user.id} userId={user.id} />
         </AppShell>
       )}
     </AuthGate>
   );
 }
 
-export function SearchWorkspace() {
+export function SearchWorkspace({ userId = '' }: { userId?: string }) {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [results, setResults] = useState<AgentPhoto[]>([]);
@@ -114,9 +141,15 @@ export function SearchWorkspace() {
   const [resultTotal, setResultTotal] = useState(0);
   const [resultComplete, setResultComplete] = useState(false);
   const [coverageHint, setCoverageHint] = useState('');
+  const [batchLabels, setBatchLabels] = useState<Record<string, string>>({});
+  const batchSequence = useRef(0);
+  const photoReferences = useRef<Record<string, { batch: string; order: number }>>({});
+  const [undoId, setUndoId] = useState<string | null>(null);
+  const [feedbackBatchId, setFeedbackBatchId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
   const [preview, setPreview] = useState<AgentPhoto | null>(null);
+  const [generationReviewId, setGenerationReviewId] = useState<string | null>(null);
   const [progress, setProgress] = useState('');
   const [activities, setActivities] = useState<ToolActivity[]>([]);
   const [streaming, setStreaming] = useState(false);
@@ -125,6 +158,74 @@ export function SearchWorkspace() {
   const messageSequence = useRef(0);
   const controller = useRef<AbortController | null>(null);
   const chatEnd = useRef<HTMLDivElement | null>(null);
+  const [conversationId, setConversationId] = useState('');
+  const [history, setHistory] = useState<LocalConversation<SearchSnapshot>[]>([]);
+  const [historyReady, setHistoryReady] = useState(!userId);
+  const [historyHint, setHistoryHint] = useState('');
+  const [storageFailed, setStorageFailed] = useState(false);
+  const [sessionExpiresAt, setSessionExpiresAt] = useState(0);
+
+  const restoreConversation = useCallback((entry: LocalConversation<SearchSnapshot>) => {
+    const saved = entry.snapshot;
+    const canResume = Boolean(saved.sessionId && saved.sessionExpiresAt > Date.now() && !saved.interrupted);
+    const restoredMessages = Array.isArray(saved.messages) ? saved.messages.filter(m => m && typeof m.id === 'string' && typeof m.text === 'string' && ['user', 'assistant', 'system'].includes(m.role)) : [];
+    setConversationId(entry.id);
+    setMessages(restoredMessages);
+    messageSequence.current = Math.max(0, ...restoredMessages.map(m => Number(m.id.split('-').at(-1)) || 0));
+    setInput(typeof saved.input === 'string' ? saved.input : '');
+    setResults(photoItems(saved.results));
+    setVisibleCount(Number(saved.visibleCount) || RESULT_BATCH);
+    setSessionId(canResume ? saved.sessionId : null);
+    setSessionExpiresAt(canResume ? saved.sessionExpiresAt : 0);
+    setSelectedPhotoId(canResume ? saved.selectedPhotoId : null);
+    setUndoId(canResume ? saved.undoId : null);
+    setFeedbackBatchId(canResume ? saved.feedbackBatchId : null);
+    setGenerationReviewId(canResume ? saved.generationReviewId : null);
+    setBatchLabels(isRecord(saved.batchLabels) ? saved.batchLabels : {});
+    photoReferences.current = isRecord(saved.photoReferences) ? saved.photoReferences : {};
+    batchSequence.current = Number(saved.batchSequence) || 0;
+    setResultMode(typeof saved.resultMode === 'string' ? saved.resultMode : 'browse');
+    setResultTotal(Number(saved.resultTotal) || 0);
+    setResultComplete(Boolean(saved.resultComplete));
+    setCoverageHint(typeof saved.coverageHint === 'string' ? saved.coverageHint : '');
+    setPreview(null); setActivities([]); setProgress(''); setFailure(null);
+    setHistoryHint(canResume ? '已恢复对话，可以继续。' : saved.interrupted
+      ? '上次请求被中断，记录已保留。请重新描述需求开始搜索。'
+      : '历史记录已恢复。上次搜索已过期，请重新描述需求；旧照片仅供查看。');
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+    const entries = readConversations<SearchSnapshot>(userId);
+    const initialize = () => {
+      setHistory(entries);
+      if (entries[0]) restoreConversation(entries[0]);
+      else setConversationId(crypto.randomUUID());
+      setHistoryReady(true);
+    };
+    initialize();
+  }, [userId, restoreConversation]);
+
+  useEffect(() => {
+    if (!userId || !historyReady || !conversationId || (!messages.length && !input.trim())) return;
+    const entry: LocalConversation<SearchSnapshot> = {
+      id: conversationId,
+      title: (messages.find(m => m.role === 'user')?.text || input).slice(0, 36),
+      updatedAt: Date.now(),
+      snapshot: { messages, results, input, sessionId, sessionExpiresAt, interrupted: streaming,
+        selectedPhotoId, feedbackBatchId, undoId, generationReviewId, visibleCount,
+        resultMode, resultTotal, resultComplete, coverageHint, batchLabels,
+        photoReferences: photoReferences.current, batchSequence: batchSequence.current },
+    };
+    const save = () => {
+      const ok = saveConversation(userId, entry);
+      setStorageFailed(!ok);
+      if (ok) setHistory(readConversations<SearchSnapshot>(userId));
+    };
+    save();
+  }, [userId, historyReady, conversationId, messages, results, input, sessionId, sessionExpiresAt,
+    streaming, selectedPhotoId, feedbackBatchId, undoId, generationReviewId, visibleCount,
+    resultMode, resultTotal, resultComplete, coverageHint, batchLabels]);
 
   const appendMessage = useCallback((
     role: ChatMessage['role'],
@@ -132,8 +233,9 @@ export function SearchWorkspace() {
     options?: string[],
   ) => {
     messageSequence.current += 1;
+    const messageId = `agent-message-${messageSequence.current}`;
     setMessages((current) => [...current, {
-      id: `agent-message-${messageSequence.current}`,
+      id: messageId,
       role,
       text,
       ...(options?.length ? { options } : {}),
@@ -161,6 +263,15 @@ export function SearchWorkspace() {
       const incomingSession = textValue(payload.session_id);
       if (incomingSession) setSessionId(incomingSession);
       setProgress('正在理解你的需求…');
+      return;
+    }
+    if (event.type === 'search_state') {
+      if (payload.display_mode === 'replace') {
+        setResults([]); setVisibleCount(RESULT_BATCH); setSelectedPhotoId(null);
+        setBatchLabels({}); batchSequence.current = 0; photoReferences.current = {}; setUndoId(null);
+        setPreview(null); setFeedbackBatchId(null); setResultTotal(0);
+        setResultComplete(false); setCoverageHint('');
+      }
       return;
     }
     if (event.type === 'route') {
@@ -207,18 +318,49 @@ export function SearchWorkspace() {
         if (index >= 0) next[index] = { ...next[index], status: succeeded ? 'done' : 'failed', summary };
         return next;
       });
-      if (SEARCH_TOOLS.has(tool)) {
-        setResults(items);
-        setVisibleCount(Math.min(RESULT_BATCH, items.length));
+      if (tool === 'apply_skill' && succeeded) {
+        const id = textValue(result.generation_id);
+        if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+          setGenerationReviewId(id);
+        }
+      }
+      if (SEARCH_TOOLS.has(tool) && succeeded && Array.isArray(result.items)) {
+        if (result.result_batch_id) setFeedbackBatchId(textValue(result.result_batch_id));
+        const append = result.display_mode === 'append';
+        if (items.length) {
+          if (!append) batchSequence.current = 0;
+          const batchNumber = numberValue(result.result_batch_number, ++batchSequence.current);
+          if (!append) photoReferences.current = {};
+          items.forEach((item, i) => {
+            if (!photoReferences.current[item.id]) photoReferences.current[item.id] = { batch: textValue(result.result_batch_id), order: batchNumber * 1000000 + i };
+          });
+          setBatchLabels((current) => ({ ...(append ? current : {}),
+            ...Object.fromEntries(items.map((item, i) => [item.id, append && current[item.id] ? current[item.id] : `第 ${batchNumber} 批 · 第 ${i + 1} 张`])) }));
+        }
+        setResults((current) => append
+          ? [...current, ...items.filter((item) => !current.some((old) => old.id === item.id))]
+          : items);
+        setVisibleCount((current) => append ? current + items.length : Math.min(RESULT_BATCH, items.length));
         setResultMode(textValue(result.result_mode, 'browse'));
         setResultTotal(numberValue(result.total_matches, numberValue(result.total, items.length)));
         setResultComplete(Boolean(result.result_set_complete));
         setCoverageHint(textValue(result.coverage_hint, textValue(result.hint)));
-        setSelectedPhotoId(null);
+        if (!append) setSelectedPhotoId(null);
       }
       return;
     }
+    if (event.type === 'undo_available') { setUndoId(textValue(payload.undo_id) || null); return; }
+    if (event.type === 'feedback_undone') {
+      const restored = photoItems(payload.items);
+      setResults((current) => [...current, ...restored.filter(p => !current.some(old => old.id === p.id))]
+        .sort((a, b) => (photoReferences.current[a.id]?.order || 0) - (photoReferences.current[b.id]?.order || 0)));
+      setResultTotal(current => current + restored.length);
+      setSelectedPhotoId(textValue(payload.selected_photo_id) || null);
+      setUndoId(null);
+      return;
+    }
     if (event.type === 'feedback') {
+      setUndoId(textValue(payload.undo_id) || null);
       const removedIds = new Set(
         Array.isArray(payload.removed_photo_ids)
           ? payload.removed_photo_ids.filter((value): value is string => typeof value === 'string')
@@ -247,18 +389,26 @@ export function SearchWorkspace() {
       return;
     }
     if (event.type === 'done') {
+      setSessionExpiresAt(Date.now() + 29 * 60_000); setHistoryHint('');
       const incomingSession = textValue(payload.session_id);
       if (incomingSession) setSessionId(incomingSession);
       const state = isRecord(payload.state) ? payload.state : {};
+      if ('feedback_undo' in state) setUndoId(isRecord(state.feedback_undo) ? textValue(state.feedback_undo.undo_id) || null : null);
+      if ('confirmed_photo_id' in state) setSelectedPhotoId(textValue(state.confirmed_photo_id) || null);
       const confirmed = textValue(state.confirmed_photo_id);
       if (confirmed) setSelectedPhotoId(confirmed);
       setProgress('');
     }
   }, [appendMessage]);
 
-  const runTurn = useCallback(async (query: string, selectedId?: string) => {
+  const runTurn = useCallback(async (query: string, selectedId?: string, uiAction?: AgentUIAction) => {
     const cleanQuery = query.trim();
-    if (!cleanQuery || streaming) return;
+    if (!cleanQuery || !historyReady || streaming || controller.current) return;
+    if (userId && sessionId && sessionExpiresAt <= Date.now()) {
+      setSessionId(null); setSelectedPhotoId(null); setUndoId(null); setFeedbackBatchId(null);
+      setHistoryHint('记录仍在，上次搜索已过期，请重新描述需求。');
+      if (selectedId || uiAction) return;
+    }
     const currentRequest = ++requestSequence.current;
     const nextController = new AbortController();
     controller.current = nextController;
@@ -271,7 +421,9 @@ export function SearchWorkspace() {
     try {
       await streamAgent({
         query: cleanQuery,
-        ...(sessionId ? { session_id: sessionId } : {}),
+        ...(uiAction ? { ui_action: uiAction } : {}),
+        ...(sessionId && (!userId || sessionExpiresAt > Date.now()) ? { session_id: sessionId } : {}),
+        ...(feedbackBatchId ? { feedback_batch_id: feedbackBatchId } : {}),
         ...(selectedId ? { selected_photo_id: selectedId } : {}),
       }, {
         signal: nextController.signal,
@@ -293,7 +445,7 @@ export function SearchWorkspace() {
       ) as ApiFailure;
       setFailure(normalized);
       appendMessage('assistant', normalized.detail);
-      if (normalized.status === 404) setSessionId(null);
+      if (normalized.status === 404) { setSessionId(null); setSelectedPhotoId(null); setFeedbackBatchId(null); setUndoId(null); setSessionExpiresAt(0); setHistoryHint('记录仍在，上次搜索已过期，请重新描述需求。'); }
     } finally {
       if (requestSequence.current === currentRequest) {
         setStreaming(false);
@@ -301,7 +453,7 @@ export function SearchWorkspace() {
         controller.current = null;
       }
     }
-  }, [appendMessage, handleAgentEvent, sessionId, streaming]);
+  }, [appendMessage, handleAgentEvent, sessionId, streaming, feedbackBatchId, historyReady, userId, sessionExpiresAt]);
 
   const submit = (event?: FormEvent) => {
     event?.preventDefault();
@@ -331,7 +483,7 @@ export function SearchWorkspace() {
     controller.current = null;
     setStreaming(false);
     setProgress('');
-    setSessionId(null);
+    setSessionId(null); setUndoId(null);
     setActivities((current) => current.map((item) => (
       item.status === 'running' ? { ...item, status: 'failed', summary: '已停止' } : item
     )));
@@ -339,11 +491,14 @@ export function SearchWorkspace() {
   };
 
   const newConversation = () => {
+    setConversationId(crypto.randomUUID()); setSessionExpiresAt(0); setHistoryHint('');
     requestSequence.current += 1;
     controller.current?.abort();
     controller.current = null;
     setInput('');
     setMessages([]);
+    setGenerationReviewId(null);
+    setUndoId(null); setFeedbackBatchId(null); photoReferences.current = {}; setBatchLabels({}); batchSequence.current = 0;
     setResults([]);
     setVisibleCount(RESULT_BATCH);
     setResultMode('browse');
@@ -374,6 +529,20 @@ export function SearchWorkspace() {
         </button>
       </header>
 
+      {userId ? <div className={styles.historyBar}>
+        <label>历史对话 <select aria-label="历史对话" value={history.some(e => e.id === conversationId) ? conversationId : ''} disabled={streaming || !historyReady}
+          onChange={e => { const entry = history.find(item => item.id === e.target.value); if (entry) restoreConversation(entry); }}>
+          <option value="">新对话</option>
+          {history.map(entry => <option key={entry.id} value={entry.id}>{entry.title}</option>)}
+        </select></label>
+        <span>仅保存在本浏览器，按账号保留最近20个对话</span>
+        {history.some(e => e.id === conversationId) ? <button type="button" disabled={streaming} onClick={() => {
+          if (removeConversation(userId, conversationId)) { setHistory(readConversations<SearchSnapshot>(userId)); newConversation(); }
+          else setStorageFailed(true);
+        }}>删除这条本地记录</button> : null}
+        {historyHint ? <p role="status">{historyHint}</p> : null}
+        {storageFailed ? <p role="alert">浏览器存储不可用或空间不足，当前对话尚未自动保存。</p> : null}
+      </div> : null}
       <div className={styles.layout}>
         <section className={styles.resultPanel} aria-label="Agent 搜索结果">
           <div className={styles.resultTopline}>
@@ -389,6 +558,12 @@ export function SearchWorkspace() {
             ) : null}
           </div>
 
+          <p><Link href={results.length ? `/workspace?candidates=${encodeURIComponent(results.slice(0,100).map(p => p.id).join(','))}` : '/workspace'}>打开稳定选片区{results.length ? '，整理当前候选' : ''}</Link></p>
+
+          {sessionId && feedbackBatchId ? <button type="button" className={styles.loadMore} disabled={streaming}
+            onClick={() => void runTurn('再看一些', undefined, { action: 'continue_search' })}>再看一些</button> : null}
+          {undoId ? <p role="status">已移除照片 · <button type="button" disabled={streaming}
+            onClick={() => void runTurn('撤销刚才的移除', undefined, { action: 'undo_feedback', undo_id: undoId })}>撤销</button></p> : null}
           {coverageHint ? <p className={styles.coverageHint}>{coverageHint}</p> : null}
 
           {visibleResults.length ? (
@@ -408,12 +583,16 @@ export function SearchWorkspace() {
                       <span className={styles.rank}>{index + 1}</span>
                     </button>
                     <div className={styles.photoBody}>
+                      <small>{batchLabels[item.id]}</small>
                       <p>{item.ai_description || '等待照片描述'}</p>
                       <div>
                         <span>相关 {scorePercent(item.score_final)}%</span>
                         <button type="button" disabled={streaming || !sessionId} onClick={() => choosePhoto(item, index)}>
                           {selected ? '已选择' : '选择这张'}
                         </button>
+                        <button type="button" disabled={streaming || !sessionId || !batchLabels[item.id]}
+                          onClick={() => { const batch = photoReferences.current[item.id]?.batch; if (batch) void runTurn(`不要${batchLabels[item.id] || '这张照片'}`, undefined, { action: 'reject_photo', photo_id: item.id, batch_id: batch }); }}>不要这张</button>
+                        <AddSelection photoId={item.id} />
                       </div>
                     </div>
                   </article>
@@ -452,6 +631,7 @@ export function SearchWorkspace() {
                 <p>我会理解你的描述、调用相册搜索，并在信息不足时向你澄清。</p>
               </div>
             ) : null}
+            {generationReviewId ? <p><Link href={`/generate?generationId=${generationReviewId}`}>查看创作方案与生成任务</Link><small> 请在方案页面核对效果和费用后确认。</small></p> : null}
             {messages.map((message) => (
               <div className={styles.messageRow} data-role={message.role} key={message.id}>
                 <div className={styles.messageBubble}>

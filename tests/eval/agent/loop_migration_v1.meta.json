@@ -1,0 +1,8 @@
+{
+  "count": 60,
+  "development": 40,
+  "validation": 20,
+  "sha256": "515159012605ccc574638c8f5488368ace259c1d092b7e8342fc7e6705ca1be2",
+  "annotation": "single-author synthetic, frozen before any live run",
+  "limits": "paraphrase split shares scenario families; not independent generalization evidence"
+}

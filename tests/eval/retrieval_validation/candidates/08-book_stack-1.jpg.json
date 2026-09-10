@@ -1,0 +1,113 @@
+{
+  "concept": "book_stack",
+  "slot": 8,
+  "rank": 1,
+  "search": "intitle:stack books filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/Adavi_Baapiraju_books_stack.jpg/1280px-Adavi_Baapiraju_books_stack.jpg",
+  "commons_page": {
+    "pageid": 166631407,
+    "ns": 6,
+    "title": "File:Adavi Baapiraju books stack.jpg",
+    "index": 1,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 5350222,
+        "width": 3024,
+        "height": 4032,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/Adavi_Baapiraju_books_stack.jpg/1280px-Adavi_Baapiraju_books_stack.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 1707,
+        "responsiveUrls": {
+          "2": "https://upload.wikimedia.org/wikipedia/commons/2/2b/Adavi_Baapiraju_books_stack.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/Adavi_Baapiraju_books_stack.jpg/1280px-Adavi_Baapiraju_books_stack.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 1707,
+          "srcset": "https://upload.wikimedia.org/wikipedia/commons/2/2b/Adavi_Baapiraju_books_stack.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/2b/Adavi_Baapiraju_books_stack.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Adavi_Baapiraju_books_stack.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=166631407",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2025-06-02 13:03:31",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Adavi Baapiraju books stack",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Adavi Baapiraju|Self-published work|Uploaded with Mobile/Android|Photographs taken on 2025-04-19",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "in Annamayya library, Guntur",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "19 April 2025 (according to <span lang=\"en\" dir=\"ltr\"><a href=\"https://en.wikipedia.org/wiki/Exif\" class=\"extiw\" title=\"en:Exif\">Exif</a></span> data)",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a href=\"//commons.wikimedia.org/wiki/User:Saiphani02\" title=\"User:Saiphani02\">Saiphani02</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 4.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 4.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/4.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-4.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

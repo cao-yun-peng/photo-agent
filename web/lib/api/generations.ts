@@ -4,8 +4,8 @@ import { apiClient, toApiFailure } from './client';
 export type Generation = components['schemas']['GenerationOut'];
 export type GenerateRequest = components['schemas']['GenerateRequest'];
 
-export const ACTIVE_GENERATION_STATUSES = new Set(['pending', 'processing']);
-export const TERMINAL_GENERATION_STATUSES = new Set(['done', 'failed']);
+export const ACTIVE_GENERATION_STATUSES = new Set(['pending', 'processing', 'cancel_requested']);
+export const TERMINAL_GENERATION_STATUSES = new Set(['done', 'failed', 'superseded', 'cancelled', 'expired', 'outcome_unknown']);
 
 export function shouldPollGeneration(status?: string | null): boolean {
   return Boolean(status && ACTIVE_GENERATION_STATUSES.has(status));
@@ -35,12 +35,13 @@ export async function prepareGeneration(
 export async function confirmGeneration(
   generationId: string,
   confirmationToken: string,
+  executionDigest?: string | null,
 ): Promise<Generation> {
   const { data, error, response } = await apiClient.POST(
     '/generations/{generation_id}/confirm',
     {
       params: { path: { generation_id: generationId } },
-      body: { confirmation_token: confirmationToken },
+      body: { confirmation_token: confirmationToken, ...(executionDigest ? { execution_digest: executionDigest } : {}) },
     },
   );
   if (!data) throw await toApiFailure(response, error);
@@ -65,6 +66,38 @@ export async function getGeneration(generationId: string): Promise<Generation> {
   const { data, error, response } = await apiClient.GET('/generations/{generation_id}', {
     params: { path: { generation_id: generationId } },
   });
+  if (!data) throw await toApiFailure(response, error);
+  return data;
+}
+
+
+export async function getGenerationInput(generationId: string, position: number): Promise<Blob> {
+  const { data, error, response } = await apiClient.GET('/generations/{generation_id}/inputs/{position}', {
+    params: { path: { generation_id: generationId, position } }, parseAs: 'blob',
+  });
+  if (!data) throw await toApiFailure(response, error);
+  if (data.type.includes('application/json')) throw await toApiFailure(response, JSON.parse(await data.text()));
+  return data;
+}
+
+export async function cancelGeneration(generationId: string): Promise<Generation> {
+  const { data, error, response } = await apiClient.POST('/generations/{generation_id}/cancel', { params: { path: { generation_id: generationId } } });
+  if (!data) throw await toApiFailure(response, error);
+  return data;
+}
+
+export async function iterateGeneration(generationId: string, feedback: string, idempotencyKey: string): Promise<Generation> {
+  const { data, error, response } = await apiClient.POST('/generations/{generation_id}/iterations', {
+    params: { path: { generation_id: generationId } }, body: { feedback, idempotency_key: idempotencyKey },
+  });
+  if (!data) throw await toApiFailure(response, error);
+  return data;
+}
+
+
+export type GenerationCost = components['schemas']['ProviderCostOut'];
+export async function getGenerationCost(id: string): Promise<GenerationCost> {
+  const { data, error, response } = await apiClient.GET('/generations/{generation_id}/cost', { params: { path: { generation_id: id } } });
   if (!data) throw await toApiFailure(response, error);
   return data;
 }

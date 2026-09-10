@@ -1,0 +1,126 @@
+{
+  "concept": "bus_stop",
+  "slot": 16,
+  "rank": 1,
+  "search": "intitle:bus stop shelter filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Bus_shelter_at_VDNKh_in_Moscow.jpg/1280px-Bus_shelter_at_VDNKh_in_Moscow.jpg",
+  "commons_page": {
+    "pageid": 71761906,
+    "ns": 6,
+    "title": "File:Bus shelter at VDNKh in Moscow.jpg",
+    "index": 1,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 9671890,
+        "width": 4310,
+        "height": 2820,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Bus_shelter_at_VDNKh_in_Moscow.jpg/1280px-Bus_shelter_at_VDNKh_in_Moscow.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 837,
+        "responsiveUrls": {
+          "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Bus_shelter_at_VDNKh_in_Moscow.jpg/3840px-Bus_shelter_at_VDNKh_in_Moscow.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Bus_shelter_at_VDNKh_in_Moscow.jpg/1280px-Bus_shelter_at_VDNKh_in_Moscow.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 837,
+          "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Bus_shelter_at_VDNKh_in_Moscow.jpg/3840px-Bus_shelter_at_VDNKh_in_Moscow.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/3/30/Bus_shelter_at_VDNKh_in_Moscow.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Bus_shelter_at_VDNKh_in_Moscow.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=71761906",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2018-08-19 09:57:53",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Bus shelter at VDNKh in Moscow",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Taken with Nikon D3100|Bus shelters in Russia|Bus stops in Moscow|Self-published work|Moscow photographs taken on 2015-08-15|Files uploaded by Dmitry Ivanov|FoP-Russia|August 2015 in Moscow|Files with coordinates missing SDC location of creation|Ring Road (VDNKh)|Green bus shelters",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "quality",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "GPSLatitude": {
+            "value": "55.827572",
+            "source": "commons-desc-page"
+          },
+          "GPSLongitude": {
+            "value": "37.631115",
+            "source": "commons-desc-page"
+          },
+          "GPSMapDatum": {
+            "value": "WGS-84",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Moscow. <a href=\"https://en.wikipedia.org/wiki/VDNKh_(Russia)\" class=\"extiw\" title=\"w:VDNKh (Russia)\">VDNKh (the Exhibition of Achievements of the National Economy)</a>. <br>A bus shelter on the Ring Road of the VDNKh, at the café <i>Varenichnaya No. 1</i> (Prospekt Mira 119, build. 521). <br><small>A photo from the user collection <a href=\"//commons.wikimedia.org/wiki/User:Dmitry_Ivanov/VDNKh\" title=\"User:Dmitry Ivanov/VDNKh\"><i>VDNKh</i></a>.</small>",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "Taken on 15 August 2015",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<span typeof=\"mw:File\"><a href=\"//commons.wikimedia.org/wiki/User:Dmitry_Ivanov\" title=\"User:Dmitry Ivanov\"><img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Dmitry_Ivanov_Logo.svg/20px-Dmitry_Ivanov_Logo.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" width=\"20\" height=\"20\" class=\"mw-file-element\" srcset=\"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Dmitry_Ivanov_Logo.svg/40px-Dmitry_Ivanov_Logo.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"100\" data-file-height=\"100\"></a></span> <a href=\"//commons.wikimedia.org/wiki/User:Dmitry_Ivanov\" title=\"User:Dmitry Ivanov\">Dmitry Ivanov</a>.",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 4.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 4.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/4.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-4.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

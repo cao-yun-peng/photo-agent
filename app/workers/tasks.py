@@ -24,7 +24,16 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import UUID
 
+from arq import Retry, cron, func
 from arq.connections import RedisSettings
+from app.services.task_lifecycle import OwnershipLost, cancel_and_wait, run_cleanup
+from app.workers.photo_recovery import (
+    claim_photo,
+    photo_commit_guard,
+    recover_photo_jobs,
+    release_attempt,
+    renew_photo,
+)
 from sqlalchemy import select
 
 from app.config import settings
@@ -245,239 +254,282 @@ async def retry_photo_embedding(ctx: dict[str, Any], photo_id: str) -> dict[str,
 
 
 async def process_photo(ctx: dict[str, Any], photo_id: str) -> dict[str, Any]:
-    """处理一张照片。返回 dict 便于 ARQ 结果面板查看。"""
-    logger.info("process_photo start | photo_id=%s", photo_id)
+    claimed = await claim_photo(photo_id)
+    if claimed is None:
+        return {"ok": False, "reason": "not_claimable"}
+    token, attempts = claimed
+    lost = asyncio.Event()
 
-    async with AsyncSessionLocal() as db:
-        result = await db.execute(select(Photo).where(Photo.id == UUID(photo_id)))
-        photo = result.scalar_one_or_none()
-        if photo is None:
-            logger.warning("process_photo skipped, photo not found | id=%s", photo_id)
-            return {"ok": False, "reason": "photo_not_found"}
+    async def execute():
+        async with AsyncSessionLocal() as db:
+            db.info["commit_guard"] = photo_commit_guard(photo_id, token, lost)
+            return await _process_claimed_photo(ctx, photo_id, db)
 
-        # --- 1) 标记 processing --------------------------------
-        if not can_transition(photo.status, "processing"):
-            logger.warning(
-                "process_photo invalid transition | id=%s current=%s",
+    task = asyncio.create_task(execute(), name="photo-processing")
+
+    async def heartbeat():
+        try:
+            while True:
+                await asyncio.sleep(settings.photo_processing_lease_seconds / 3)
+                if not await asyncio.wait_for(
+                    renew_photo(photo_id, token),
+                    settings.photo_processing_lease_seconds / 3,
+                ):
+                    break
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            logger.warning("photo heartbeat failed | photo=%s", photo_id)
+        lost.set()
+        task.cancel()
+
+    renewal = asyncio.create_task(heartbeat(), name="photo-heartbeat")
+    try:
+        return await task
+    except asyncio.CancelledError:
+        await run_cleanup(
+            lambda: release_attempt(
                 photo_id,
-                photo.status,
+                token,
+                retry=attempts < settings.photo_processing_max_attempts,
+                reason="process_cancelled",
+            )
+        )
+        if lost.is_set():
+            return {"ok": False, "reason": "photo_lease_lost"}
+        raise
+    except OwnershipLost:
+        return {"ok": False, "reason": "photo_lease_lost"}
+    except Exception as exc:
+        retry = attempts < settings.photo_processing_max_attempts
+        released = await release_attempt(
+            photo_id,
+            token,
+            retry=retry,
+            reason=type(exc).__name__,
+            delay=min(5 * 2 ** (attempts - 1), 60),
+        )
+        if retry and released:
+            raise Retry(defer=min(5 * 2 ** (attempts - 1), 60)) from exc
+        return {"ok": False, "reason": "process_retry_exhausted"}
+    finally:
+        lost.set()
+        await cancel_and_wait(task, renewal)
+
+
+async def _process_claimed_photo(ctx, photo_id, db):
+    photo = await db.get(Photo, UUID(photo_id))
+    if photo is None:
+        raise OwnershipLost("photo_deleted")
+    try:
+        # --- 2) 拉原图 ------------------------------------
+        raw = await get_object(photo.oss_key)
+        if raw is None:
+            raise NonRetryableError(f"OSS object missing: {photo.oss_key}")
+
+        # --- 3) 输入预检 ----------------------------------
+        preflight = await asyncio.to_thread(preflight_check, raw)
+        if not preflight.ok:
+            photo.status = "skipped"
+            photo.partial_reason = preflight.reason
+            photo.width = preflight.width
+            photo.height = preflight.height
+            await db.commit()
+            logger.warning(
+                "process_photo skipped | id=%s reason=%s",
+                photo_id,
+                preflight.reason,
             )
             return {
                 "ok": False,
                 "photo_id": photo_id,
-                "status": photo.status,
-                "reason": "invalid_state_transition",
+                "status": "skipped",
+                "reason": preflight.reason,
             }
-        photo.status = "processing"
-        await db.commit()
 
+        # --- 4) EXIF + 缩略图 -----------------------------
+        processed = await asyncio.to_thread(image_service.process, raw, thumb_max=512)
+
+        # --- 5) 上传缩略图 --------------------------------
+        thumb_key = thumb_key_of(photo.oss_key)
+        await put_object(thumb_key, processed.thumb_bytes, content_type="image/jpeg")
+
+        # --- 6) 调 VL 生描述 + 结构化分析 ------------------
+        # 真模式下 DashScope 要用公网 URL 拉图；mock 模式下 URL 不重要
+        image_url = sign_get_url(photo.oss_key, ttl=600)
         try:
-            # --- 2) 拉原图 ------------------------------------
-            raw = await get_object(photo.oss_key)
-            if raw is None:
-                raise NonRetryableError(f"OSS object missing: {photo.oss_key}")
-
-            # --- 3) 输入预检 ----------------------------------
-            preflight = await asyncio.to_thread(preflight_check, raw)
-            if not preflight.ok:
-                photo.status = "skipped"
-                photo.partial_reason = preflight.reason
-                photo.width = preflight.width
-                photo.height = preflight.height
-                await db.commit()
-                logger.warning(
-                    "process_photo skipped | id=%s reason=%s",
-                    photo_id,
-                    preflight.reason,
-                )
-                return {
-                    "ok": False,
-                    "photo_id": photo_id,
-                    "status": "skipped",
-                    "reason": preflight.reason,
-                }
-
-            # --- 4) EXIF + 缩略图 -----------------------------
-            processed = await asyncio.to_thread(
-                image_service.process, raw, thumb_max=512
-            )
-
-            # --- 5) 上传缩略图 --------------------------------
-            thumb_key = thumb_key_of(photo.oss_key)
-            await put_object(
-                thumb_key, processed.thumb_bytes, content_type="image/jpeg"
-            )
-
-            # --- 6) 调 VL 生描述 + 结构化分析 ------------------
-            # 真模式下 DashScope 要用公网 URL 拉图；mock 模式下 URL 不重要
-            image_url = sign_get_url(photo.oss_key, ttl=600)
-            try:
+            description = photo.ai_description
+            if not description:
                 description = await ai_service.describe_image(image_url)
-            except ServiceDegradedError:
-                # VL 降级：保留 EXIF + 缩略图，状态 partial_done
-                photo.width = processed.width
-                photo.height = processed.height
-                photo.taken_at = processed.taken_at
-                photo.location = processed.location
-                photo.thumb_key = thumb_key
-                photo.status = "partial_done"
-                photo.partial_reason = "vl_degraded"
+                photo.ai_description = description
                 await db.commit()
-                metrics.record_photo_status("partial_done")
-                logger.warning("process_photo vl degraded | id=%s", photo_id)
-                return {
-                    "ok": True,
-                    "photo_id": photo_id,
-                    "status": "partial_done",
-                    "degraded": True,
-                }
-
-            analysis = await ai_service.analyze_image(image_url)
-
-            # --- 7) 调 Embedding ------------------------------
-            # 展开细粒度视觉字段，确保动作/年龄/模糊/位置真正进入召回向量。
-            embed_text_input = ai_service.build_retrieval_text(description, analysis)
-            embedding_retry_delay: int | None = None
-            embedding_retry_attempted = False
-            photo.embedding_last_attempt_at = datetime.now(timezone.utc)
-            try:
-                embedding = await ai_service.embed_text(embed_text_input)
-            except ServiceDegradedError:
-                # OPEN/HALF_OPEN 已拒绝本次请求：没有真正调用模型，不计次数。
-                embedding = None
-                partial_reason = "embedding_service_busy"
-                photo.embedding_last_error = "circuit_open"
-                embedding_retry_delay = max(1, embedding_breaker.retry_after_seconds())
-            except Exception as exc:  # noqa: BLE001
-                # 第一次真实调用失败，从失败结束时开始等待 2 秒再补算。
-                embedding = None
-                embedding_retry_attempted = True
-                photo.embedding_retry_count = 1
-                photo.embedding_last_error = _safe_embedding_error(exc)
-                partial_reason = "embedding_retrying"
-                embedding_retry_delay = retry_delay_after_failure(1)
-            else:
-                partial_reason = None
-                photo.embedding_retry_count = 0
-                photo.embedding_next_retry_at = None
-                photo.embedding_last_error = None
-
-            # --- 8) 输出质量关卡 ------------------------------
-            gate = quality_gate(
-                description=description,
-                embedding=embedding,
-                analysis=analysis,
-            )
-
-            # 若 embedding 降级，强制 storage_tier 为 partial
-            if partial_reason and gate.storage_tier == "full":
-                gate.storage_tier = "partial"
-                gate.reason = "partial"
-                gate.issues.append(partial_reason)
-
-            # --- 9) 根据质量分级回写状态 -----------------------
-            decision = decide_storage(gate)
-
+        except ServiceDegradedError:
+            # VL 降级：保留 EXIF + 缩略图，状态 partial_done
             photo.width = processed.width
             photo.height = processed.height
             photo.taken_at = processed.taken_at
             photo.location = processed.location
             photo.thumb_key = thumb_key
-
-            if decision.store_description:
-                photo.ai_description = description
-            else:
-                photo.ai_description = None
-
-            if decision.store_analysis:
-                photo.ai_analysis = analysis.model_dump(exclude_none=True)
-                apply_semantic_facets(photo, analysis)
-            else:
-                photo.ai_analysis = {}
-                clear_semantic_facets(photo)
-
-            if decision.store_embedding:
-                photo.embedding = embedding
-            else:
-                photo.embedding = None
-
-            if not can_transition(photo.status, decision.status):
-                # 正常情况下不会发生，兜底保持当前状态
-                logger.error(
-                    "process_photo unexpected transition | id=%s from=%s to=%s",
-                    photo_id,
-                    photo.status,
-                    decision.status,
-                )
-                photo.status = "failed"
-                photo.partial_reason = "state_machine_error"
-            else:
-                photo.status = decision.status
-                # embedding 服务失败时，用客户端可理解的精确状态覆盖通用
-                # quality_gate 的 embedding_missing。
-                photo.partial_reason = partial_reason or decision.partial_reason
-
-            if embedding_retry_delay is not None:
-                photo.embedding_next_retry_at = datetime.now(timezone.utc) + timedelta(
-                    seconds=embedding_retry_delay
-                )
-
+            photo.status = "partial_done"
+            photo.partial_reason = "vl_degraded"
             await db.commit()
-
-            # 先持久化可用的 VL 结果，再安排只补 embedding 的延迟任务。
-            if embedding_retry_delay is not None:
-                queued = await _schedule_embedding_retry(
-                    ctx["redis"],
-                    photo_id,
-                    delay_seconds=embedding_retry_delay,
-                    retry_count=photo.embedding_retry_count,
-                    scheduled_at=photo.embedding_next_retry_at,
-                )
-                if not queued:
-                    photo.partial_reason = "embedding_retry_enqueue_failed"
-                    photo.embedding_next_retry_at = None
-                    await db.commit()
-            metrics.record_photo_status(photo.status)
-            logger.info(
-                "process_photo done | id=%s status=%s desc=%r size=%dx%d",
-                photo_id,
-                photo.status,
-                description[:40],
-                processed.width,
-                processed.height,
-            )
+            metrics.record_photo_status("partial_done")
+            logger.warning("process_photo vl degraded | id=%s", photo_id)
             return {
-                "ok": photo.status in ("done", "partial_done"),
+                "ok": True,
                 "photo_id": photo_id,
-                "status": photo.status,
-                "description": description[:60],
-                "size": [processed.width, processed.height],
-                "embedding_attempted": embedding_retry_attempted,
-                "embedding_retry_in_seconds": (
-                    embedding_retry_delay
-                    if embedding_retry_delay is not None and queued
-                    else None
-                ),
+                "status": "partial_done",
+                "degraded": True,
             }
 
-        except NonRetryableError as exc:
-            # 不可重试：OSS 对象缺失、数据完整性问题等
-            photo.status = "failed"
-            await db.commit()
-            metrics.record_photo_status("failed")
-            logger.warning(
-                "process_photo non-retryable failure | id=%s err=%s", photo_id, exc
-            )
-            return {"ok": False, "photo_id": photo_id, "error": str(exc)}
+        from app.schemas.analysis import ImageAnalysis
 
-        except Exception:  # noqa: BLE001
-            # 可重试：网络超时、服务降级、AI 调用失败等
-            # 标记 failed 后 re-raise，让 ARQ max_tries 机制触发重试
-            photo.status = "failed"
+        if (
+            photo.ai_analysis
+            and photo.ai_analysis.get("analysis_version")
+            == ai_service.VL_ANALYSIS_PROMPT_VERSION
+        ):
+            analysis = ImageAnalysis.model_validate(photo.ai_analysis)
+        else:
+            analysis = await ai_service.analyze_image(image_url)
+            photo.ai_analysis = analysis.model_dump(exclude_none=True)
             await db.commit()
-            metrics.record_photo_status("failed")
-            logger.exception("process_photo retryable failure | id=%s", photo_id)
-            raise
+
+        # --- 7) 调 Embedding ------------------------------
+        # 展开细粒度视觉字段，确保动作/年龄/模糊/位置真正进入召回向量。
+        embed_text_input = ai_service.build_retrieval_text(description, analysis)
+        embedding_retry_delay: int | None = None
+        embedding_retry_attempted = False
+        photo.embedding_last_attempt_at = datetime.now(timezone.utc)
+        try:
+            embedding = await ai_service.embed_text(embed_text_input)
+        except ServiceDegradedError:
+            # OPEN/HALF_OPEN 已拒绝本次请求：没有真正调用模型，不计次数。
+            embedding = None
+            partial_reason = "embedding_service_busy"
+            photo.embedding_last_error = "circuit_open"
+            embedding_retry_delay = max(1, embedding_breaker.retry_after_seconds())
+        except Exception as exc:  # noqa: BLE001
+            # 第一次真实调用失败，从失败结束时开始等待 2 秒再补算。
+            embedding = None
+            embedding_retry_attempted = True
+            photo.embedding_retry_count = 1
+            photo.embedding_last_error = _safe_embedding_error(exc)
+            partial_reason = "embedding_retrying"
+            embedding_retry_delay = retry_delay_after_failure(1)
+        else:
+            partial_reason = None
+            photo.embedding_retry_count = 0
+            photo.embedding_next_retry_at = None
+            photo.embedding_last_error = None
+
+        # --- 8) 输出质量关卡 ------------------------------
+        gate = quality_gate(
+            description=description,
+            embedding=embedding,
+            analysis=analysis,
+        )
+
+        # 若 embedding 降级，强制 storage_tier 为 partial
+        if partial_reason and gate.storage_tier == "full":
+            gate.storage_tier = "partial"
+            gate.reason = "partial"
+            gate.issues.append(partial_reason)
+
+        # --- 9) 根据质量分级回写状态 -----------------------
+        decision = decide_storage(gate)
+
+        photo.width = processed.width
+        photo.height = processed.height
+        photo.taken_at = processed.taken_at
+        photo.location = processed.location
+        photo.thumb_key = thumb_key
+
+        if decision.store_description:
+            photo.ai_description = description
+        else:
+            photo.ai_description = None
+
+        if decision.store_analysis:
+            photo.ai_analysis = analysis.model_dump(exclude_none=True)
+            apply_semantic_facets(photo, analysis)
+        else:
+            photo.ai_analysis = {}
+            clear_semantic_facets(photo)
+
+        if decision.store_embedding:
+            photo.embedding = embedding
+        else:
+            photo.embedding = None
+
+        if not can_transition(photo.status, decision.status):
+            # 正常情况下不会发生，兜底保持当前状态
+            logger.error(
+                "process_photo unexpected transition | id=%s from=%s to=%s",
+                photo_id,
+                photo.status,
+                decision.status,
+            )
+            photo.status = "failed"
+            photo.partial_reason = "state_machine_error"
+        else:
+            photo.status = decision.status
+            # embedding 服务失败时，用客户端可理解的精确状态覆盖通用
+            # quality_gate 的 embedding_missing。
+            photo.partial_reason = partial_reason or decision.partial_reason
+
+        if embedding_retry_delay is not None:
+            photo.embedding_next_retry_at = datetime.now(timezone.utc) + timedelta(
+                seconds=embedding_retry_delay
+            )
+
+        await db.commit()
+
+        # 先持久化可用的 VL 结果，再安排只补 embedding 的延迟任务。
+        if embedding_retry_delay is not None:
+            queued = await _schedule_embedding_retry(
+                ctx["redis"],
+                photo_id,
+                delay_seconds=embedding_retry_delay,
+                retry_count=photo.embedding_retry_count,
+                scheduled_at=photo.embedding_next_retry_at,
+            )
+            if not queued:
+                photo.partial_reason = "embedding_retry_enqueue_failed"
+                photo.embedding_next_retry_at = None
+                await db.commit()
+        metrics.record_photo_status(photo.status)
+        logger.info(
+            "process_photo done | id=%s status=%s desc=%r size=%dx%d",
+            photo_id,
+            photo.status,
+            description[:40],
+            processed.width,
+            processed.height,
+        )
+        return {
+            "ok": photo.status in ("done", "partial_done"),
+            "photo_id": photo_id,
+            "status": photo.status,
+            "description": description[:60],
+            "size": [processed.width, processed.height],
+            "embedding_attempted": embedding_retry_attempted,
+            "embedding_retry_in_seconds": (
+                embedding_retry_delay
+                if embedding_retry_delay is not None and queued
+                else None
+            ),
+        }
+
+    except NonRetryableError as exc:
+        # 不可重试：OSS 对象缺失、数据完整性问题等
+        photo.status = "failed"
+        await db.commit()
+        metrics.record_photo_status("failed")
+        logger.warning(
+            "process_photo non-retryable failure | id=%s err=%s", photo_id, exc
+        )
+        return {"ok": False, "photo_id": photo_id, "error": str(exc)}
 
 
 # --- 生产者辅助函数 ------------------------------------------------------
@@ -492,7 +544,9 @@ async def enqueue_process_photo(photo_id) -> None:
     global _pool
     if _pool is None:
         _pool = await create_pool(WorkerSettings.redis_settings)
-    await enqueue_job_with_trace(_pool, "process_photo", str(photo_id))
+    await enqueue_job_with_trace(
+        _pool, "process_photo", str(photo_id), _job_id=f"photo-process:{photo_id}"
+    )
 
 
 async def enqueue_retry_photo_embedding(photo_id) -> bool:
@@ -543,7 +597,15 @@ async def enqueue_profile_update(user_id) -> None:
 # --- ARQ Worker 配置 -----------------------------------------------------
 
 
-async def worker_startup(_: dict[str, Any]) -> None:
+async def worker_startup(ctx: dict[str, Any]) -> None:
+    settings.validate_runtime()
+    await recover_photo_jobs(ctx)
+    from app.workers.package_tasks import recover_generation_jobs
+
+    await recover_generation_jobs(ctx)
+    from app.services.photo_workspace import purge_workspace_history
+
+    await purge_workspace_history(ctx)
     setup_logging(
         log_level=settings.log_level,
         log_dir=settings.log_dir or None,
@@ -569,7 +631,9 @@ class WorkerSettings:
     from app.workers.search_tasks import prefetch_search_candidates
 
     functions = [
-        traced_job(process_photo),
+        func(
+            traced_job(process_photo), max_tries=settings.photo_processing_max_attempts
+        ),
         traced_job(retry_photo_embedding),
         traced_job(generate_photo),
         traced_job(aggregate_user_profile),
@@ -578,6 +642,15 @@ class WorkerSettings:
         traced_job(archive_cold_events),
         traced_job(count_events_by_age),
         traced_job(prefetch_search_candidates),
+    ]
+    from app.workers.package_tasks import recover_generation_jobs
+
+    from app.services.photo_workspace import purge_workspace_history
+
+    cron_jobs = [
+        cron(traced_job(purge_workspace_history), second=20),
+        cron(traced_job(recover_photo_jobs), second={0, 30}),
+        cron(traced_job(recover_generation_jobs), second={10, 40}),
     ]
     on_startup = worker_startup
     on_shutdown = worker_shutdown

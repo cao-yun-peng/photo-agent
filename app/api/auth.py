@@ -1,4 +1,5 @@
 """Auth 路由：/auth/wechat 换 token、/me 拿当前用户."""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status

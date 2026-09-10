@@ -1,4 +1,5 @@
 """用户画像表 — 聚合后的偏好数据."""
+
 from datetime import datetime
 from uuid import UUID
 

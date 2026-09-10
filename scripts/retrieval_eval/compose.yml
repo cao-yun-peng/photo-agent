@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: photo_agent_retrieval_eval_test
+      POSTGRES_USER: retrieval_eval
+      POSTGRES_PASSWORD: retrieval_eval_local_only
+    ports: ["127.0.0.1:55449:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U retrieval_eval -d photo_agent_retrieval_eval_test"]
+      interval: 2s
+      retries: 30
+  redis:
+    image: redis:7-alpine
+    ports: ["127.0.0.1:56399:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      retries: 30

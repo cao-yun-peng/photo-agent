@@ -1,4 +1,5 @@
 """用户相关 schema."""
+
 from datetime import datetime
 from uuid import UUID
 

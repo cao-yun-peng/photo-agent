@@ -15,6 +15,13 @@ dist/
 # Env
 .env
 .env.local
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
 .venv/
 venv/
 env/
@@ -24,10 +31,23 @@ env/
 .vscode/
 *.swp
 .DS_Store
+Thumbs.db
+Desktop.ini
 
 # Docker volumes (bind-mount 情形下)
 pgdata/
 redisdata/
+tempodata/
+lokidata/
+prometheusdata/
+grafanadata/
+ossmock/
+backups/
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.dump
 
 # Logs
 logs/
@@ -36,11 +56,44 @@ logs/
 # Test
 .pytest_cache/
 .pytest-*/
+.pytest_tmp*/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
 .coverage
+.coverage.*
+coverage.xml
 htmlcov/
+test-results/
+playwright-report/
 artifacts/
 agent_eval_result.json
-miniprogram/
+# Generated reports and local evaluation media (keep test code and fixtures).
+/docs/benchmarks/
+test_photos/
+test_photos_realistic/
+# Scratch text reports; requirements and test prompt/baseline .txt files stay tracked.
+pytest*.txt
+test-output*.txt
+test-results*.txt
+*.text
+*.tmp
+*.bak
+
+# Local project history, diagnostics and agent tooling.
+/.project-to-act/
+/.codex/
+/.agents/
+
+# JavaScript dependencies and generated builds.
+node_modules/
+coverage/
+*.tsbuildinfo
+miniprogram/project.private.config.json
+miniprogram/miniprogram_npm/
+
+# Optional local prompt override; publish the example instead.
+/app/data/prompts.json
 
 # Local code knowledge graph and dashboard runtime
 .understand-anything/

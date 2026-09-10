@@ -151,11 +151,11 @@ class ConsoleFormatter(logging.Formatter):
     """开发环境控制台彩色格式化器."""
 
     COLORS = {
-        "DEBUG": "\033[36m",     # Cyan
-        "INFO": "\033[32m",      # Green
-        "NOTICE": "\033[35m",    # Magenta
-        "WARNING": "\033[33m",   # Yellow
-        "ERROR": "\033[31m",     # Red
+        "DEBUG": "\033[36m",  # Cyan
+        "INFO": "\033[32m",  # Green
+        "NOTICE": "\033[35m",  # Magenta
+        "WARNING": "\033[33m",  # Yellow
+        "ERROR": "\033[31m",  # Red
         "CRITICAL": "\033[41m",  # Red bg
     }
     RESET = "\033[0m"
@@ -204,9 +204,7 @@ def setup_logging(
 
     # Console handler
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(
-        JSONFormatter() if json_format else ConsoleFormatter()
-    )
+    console_handler.setFormatter(JSONFormatter() if json_format else ConsoleFormatter())
     root_logger.addHandler(console_handler)
 
     # File handler (可选)

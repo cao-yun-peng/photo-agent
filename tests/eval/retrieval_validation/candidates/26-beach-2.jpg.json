@@ -1,0 +1,127 @@
+{
+  "concept": "beach",
+  "slot": 26,
+  "rank": 2,
+  "search": "intitle:sandy beach sea filetype:bitmap",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Holland-on-Sea%2C_Beach_at_Sandy_Point_-_geograph.org.uk_-_1470929.jpg",
+  "commons_page": {
+    "pageid": 14221840,
+    "ns": 6,
+    "title": "File:Holland-on-Sea, Beach at Sandy Point - geograph.org.uk - 1470929.jpg",
+    "index": 2,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 62417,
+        "width": 640,
+        "height": 471,
+        "thumburl": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Holland-on-Sea%2C_Beach_at_Sandy_Point_-_geograph.org.uk_-_1470929.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "thumbwidth": 1280,
+        "thumbheight": 942,
+        "thumbattribs": {
+          "src": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Holland-on-Sea%2C_Beach_at_Sandy_Point_-_geograph.org.uk_-_1470929.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 942
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Holland-on-Sea%2C_Beach_at_Sandy_Point_-_geograph.org.uk_-_1470929.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Holland-on-Sea,_Beach_at_Sandy_Point_-_geograph.org.uk_-_1470929.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=14221840",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2011-03-02 12:01:59",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Holland-on-Sea, Beach at Sandy Point - geograph.org.uk - 1470929",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Holland-on-Sea|Images from Geograph Britain and Ireland|Beaches of Essex|Information field template with formatting|August 2009 in Essex|Photographs by Nigel Cox|United Kingdom photographs taken on 2009-08-30",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "GPSLatitude": {
+            "value": "51.817360",
+            "source": "commons-desc-page"
+          },
+          "GPSLongitude": {
+            "value": "1.232700",
+            "source": "commons-desc-page"
+          },
+          "GPSMapDatum": {
+            "value": "WGS-84",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Holland-on-Sea: Beach at Sandy Point The boundary between Holland-on-Sea and Frinton-on-Sea lies just beyond the first groyne so this is the very north-eastern extremity of Holland-on-Sea. The tower on the horizon is the communications mast in <a href=\"//commons.wikimedia.org/w/index.php?title=TM2117&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"TM2117 (page does not exist)\">TM2117</a>.",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2009-08-30",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "From <a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/photo/1470929\">geograph.org.uk</a>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/2798\">Nigel Cox</a>",
+            "source": "commons-desc-page"
+          },
+          "Attribution": {
+            "value": "Nigel Cox",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 2.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 2.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/2.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-2.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

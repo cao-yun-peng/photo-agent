@@ -1,0 +1,127 @@
+{
+  "concept": "bus_stop",
+  "slot": 16,
+  "rank": 2,
+  "search": "intitle:bus stop shelter filetype:bitmap",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Bus_stop_shelter%2C_Dale_Road_-_geograph.org.uk_-_985248.jpg",
+  "commons_page": {
+    "pageid": 13678254,
+    "ns": 6,
+    "title": "File:Bus stop shelter, Dale Road - geograph.org.uk - 985248.jpg",
+    "index": 2,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 105101,
+        "width": 640,
+        "height": 427,
+        "thumburl": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Bus_stop_shelter%2C_Dale_Road_-_geograph.org.uk_-_985248.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "thumbwidth": 1280,
+        "thumbheight": 854,
+        "thumbattribs": {
+          "src": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Bus_stop_shelter%2C_Dale_Road_-_geograph.org.uk_-_985248.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 854
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Bus_stop_shelter%2C_Dale_Road_-_geograph.org.uk_-_985248.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Bus_stop_shelter,_Dale_Road_-_geograph.org.uk_-_985248.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=13678254",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2011-02-22 23:23:55",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Bus stop shelter, Dale Road - geograph.org.uk - 985248",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Taken with Olympus SP-500UZ|Images from Geograph Britain and Ireland|Information field template with formatting|Bus shelters in Hampshire|September 2008 in Hampshire|Images by Jim Champion|United Kingdom photographs taken on 2008-09-28|2008 in Southampton|Bus stops in Southampton|Dale Road, Southampton",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "GPSLatitude": {
+            "value": "50.929770",
+            "source": "commons-desc-page"
+          },
+          "GPSLongitude": {
+            "value": "-1.429400",
+            "source": "commons-desc-page"
+          },
+          "GPSMapDatum": {
+            "value": "WGS-84",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Bus stop shelter, Dale Road A narrow pavement runs down the west side of Dale Road, and is home to this bus stop shelter.",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2008-09-28",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "From <a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/photo/985248\">geograph.org.uk</a>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/1086\">Jim Champion</a>",
+            "source": "commons-desc-page"
+          },
+          "Attribution": {
+            "value": "Jim Champion",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 2.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 2.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/2.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-2.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

@@ -16,6 +16,7 @@ import {
   type Skill,
 } from '@/lib/api/skills';
 import styles from './skills-page.module.css';
+import { PackageUpload, PackageVersions } from './package-panel';
 
 const FUNCTION_LABELS: Record<string, string> = {
   description_edit: '描述式编辑',
@@ -87,6 +88,8 @@ export function SkillsWorkspace({ userId }: { userId: string }) {
         </div>
       </header>
 
+      <PackageUpload onSaved={() => { setScope('mine'); void queryClient.invalidateQueries({ queryKey: ['skills'] }); }} />
+
       <section className={styles.toolbar}>
         <div className={styles.tabs} role="tablist" aria-label="Skill 范围">
           <button type="button" role="tab" aria-selected={scope === 'plaza'} onClick={() => setScope('plaza')}>
@@ -131,13 +134,13 @@ export function SkillsWorkspace({ userId }: { userId: string }) {
                     <p>{skill.description || '用这份提示词为照片创造新的表达。'}</p>
                   </div>
                   <div className={styles.meta}>
-                    <span>{FUNCTION_LABELS[skill.function] || skill.function}</span>
+                    <span>{skill.kind === 'package' ? '流程包 · 先预览方案' : FUNCTION_LABELS[skill.function] || skill.function}</span>
                     <span>使用 {skill.use_count} 次</span>
                   </div>
                   <div className={styles.cardActions}>
                     <button type="button" onClick={() => setSelected(skill)}>查看</button>
-                    {own ? <Link href={`/skills/${skill.id}/edit`}>编辑</Link> : null}
-                    <Link className={styles.use} href={`/generate/${skill.id}`}>使用这个 Skill</Link>
+                    {own && skill.kind !== 'package' ? <Link href={`/skills/${skill.id}/edit`}>编辑</Link> : null}
+                    <Link className={styles.use} href={`/generate/${skill.id}`}>{skill.kind === 'package' ? '预览创作方案' : '使用这个 Skill'}</Link>
                   </div>
                 </div>
               </article>
@@ -160,6 +163,7 @@ export function SkillsWorkspace({ userId }: { userId: string }) {
             <p className={styles.dialogKicker}>{selected.is_official ? 'Official Skill' : 'Custom Skill'}</p>
             <h2>{selected.name}</h2>
             <p className={styles.dialogDescription}>{selected.description || '暂无简介'}</p>
+            {selected.kind === 'package' ? <><PackageVersions key={selected.id} skillId={selected.id} /><PackageUpload key={`upload-${selected.id}`} skillId={selected.id} onSaved={() => { void queryClient.invalidateQueries({ queryKey: ['skills'] }); }} /></> : null}
             <div className={styles.prompt}>
               <span>提示词</span>
               <p>{selected.prompt_template}</p>
@@ -173,7 +177,7 @@ export function SkillsWorkspace({ userId }: { userId: string }) {
             <div className={styles.dialogActions}>
               {!selected.is_official && selected.owner_id === userId ? (
                 <>
-                  <Link href={`/skills/${selected.id}/edit`}>编辑 Skill</Link>
+                  {selected.kind !== 'package' ? <Link href={`/skills/${selected.id}/edit`}>编辑 Skill</Link> : null}
                   <button
                     type="button"
                     data-danger={deleteArmed === selected.id}
@@ -187,7 +191,7 @@ export function SkillsWorkspace({ userId }: { userId: string }) {
                   </button>
                 </>
               ) : null}
-              <Link className={styles.dialogPrimary} href={`/generate/${selected.id}`}>选择源图并生成</Link>
+              <Link className={styles.dialogPrimary} href={`/generate/${selected.id}`}>选择源图并预览</Link>
             </div>
           </section>
         </div>

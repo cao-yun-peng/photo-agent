@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-
 import httpx
 
 from app.config import settings
@@ -41,26 +39,11 @@ async def _llm_decide(
     usage_info 包含 total_tokens 等指标，用于预算追踪。
     """
     if _is_mock_llm():
-        # mock 模式下返回一个安全的默认决策
         return (
             {
                 "role": "assistant",
-                "content": "mock 模式：直接给出最终答案。",
-                "tool_calls": [
-                    {
-                        "id": "mock-call-1",
-                        "type": "function",
-                        "function": {
-                            "name": "final_answer",
-                            "arguments": json.dumps(
-                                {
-                                    "message": "当前是 mock 模式，未启用 LLM 决策。"
-                                    "请在 .env 中配置 DASHSCOPE_API_KEY 后重试。"
-                                }
-                            ),
-                        },
-                    }
-                ],
+                "content": "当前是 mock 模式，未启用 LLM 决策。",
+                "tool_calls": [],
             },
             {"total_tokens": 0},
         )
@@ -87,16 +70,15 @@ async def _llm_decide(
             )
 
         if resp.status_code != 200:
-            raise RuntimeError(f"Agent LLM HTTP {resp.status_code}: {resp.text[:300]}")
+            raise RuntimeError(f"Agent LLM HTTP {resp.status_code}")
 
         # 响应JSON解析容错
         try:
             data = resp.json()
         except Exception:
             # JSON解析失败，尝试从文本中提取
-            resp_text = resp.text
-            logger.warning("LLM response json parse failed, raw: %s", resp_text[:500])
-            raise RuntimeError(f"Agent LLM invalid JSON response: {resp_text[:300]}")
+            logger.warning("LLM response json parse failed")
+            raise RuntimeError("Agent LLM invalid JSON response")
 
         try:
             choices = data.get("choices", [])
@@ -104,7 +86,7 @@ async def _llm_decide(
                 # 无choices时，检查是否有error字段
                 error = data.get("error", {})
                 if error:
-                    raise RuntimeError(f"Agent LLM API error: {error}")
+                    raise RuntimeError("Agent LLM API error")
                 # content为空时，尝试取reasoning_content兜底
                 logger.warning("LLM returned empty choices, returning empty message")
                 return {"role": "assistant", "content": "", "tool_calls": []}, {
@@ -116,10 +98,12 @@ async def _llm_decide(
             choice = choices[0]
             message = choice.get("message", {})
 
-            # content为空时，尝试取reasoning_content兜底（兼容推理模型）
-            if not message.get("content") and message.get("reasoning_content"):
-                logger.debug("using reasoning_content as fallback for empty content")
-                message["content"] = message.get("reasoning_content", "")
+            # Provider reasoning is never a public answer or conversation content.
+            message = {
+                "role": "assistant",
+                "content": message.get("content") if isinstance(message.get("content"), str) else "",
+                "tool_calls": message.get("tool_calls"),
+            }
 
             # tool_calls字段容错：确保是列表
             if "tool_calls" not in message or message["tool_calls"] is None:
@@ -133,7 +117,7 @@ async def _llm_decide(
             }
         except (KeyError, IndexError, TypeError) as exc:
             raise RuntimeError(
-                f"Agent LLM unexpected response: {str(data)[:500]}"
+                "Agent LLM unexpected response"
             ) from exc
 
     decision, usage = await agent_llm_breaker.call(_do_call)

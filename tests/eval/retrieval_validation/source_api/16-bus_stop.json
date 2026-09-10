@@ -1,0 +1,615 @@
+{
+  "batchcomplete": "",
+  "continue": {
+    "gsroffset": 5,
+    "continue": "gsroffset||"
+  },
+  "query": {
+    "pages": {
+      "71761906": {
+        "pageid": 71761906,
+        "ns": 6,
+        "title": "File:Bus shelter at VDNKh in Moscow.jpg",
+        "index": 1,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 9671890,
+            "width": 4310,
+            "height": 2820,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Bus_shelter_at_VDNKh_in_Moscow.jpg/1280px-Bus_shelter_at_VDNKh_in_Moscow.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1280,
+            "thumbheight": 837,
+            "responsiveUrls": {
+              "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Bus_shelter_at_VDNKh_in_Moscow.jpg/3840px-Bus_shelter_at_VDNKh_in_Moscow.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+            },
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Bus_shelter_at_VDNKh_in_Moscow.jpg/1280px-Bus_shelter_at_VDNKh_in_Moscow.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 837,
+              "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Bus_shelter_at_VDNKh_in_Moscow.jpg/3840px-Bus_shelter_at_VDNKh_in_Moscow.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/3/30/Bus_shelter_at_VDNKh_in_Moscow.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Bus_shelter_at_VDNKh_in_Moscow.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=71761906",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2018-08-19 09:57:53",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Bus shelter at VDNKh in Moscow",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Taken with Nikon D3100|Bus shelters in Russia|Bus stops in Moscow|Self-published work|Moscow photographs taken on 2015-08-15|Files uploaded by Dmitry Ivanov|FoP-Russia|August 2015 in Moscow|Files with coordinates missing SDC location of creation|Ring Road (VDNKh)|Green bus shelters",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "quality",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "55.827572",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "37.631115",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Moscow. <a href=\"https://en.wikipedia.org/wiki/VDNKh_(Russia)\" class=\"extiw\" title=\"w:VDNKh (Russia)\">VDNKh (the Exhibition of Achievements of the National Economy)</a>. <br>A bus shelter on the Ring Road of the VDNKh, at the café <i>Varenichnaya No. 1</i> (Prospekt Mira 119, build. 521). <br><small>A photo from the user collection <a href=\"//commons.wikimedia.org/wiki/User:Dmitry_Ivanov/VDNKh\" title=\"User:Dmitry Ivanov/VDNKh\"><i>VDNKh</i></a>.</small>",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "Taken on 15 August 2015",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<span typeof=\"mw:File\"><a href=\"//commons.wikimedia.org/wiki/User:Dmitry_Ivanov\" title=\"User:Dmitry Ivanov\"><img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Dmitry_Ivanov_Logo.svg/20px-Dmitry_Ivanov_Logo.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" width=\"20\" height=\"20\" class=\"mw-file-element\" srcset=\"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Dmitry_Ivanov_Logo.svg/40px-Dmitry_Ivanov_Logo.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"100\" data-file-height=\"100\"></a></span> <a href=\"//commons.wikimedia.org/wiki/User:Dmitry_Ivanov\" title=\"User:Dmitry Ivanov\">Dmitry Ivanov</a>.",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 4.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 4.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/4.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-4.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "142570828": {
+        "pageid": 142570828,
+        "ns": 6,
+        "title": "File:Bus stop and shelter on Balmoral Avenue, Huddersfield - geograph.org.uk - 5973432.jpg",
+        "index": 4,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 84997,
+            "width": 640,
+            "height": 480,
+            "thumburl": "https://upload.wikimedia.org/wikipedia/commons/9/90/Bus_stop_and_shelter_on_Balmoral_Avenue%2C_Huddersfield_-_geograph.org.uk_-_5973432.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+            "thumbwidth": 1280,
+            "thumbheight": 960,
+            "thumbattribs": {
+              "src": "https://upload.wikimedia.org/wikipedia/commons/9/90/Bus_stop_and_shelter_on_Balmoral_Avenue%2C_Huddersfield_-_geograph.org.uk_-_5973432.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 960
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/9/90/Bus_stop_and_shelter_on_Balmoral_Avenue%2C_Huddersfield_-_geograph.org.uk_-_5973432.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Bus_stop_and_shelter_on_Balmoral_Avenue,_Huddersfield_-_geograph.org.uk_-_5973432.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=142570828",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2023-12-21 17:56:00",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Bus stop and shelter on Balmoral Avenue, Huddersfield - geograph.org.uk - 5973432",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Images from Geograph Britain and Ireland|Bus shelters in West Yorkshire|Bus stops in Huddersfield|Balmoral Avenue, Huddersfield",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "53.629419",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "-1.816829",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Bus stop and shelter on Balmoral Avenue, Huddersfield <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Bus_stop_and_shelter_on_Balmoral_Avenue,_Huddersfield_-_geograph.org.uk_-_5973432.jpg#ooui-php-4\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2018-11-08",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/photo/5973432\">Geograph Britain and Ireland</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Bus_stop_and_shelter_on_Balmoral_Avenue,_Huddersfield_-_geograph.org.uk_-_5973432.jpg#P7482\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/35313\">JThomas</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Bus_stop_and_shelter_on_Balmoral_Avenue,_Huddersfield_-_geograph.org.uk_-_5973432.jpg#P170\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 2.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 2.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Attribution": {
+                "value": "<i>Bus stop and shelter on Balmoral Avenue, Huddersfield</i> by JThomas",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/2.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-2.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "137045590": {
+        "pageid": 137045590,
+        "ns": 6,
+        "title": "File:Bus stop and shelter on West Garth (geograph 7587207).jpg",
+        "index": 5,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 59283,
+            "width": 640,
+            "height": 479,
+            "thumburl": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Bus_stop_and_shelter_on_West_Garth_%28geograph_7587207%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+            "thumbwidth": 1280,
+            "thumbheight": 958,
+            "thumbattribs": {
+              "src": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Bus_stop_and_shelter_on_West_Garth_%28geograph_7587207%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 958
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Bus_stop_and_shelter_on_West_Garth_%28geograph_7587207%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Bus_stop_and_shelter_on_West_Garth_(geograph_7587207).jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=137045590",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2023-09-05 21:02:38",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Bus stop and shelter on West Garth (geograph 7587207)",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Images from Geograph Britain and Ireland|Information field template with formatting|Bus stops in North Yorkshire|September 2023 in North Yorkshire|Bus shelters in North Yorkshire|Images by JThomas|Streets in Scarborough, North Yorkshire|2023 in Scarborough, North Yorkshire",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "54.232174",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "-0.380382",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Bus stop and shelter on West Garth",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2023-09-03",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "From <a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/photo/7587207\">geograph.org.uk</a>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/35313\">JThomas</a>",
+                "source": "commons-desc-page"
+              },
+              "Permission": {
+                "value": "Creative Commons Attribution Share-alike license 2.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Attribution": {
+                "value": "JThomas",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 2.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 2.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/2.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-2.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "13678254": {
+        "pageid": 13678254,
+        "ns": 6,
+        "title": "File:Bus stop shelter, Dale Road - geograph.org.uk - 985248.jpg",
+        "index": 2,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 105101,
+            "width": 640,
+            "height": 427,
+            "thumburl": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Bus_stop_shelter%2C_Dale_Road_-_geograph.org.uk_-_985248.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+            "thumbwidth": 1280,
+            "thumbheight": 854,
+            "thumbattribs": {
+              "src": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Bus_stop_shelter%2C_Dale_Road_-_geograph.org.uk_-_985248.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 854
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Bus_stop_shelter%2C_Dale_Road_-_geograph.org.uk_-_985248.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Bus_stop_shelter,_Dale_Road_-_geograph.org.uk_-_985248.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=13678254",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2011-02-22 23:23:55",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Bus stop shelter, Dale Road - geograph.org.uk - 985248",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Taken with Olympus SP-500UZ|Images from Geograph Britain and Ireland|Information field template with formatting|Bus shelters in Hampshire|September 2008 in Hampshire|Images by Jim Champion|United Kingdom photographs taken on 2008-09-28|2008 in Southampton|Bus stops in Southampton|Dale Road, Southampton",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "50.929770",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "-1.429400",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Bus stop shelter, Dale Road A narrow pavement runs down the west side of Dale Road, and is home to this bus stop shelter.",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2008-09-28",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "From <a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/photo/985248\">geograph.org.uk</a>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/1086\">Jim Champion</a>",
+                "source": "commons-desc-page"
+              },
+              "Attribution": {
+                "value": "Jim Champion",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 2.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 2.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/2.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-2.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      },
+      "13962549": {
+        "pageid": 13962549,
+        "ns": 6,
+        "title": "File:Bus stop shelter, Wilton Road - geograph.org.uk - 1249769.jpg",
+        "index": 3,
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 108149,
+            "width": 427,
+            "height": 640,
+            "thumburl": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Bus_stop_shelter%2C_Wilton_Road_-_geograph.org.uk_-_1249769.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+            "thumbwidth": 1280,
+            "thumbheight": 1919,
+            "thumbattribs": {
+              "src": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Bus_stop_shelter%2C_Wilton_Road_-_geograph.org.uk_-_1249769.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+              "decoding": "async",
+              "loading": "lazy",
+              "width": 1280,
+              "height": 1919
+            },
+            "url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Bus_stop_shelter%2C_Wilton_Road_-_geograph.org.uk_-_1249769.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Bus_stop_shelter,_Wilton_Road_-_geograph.org.uk_-_1249769.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=13962549",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2011-02-26 16:06:32",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Bus stop shelter, Wilton Road - geograph.org.uk - 1249769",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Taken with Nikon Coolpix L10|Images from Geograph Britain and Ireland|Information field template with formatting|Bus shelters in Hampshire|Images by Jim Champion|April 2009 in Hampshire|United Kingdom photographs taken on 2009-04-12|2009 in Southampton|Bus stops in Southampton|Wilton Road, Southampton",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "50.926060",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "-1.423500",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Bus stop shelter, Wilton Road Bus stop on the east side of Wilton Road, before the junction with Upper Shirley Avenue. The Uni-link service stops here.",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2009-04-12",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "From <a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/photo/1249769\">geograph.org.uk</a>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/1086\">Jim Champion</a>",
+                "source": "commons-desc-page"
+              },
+              "Attribution": {
+                "value": "Jim Champion",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 2.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 2.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/2.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-2.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

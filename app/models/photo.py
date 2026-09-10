@@ -80,6 +80,25 @@ class Photo(Base):
     # 部分成功/跳过/失败的原因码（供前端展示和离线统计用）
     partial_reason: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
+    processing_token: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True), nullable=True
+    )
+    processing_started_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    processing_lease_until: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True, index=True
+    )
+    processing_dispatch_until: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    processing_attempts: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default="0"
+    )
+    processing_retry_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True, index=True
+    )
+
     # embedding 专项补算状态；不重复调用已经成功的 VL。
     embedding_retry_count: Mapped[int] = mapped_column(
         Integer, nullable=False, default=0, server_default="0"

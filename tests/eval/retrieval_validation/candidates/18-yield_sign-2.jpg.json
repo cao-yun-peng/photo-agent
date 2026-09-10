@@ -1,0 +1,113 @@
+{
+  "concept": "yield_sign",
+  "slot": 18,
+  "rank": 2,
+  "search": "intitle:yield sign road filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Road_sign_-_TURNING_VEHICLES_RIGHT_-_YIELD_TO_PEDESTRIANS_%28Manhattan%2C_2008%29.jpg/1280px-Road_sign_-_TURNING_VEHICLES_RIGHT_-_YIELD_TO_PEDESTRIANS_%28Manhattan%2C_2008%29.jpg",
+  "commons_page": {
+    "pageid": 5048644,
+    "ns": 6,
+    "title": "File:Road sign - TURNING VEHICLES RIGHT - YIELD TO PEDESTRIANS (Manhattan, 2008).jpg",
+    "index": 2,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 3485795,
+        "width": 3648,
+        "height": 2736,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Road_sign_-_TURNING_VEHICLES_RIGHT_-_YIELD_TO_PEDESTRIANS_%28Manhattan%2C_2008%29.jpg/1280px-Road_sign_-_TURNING_VEHICLES_RIGHT_-_YIELD_TO_PEDESTRIANS_%28Manhattan%2C_2008%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 960,
+        "responsiveUrls": {
+          "2": "https://upload.wikimedia.org/wikipedia/commons/6/63/Road_sign_-_TURNING_VEHICLES_RIGHT_-_YIELD_TO_PEDESTRIANS_%28Manhattan%2C_2008%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Road_sign_-_TURNING_VEHICLES_RIGHT_-_YIELD_TO_PEDESTRIANS_%28Manhattan%2C_2008%29.jpg/1280px-Road_sign_-_TURNING_VEHICLES_RIGHT_-_YIELD_TO_PEDESTRIANS_%28Manhattan%2C_2008%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 960,
+          "srcset": "https://upload.wikimedia.org/wikipedia/commons/6/63/Road_sign_-_TURNING_VEHICLES_RIGHT_-_YIELD_TO_PEDESTRIANS_%28Manhattan%2C_2008%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Road_sign_-_TURNING_VEHICLES_RIGHT_-_YIELD_TO_PEDESTRIANS_%28Manhattan%2C_2008%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Road_sign_-_TURNING_VEHICLES_RIGHT_-_YIELD_TO_PEDESTRIANS_(Manhattan,_2008).jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=5048644",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2008-10-23 01:47:14",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Road sign - TURNING VEHICLES RIGHT - YIELD TO PEDESTRIANS (Manhattan, 2008)",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Taken with Sony DSC-T300|Images from Wikis Take Manhattan by Naked Pictures of Bea Arthur|Crosswalks in New York City|Yield signs for turning vehicles|Pedestrian crossing road signs|Yield to pedestrians signs in the United States",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "<table style=\"width:100%; border:1px solid black; background:#ffe0e0; padding:0; text-align:center;\">\n\n<tbody><tr>\n<td>This photo is of <b>Wikis Take Manhattan goal code S27</b>, <a href=\"https://en.wikipedia.org/wiki/Pedestrian_crossing\" class=\"extiw\" title=\"w:Pedestrian crossing\">Yield to Pedestrian Sign</a>.\n</td></tr></tbody></table>",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2008-10-04",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "Contributed by author.",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<table style=\"width:100%; border:1px solid black; background:#ffe0e0; padding:0; text-align:center;\">\n\n<tbody><tr>\n<td align=\"left\"><span typeof=\"mw:File\"><a href=\"//commons.wikimedia.org/wiki/File:Wikis_Take_Manhattan.png\" class=\"mw-file-description\"><img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Wikis_Take_Manhattan.png/250px-Wikis_Take_Manhattan.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"150\" height=\"140\" class=\"mw-file-element\" srcset=\"https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Wikis_Take_Manhattan.png/330px-Wikis_Take_Manhattan.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"1400\" data-file-height=\"1309\"></a></span>\n</td>\n<td>This photo was taken by participant/team <big><i><b><a href=\"//commons.wikimedia.org/wiki/Category:Images_from_Wikis_Take_Manhattan_by_Naked_Pictures_of_Bea_Arthur\" title=\"Category:Images from Wikis Take Manhattan by Naked Pictures of Bea Arthur\">Naked Pictures of Bea Arthur</a></b></i></big> as part of the <a href=\"//commons.wikimedia.org/wiki/Commons:Wikis_Take_Manhattan\" title=\"Commons:Wikis Take Manhattan\">Commons:Wikis Take Manhattan</a> project on October 4, 2008.\n</td></tr></tbody></table>\n<div class=\"responsive-license-cc layouttemplate licensetpl\" dir=\"ltr\" lang=\"en\"><div class=\"rlicense-icons\"><span class=\"skin-invert\" typeof=\"mw:File\"><span title=\"w:en:Creative Commons\"><img alt=\"w:en:Creative Commons\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/CC_some_rights_reserved.svg/120px-CC_some_rights_reserved.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"90\" height=\"36\" class=\"mw-file-element\" srcset=\"https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/CC_some_rights_reserved.svg/250px-CC_some_rights_reserved.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"744\" data-file-height=\"300\"></span></span><br>\n<span class=\"skin-invert\" typeof=\"mw:File\"><span title=\"attribution\"><img alt=\"attribution\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Cc-by_new_white.svg/40px-Cc-by_new_white.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"24\" height=\"24\" class=\"mw-file-element\" srcset=\"https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Cc-by_new_white.svg/60px-Cc-by_new_white.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"64\" data-file-height=\"64\"></span></span> <span class=\"skin-invert\" typeof=\"mw:File\"><span title=\"share alike\"><img alt=\"share alike\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Cc-sa_white.svg/40px-Cc-sa_white.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"24\" height=\"24\" class=\"mw-file-element\" srcset=\"https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Cc-sa_white.svg/60px-Cc-sa_white.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"64\" data-file-height=\"64\"></span></span></div><div class=\"rlicense-text\"><div class=\"rlicense-declaration\">This file is licensed under the <a href=\"https://en.wikipedia.org/wiki/en:Creative_Commons\" class=\"extiw\" title=\"w:en:Creative Commons\">Creative Commons</a> <a href=\"//creativecommons.org/licenses/by-sa/3.0/deed.en\" class=\"extiw\" title=\"creativecommons:by-sa/3.0/deed.en\">Attribution-Share Alike 3.0 Unported</a> license.</div><div class=\"rlicense-desc\" style=\"text-align:start;\" lang=\"en\">\n<dl><dd>You are free:\n<ul><li><b>to share</b> – to copy, distribute and transmit the work</li>\n<li><b>to remix</b> – to adapt the work</li></ul></dd>\n<dd>Under the following conditions:\n<ul><li><b>attribution</b> – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.</li>\n<li><b>share alike</b> – If you remix, transform, or build upon the material, you must distribute your contributions under the <a href=\"https://creativecommons.org/share-your-work/licensing-considerations/compatible-licenses\" class=\"extiw\" title=\"ccorg:share-your-work/licensing-considerations/compatible-licenses\">same or compatible license</a> as the original.</li></ul></dd></dl></div><span class=\"licensetpl_link\" style=\"display:none;\">https://creativecommons.org/licenses/by-sa/3.0</span><span class=\"licensetpl_short\" style=\"display:none;\">CC BY-SA 3.0 </span><span class=\"licensetpl_long\" style=\"display:none;\">Creative Commons Attribution-Share Alike 3.0 </span><span class=\"licensetpl_link_req\" style=\"display:none;\">true</span><span class=\"licensetpl_attr_req\" style=\"display:none;\">true</span></div></div>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 3.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 3.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/3.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-3.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

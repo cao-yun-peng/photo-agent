@@ -6,6 +6,15 @@ function _getToken() {
   return app && app.globalData && app.globalData.token;
 }
 
+function _timezoneHeaders() {
+  try {
+    const name = getApp().globalData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return name ? { 'X-Timezone': name } : {};
+  } catch (_) {
+    return {}; // Older mini-program runtimes use the server's product timezone.
+  }
+}
+
 function _newLogId() {
   return 'wx-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
 }
@@ -31,9 +40,10 @@ function _captureTraceHeaders(headers = {}) {
  */
 function request({ url, method = 'GET', data, header = {}, auth = true, timeout = 30000 }) {
   return new Promise((resolve, reject) => {
-    const h = { 'Content-Type': 'application/json', 'X-Log-ID': _newLogId(), ...header };
+    const token = auth ? _getToken() : null;
+    const epoch = getApp().globalData.authEpoch || 0;
+    const h = { 'Content-Type': 'application/json', 'X-Log-ID': _newLogId(), ..._timezoneHeaders(), ...header };
     if (auth) {
-      const token = _getToken();
       if (token) h['Authorization'] = 'Bearer ' + token;
     }
     wx.request({
@@ -43,6 +53,10 @@ function request({ url, method = 'GET', data, header = {}, auth = true, timeout 
       header: h,
       timeout,
       success(res) {
+        if (res.statusCode === 401 && auth) getApp().invalidateSession(token, epoch);
+        if (auth && epoch !== (getApp().globalData.authEpoch || 0)) {
+          reject({ status: 401, detail: '登录状态已变更' }); return;
+        }
         const trace = _captureTraceHeaders(res.header);
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data);
@@ -127,32 +141,37 @@ function _createUtf8StreamDecoder() {
 }
 
 function _createSseParser(onEvent) {
-  let buffer = '';
-
-  function parseFrame(frame) {
-    const data = frame
-      .replace(/\r/g, '')
-      .split('\n')
-      .filter((line) => line.startsWith('data:'))
-      .map((line) => line.slice(5).trimStart())
-      .join('\n');
-    if (data) onEvent(JSON.parse(data));
+  const onData = (data) => { if (data) onEvent(JSON.parse(data)); };
+  let line = '';
+  let data = [];
+  let skipLf = false;
+  function finishLine() {
+    if (line === '') {
+      if (data.length) onData(data.join('\n'));
+      data = [];
+    } else if (line === 'data' || line.startsWith('data:')) {
+      data.push(line === 'data' ? '' : line.slice(5).replace(/^ /, ''));
+    }
+    line = '';
   }
-
   return {
     feed(text) {
-      buffer += text;
-      let separator = buffer.indexOf('\n\n');
-      while (separator >= 0) {
-        const frame = buffer.slice(0, separator);
-        buffer = buffer.slice(separator + 2);
-        if (frame.trim()) parseFrame(frame);
-        separator = buffer.indexOf('\n\n');
+      for (const char of text) {
+        if (skipLf) {
+          skipLf = false;
+          if (char === '\n') continue;
+        }
+        if (char === '\r' || char === '\n') {
+          finishLine();
+          skipLf = char === '\r';
+        } else line += char;
       }
     },
     flush() {
-      if (buffer.trim()) parseFrame(buffer);
-      buffer = '';
+      if (line) finishLine();
+      if (data.length) onData(data.join('\n'));
+      data = [];
+      skipLf = false;
     },
   };
 }
@@ -203,18 +222,24 @@ const search = {
 };
 
 const agent = {
-  stream({ query, session_id, selected_photo_id, onEvent }) {
+  stream({ query, session_id, selected_photo_id, feedback_batch_id, ui_action, onEvent }) {
     return new Promise((resolve, reject) => {
       const token = _getToken();
+      const epoch = getApp().globalData.authEpoch || 0;
       const decoder = _createUtf8StreamDecoder();
       const events = [];
       let receivedChunks = false;
+      let responseStatus = 200;
       let streamError = null;
       let settled = false;
       const logId = _newLogId();
       const parser = _createSseParser((event) => {
+        if (epoch !== (getApp().globalData.authEpoch || 0)) return;
         events.push(event);
-        if (event.type === 'error') streamError = event.payload || {};
+        if (event.type === 'error') {
+          streamError = event.payload || {};
+          if (streamError.status_code === 401) getApp().invalidateSession(token, epoch);
+        }
         if (onEvent) onEvent(event);
       });
 
@@ -236,19 +261,29 @@ const agent = {
         method: 'POST',
         data: {
           query,
+          ...(ui_action ? { ui_action } : {}),
           ...(session_id ? { session_id } : {}),
+          ...(feedback_batch_id ? { feedback_batch_id } : {}),
           ...(selected_photo_id ? { selected_photo_id } : {}),
         },
         header: {
           'Content-Type': 'application/json',
           Accept: 'text/event-stream',
           'X-Log-ID': logId,
+          ..._timezoneHeaders(),
           ...(token ? { Authorization: 'Bearer ' + token } : {}),
         },
         enableChunked: true,
         timeout: 90000,
         success(res) {
+          if (res.statusCode === 401) getApp().invalidateSession(token, epoch);
+          if (epoch !== (getApp().globalData.authEpoch || 0)) {
+            rejectOnce({ status: 401, detail: '登录状态已变更' }); return;
+          }
           const trace = _captureTraceHeaders(res.header);
+          if (res.statusCode < 200 || res.statusCode >= 300) {
+            rejectOnce({ status: res.statusCode, detail: res.data?.detail || '请求失败', ...trace }); return;
+          }
           try {
             if (!receivedChunks && typeof res.data === 'string') parser.feed(res.data);
             parser.feed(decoder.decode(null, true));
@@ -277,8 +312,20 @@ const agent = {
         },
       });
 
+      if (task.onHeadersReceived) task.onHeadersReceived((res) => {
+        responseStatus = res.statusCode;
+        if (responseStatus === 401) {
+          getApp().invalidateSession(token, epoch);
+          rejectOnce({ status: 401, detail: '登录已过期' });
+          task.abort();
+        }
+      });
       task.onChunkReceived((res) => {
+        if (responseStatus < 200 || responseStatus >= 300) return;
         try {
+          if (epoch !== (getApp().globalData.authEpoch || 0)) {
+            task.abort(); rejectOnce({ status: 401, detail: '登录状态已变更' }); return;
+          }
           receivedChunks = true;
           parser.feed(decoder.decode(res.data));
         } catch (error) {
@@ -337,4 +384,4 @@ const generations = {
   },
 };
 
-module.exports = { request, auth, photos, search, agent, skills, generations, API_BASE };
+module.exports = { request, auth, photos, search, agent, skills, generations, API_BASE, _createSseParser, _createUtf8StreamDecoder };

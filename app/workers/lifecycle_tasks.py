@@ -8,6 +8,7 @@ user_events 是写入最频繁的表。本模块提供：
 注意：user_events 表使用 PostgreSQL 原生分区（RANGE created_at），
 由迁移脚本建立。查询时 PG 会自动裁剪分区。
 """
+
 from __future__ import annotations
 
 import json
@@ -24,7 +25,7 @@ from app.services.oss import put_object
 logger = logging.getLogger(__name__)
 
 # 数据生命周期阈值
-_HOT_DAYS = 30    # 热数据：最近 30 天
+_HOT_DAYS = 30  # 热数据：最近 30 天
 _WARM_DAYS = 180  # 温数据：30-180 天
 _COLD_DAYS = 180  # 冷数据：超过 180 天归档
 
@@ -71,7 +72,9 @@ async def archive_cold_events(
                         "user_id": str(ev.user_id),
                         "event_type": ev.event_type,
                         "payload": ev.payload,
-                        "created_at": ev.created_at.isoformat() if ev.created_at else None,
+                        "created_at": ev.created_at.isoformat()
+                        if ev.created_at
+                        else None,
                     },
                     ensure_ascii=False,
                     default=str,
@@ -89,9 +92,7 @@ async def archive_cold_events(
             return {"ok": False, "archived": 0, "oss_key": None, "error": str(exc)}
 
         # 上传成功后删除原记录
-        await db.execute(
-            delete(UserEvent).where(UserEvent.id.in_(event_ids))
-        )
+        await db.execute(delete(UserEvent).where(UserEvent.id.in_(event_ids)))
         await db.commit()
         archived = len(events)
         logger.info(

@@ -1,0 +1,126 @@
+{
+  "concept": "washing_dishes",
+  "slot": 30,
+  "rank": 1,
+  "search": "intitle:washing dishes filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg/1280px-Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg",
+  "commons_page": {
+    "pageid": 4314890,
+    "ns": 6,
+    "title": "File:Washing dishes for Our Community Place soup kitchen Little Grill Collective Harrisonburg VA June 2008.jpg",
+    "index": 1,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 772128,
+        "width": 2092,
+        "height": 2800,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg/1280px-Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 1713,
+        "responsiveUrls": {
+          "2": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg/1280px-Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 1713,
+          "srcset": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Washing_dishes_for_Our_Community_Place_soup_kitchen_Little_Grill_Collective_Harrisonburg_VA_June_2008.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=4314890",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2008-07-03 01:37:43",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Washing dishes for Our Community Place soup kitchen Little Grill Collective Harrisonburg VA June 2008",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Volunteers|GFDL|Little Grill Collective|Dish washing|People of Harrisonburg, Virginia|Our Community Place|License migration redundant|Self-published work|Men wearing baseball caps in Virginia|Men at work in Virginia|June 2008 in Virginia|Men wearing gray T-shirts|Files with coordinates missing SDC location of creation|United States photographs taken on 2008-06-28|Sinks in the United States|Plates in Virginia|Soup kitchens in the United States|Images by Artaxerxes|Men at work in the 2000s|2008 in Harrisonburg, Virginia",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "GPSLatitude": {
+            "value": "38.455882",
+            "source": "commons-desc-page"
+          },
+          "GPSLongitude": {
+            "value": "-78.864813",
+            "source": "commons-desc-page"
+          },
+          "GPSMapDatum": {
+            "value": "WGS-84",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Washing dishes at the Our Community Place Soup Kitchen held at <a href=\"https://en.wikipedia.org/wiki/Little_Grill_Collective\" class=\"extiw\" title=\"en:Little Grill Collective\">Little Grill Collective</a> on Monday, June 28, 2008 in Harrisonburg, Virginia.",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2008-06-28",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a href=\"//commons.wikimedia.org/wiki/User:Artaxerxes\" title=\"User:Artaxerxes\">Artaxerxes</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 3.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 3.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/3.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-3.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

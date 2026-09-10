@@ -1,0 +1,127 @@
+{
+  "concept": "parking_sign",
+  "slot": 39,
+  "rank": 1,
+  "search": "intitle:parking sign street filetype:bitmap",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/No_Entry_sign_and_Restricted_Parking_Zone_sign%2C_Lower_Chapel_Street%2C_East_Looe_-_geograph.org.uk_-_5822831.jpg",
+  "commons_page": {
+    "pageid": 141507921,
+    "ns": 6,
+    "title": "File:No Entry sign and Restricted Parking Zone sign, Lower Chapel Street, East Looe - geograph.org.uk - 5822831.jpg",
+    "index": 1,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 107456,
+        "width": 506,
+        "height": 800,
+        "thumburl": "https://upload.wikimedia.org/wikipedia/commons/6/6b/No_Entry_sign_and_Restricted_Parking_Zone_sign%2C_Lower_Chapel_Street%2C_East_Looe_-_geograph.org.uk_-_5822831.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "thumbwidth": 1280,
+        "thumbheight": 2024,
+        "thumbattribs": {
+          "src": "https://upload.wikimedia.org/wikipedia/commons/6/6b/No_Entry_sign_and_Restricted_Parking_Zone_sign%2C_Lower_Chapel_Street%2C_East_Looe_-_geograph.org.uk_-_5822831.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 2024
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/No_Entry_sign_and_Restricted_Parking_Zone_sign%2C_Lower_Chapel_Street%2C_East_Looe_-_geograph.org.uk_-_5822831.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:No_Entry_sign_and_Restricted_Parking_Zone_sign,_Lower_Chapel_Street,_East_Looe_-_geograph.org.uk_-_5822831.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=141507921",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2023-11-28 05:15:48",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "No Entry sign and Restricted Parking Zone sign, Lower Chapel Street, East Looe - geograph.org.uk - 5822831",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Images from Geograph Britain and Ireland|Streets in Looe",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "GPSLatitude": {
+            "value": "50.352626",
+            "source": "commons-desc-page"
+          },
+          "GPSLongitude": {
+            "value": "-4.453433",
+            "source": "commons-desc-page"
+          },
+          "GPSMapDatum": {
+            "value": "WGS-84",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "No Entry sign and Restricted Parking Zone sign, Lower Chapel Street, East Looe <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:No_Entry_sign_and_Restricted_Parking_Zone_sign,_Lower_Chapel_Street,_East_Looe_-_geograph.org.uk_-_5822831.jpg#ooui-php-4\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2018-05-28",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/photo/5822831\">Geograph Britain and Ireland</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:No_Entry_sign_and_Restricted_Parking_Zone_sign,_Lower_Chapel_Street,_East_Looe_-_geograph.org.uk_-_5822831.jpg#P7482\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/39302\">Jaggery</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:No_Entry_sign_and_Restricted_Parking_Zone_sign,_Lower_Chapel_Street,_East_Looe_-_geograph.org.uk_-_5822831.jpg#P170\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 2.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 2.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Attribution": {
+            "value": "<i>No Entry sign and Restricted Parking Zone sign, Lower Chapel Street, East Looe</i> by Jaggery",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/2.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-2.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

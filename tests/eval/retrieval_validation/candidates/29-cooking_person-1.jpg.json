@@ -1,0 +1,109 @@
+{
+  "concept": "cooking_person",
+  "slot": 29,
+  "rank": 1,
+  "search": "intitle:cooking kitchen person filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg/1280px-Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg",
+  "commons_page": {
+    "pageid": 133838764,
+    "ns": 6,
+    "title": "File:Fire Safety - A person who uses a wheelchair cooking safely in their kitchen.jpg",
+    "index": 1,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 2145876,
+        "width": 2500,
+        "height": 1667,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg/1280px-Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 854,
+        "responsiveUrls": {
+          "2": "https://upload.wikimedia.org/wikipedia/commons/8/83/Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg/1280px-Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 854,
+          "srcset": "https://upload.wikimedia.org/wikipedia/commons/8/83/Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/8/83/Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Fire_Safety_-_A_person_who_uses_a_wheelchair_cooking_safely_in_their_kitchen.jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=133838764",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2023-07-01 22:42:26",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Fire Safety - A person who uses a wheelchair cooking safely in their kitchen",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "United States Consumer Product Safety Commission|People cooking in the 2020s|Home kitchens in the 2020s|PD US CPSC|Males in wheelchairs",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Fire Safety - A person who uses a wheelchair cooking safely in their kitchen.",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "Unknown",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<a rel=\"nofollow\" class=\"external free\" href=\"https://www.cpsc.gov/Newsroom/Multimedia/Americans-with-Disabilities-Home-Safety-Best-Practices\">https://www.cpsc.gov/Newsroom/Multimedia/Americans-with-Disabilities-Home-Safety-Best-Practices</a>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "U.S. Consumer Product Safety Commission",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "Public domain",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Public domain",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "false",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Copyrighted": {
+            "value": "False",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "pd",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

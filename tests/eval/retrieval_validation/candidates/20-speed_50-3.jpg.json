@@ -1,0 +1,109 @@
+{
+  "concept": "speed_50",
+  "slot": 20,
+  "rank": 3,
+  "search": "intitle:speed limit 50 sign filetype:bitmap",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/6/6a/50_kmh_speed_limit_temporary_%28New_Zealand_road_sign%29.jpg",
+  "commons_page": {
+    "pageid": 90507252,
+    "ns": 6,
+    "title": "File:50 kmh speed limit temporary (New Zealand road sign).jpg",
+    "index": 3,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 32057,
+        "width": 510,
+        "height": 510,
+        "thumburl": "https://upload.wikimedia.org/wikipedia/commons/6/6a/50_kmh_speed_limit_temporary_%28New_Zealand_road_sign%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "thumbwidth": 1280,
+        "thumbheight": 1280,
+        "thumbattribs": {
+          "src": "https://upload.wikimedia.org/wikipedia/commons/6/6a/50_kmh_speed_limit_temporary_%28New_Zealand_road_sign%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 1280
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/6a/50_kmh_speed_limit_temporary_%28New_Zealand_road_sign%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:50_kmh_speed_limit_temporary_(New_Zealand_road_sign).jpg",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=90507252",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2020-05-21 09:44:04",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "50 kmh speed limit temporary (New Zealand road sign)",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "Self-published work|Diagrams of speed limit road signs of New Zealand|Diagrams of 50 km/h speed limit road signs",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "50 km/h speed limit (temporary version)",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2020-05-21",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a href=\"//commons.wikimedia.org/wiki/User:Akele202\" title=\"User:Akele202\">Akele202</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC BY-SA 4.0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Attribution-Share Alike 4.0",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "true",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "https://creativecommons.org/licenses/by-sa/4.0",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc-by-sa-4.0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

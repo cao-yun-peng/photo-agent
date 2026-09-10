@@ -1,0 +1,113 @@
+{
+  "concept": "shopping_cart",
+  "slot": 37,
+  "rank": 3,
+  "search": "intitle:shopping cart supermarket filetype:bitmap",
+  "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lone_Shopping_Cart_Goes_to_School.webp/1280px-Lone_Shopping_Cart_Goes_to_School.webp",
+  "commons_page": {
+    "pageid": 110727560,
+    "ns": 6,
+    "title": "File:Lone Shopping Cart Goes to School.webp",
+    "index": 3,
+    "imagerepository": "local",
+    "imageinfo": [
+      {
+        "size": 811284,
+        "width": 4091,
+        "height": 3068,
+        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lone_Shopping_Cart_Goes_to_School.webp/1280px-Lone_Shopping_Cart_Goes_to_School.webp?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "thumbwidth": 1280,
+        "thumbheight": 960,
+        "responsiveUrls": {
+          "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lone_Shopping_Cart_Goes_to_School.webp/3840px-Lone_Shopping_Cart_Goes_to_School.webp?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        "thumbattribs": {
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lone_Shopping_Cart_Goes_to_School.webp/1280px-Lone_Shopping_Cart_Goes_to_School.webp?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "decoding": "async",
+          "loading": "lazy",
+          "width": 1280,
+          "height": 960,
+          "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lone_Shopping_Cart_Goes_to_School.webp/3840px-Lone_Shopping_Cart_Goes_to_School.webp?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+        },
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/27/Lone_Shopping_Cart_Goes_to_School.webp?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Lone_Shopping_Cart_Goes_to_School.webp",
+        "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=110727560",
+        "extmetadata": {
+          "DateTime": {
+            "value": "2021-10-04 21:43:33",
+            "source": "mediawiki-metadata",
+            "hidden": ""
+          },
+          "ObjectName": {
+            "value": "Lone Shopping Cart Goes to School",
+            "source": "mediawiki-metadata"
+          },
+          "CommonsMetadataExtension": {
+            "value": 1.2,
+            "source": "extension",
+            "hidden": ""
+          },
+          "Categories": {
+            "value": "CC-Zero|Anthropomorphism|Shopping carts|School buildings|Burnaby|Self-published work",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "Assessments": {
+            "value": "",
+            "source": "commons-categories",
+            "hidden": ""
+          },
+          "ImageDescription": {
+            "value": "Good old Lone Shopping Cart!",
+            "source": "commons-desc-page"
+          },
+          "DateTimeOriginal": {
+            "value": "2021-10-04",
+            "source": "commons-desc-page"
+          },
+          "Credit": {
+            "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+            "source": "commons-desc-page"
+          },
+          "Artist": {
+            "value": "<a href=\"//commons.wikimedia.org/wiki/User:Whythealgarve\" title=\"User:Whythealgarve\">Whythealgarve</a>",
+            "source": "commons-desc-page"
+          },
+          "LicenseShortName": {
+            "value": "CC0",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "UsageTerms": {
+            "value": "Creative Commons Zero, Public Domain Dedication",
+            "source": "commons-desc-page"
+          },
+          "AttributionRequired": {
+            "value": "false",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "LicenseUrl": {
+            "value": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+            "source": "commons-desc-page"
+          },
+          "Copyrighted": {
+            "value": "True",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "Restrictions": {
+            "value": "",
+            "source": "commons-desc-page",
+            "hidden": ""
+          },
+          "License": {
+            "value": "cc0",
+            "source": "commons-templates",
+            "hidden": ""
+          }
+        }
+      }
+    ]
+  }
+}

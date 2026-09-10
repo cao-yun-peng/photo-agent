@@ -6,6 +6,7 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Any
 
+from app.services.photo_workspace import workspace_for_agent
 from app.services.agent_tools import (
     apply_skill,
     browse_candidates,
@@ -80,6 +81,18 @@ async def ask_clarification(
 # ------------------------------------------------------------------
 def _build_registry() -> ToolRegistry:
     registry = ToolRegistry()
+    registry.register(
+        ToolSpec(
+            name="read_workspace",
+            description="读取用户明确保存的选片、任务目标、偏好和照片事实修正；不执行写入或生成。",
+            parameters={
+                "type": "object",
+                "properties": {},
+                "additionalProperties": False,
+            },
+            fn=workspace_for_agent,
+        )
+    )
 
     registry.register(
         ToolSpec(
@@ -249,7 +262,7 @@ def _build_registry() -> ToolRegistry:
     registry.register(
         ToolSpec(
             name="apply_skill",
-            description="准备对指定照片应用 AI 改造；灰度版会返回费用摘要并等待用户再次确认后才入队。",
+            description="准备照片改造。流程包返回创作方案，必须由用户在方案页面确认后才入队；不得代替用户确认。",
             parameters={
                 "type": "object",
                 "properties": {
@@ -265,10 +278,23 @@ def _build_registry() -> ToolRegistry:
                         "type": "string",
                         "description": "额外补充描述，可选",
                     },
+                    "package_options": {
+                        "type": "object",
+                        "description": "流程包标题要求；用户明确不要文字时使用 none",
+                        "additionalProperties": False,
+                        "properties": {
+                            "title_mode": {
+                                "type": "string",
+                                "enum": ["auto", "none", "exact"],
+                            },
+                            "title": {"type": "string", "maxLength": 60},
+                        },
+                    },
                 },
                 "required": ["photo_id"],
             },
             fn=apply_skill,
+            timeout=90,
         )
     )
 
@@ -331,6 +357,9 @@ def _build_registry() -> ToolRegistry:
         )
     )
 
+    from app.services.agent_actions import configure_action_tools
+
+    configure_action_tools(registry, ToolSpec)
     return registry
 
 

@@ -8,16 +8,21 @@
   这样后端就能相信"客户端说传完了"这句话。
 - 未配置 OSS 时走 **本地磁盘 mock**，把开发闭环打通而不需要真实 Bucket。
 """
+
 from __future__ import annotations
 
 import asyncio
 import hashlib
+import hmac
 import logging
-import shutil
+import os
+import tempfile
+import time
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlencode
 
 import oss2
 
@@ -31,15 +36,54 @@ logger = logging.getLogger(__name__)
 # 是否处于"未配置真实 OSS"的开发环境
 # ------------------------------------------------------------------------
 def _is_mock_mode() -> bool:
-    return (
-        not settings.oss_bucket
-        or settings.oss_bucket == "photo-agent-dev"
-        or settings.oss_key_id in ("", "LTAI_xxx")
-    )
+    return settings.uses_mock_oss()
 
 
 # 本地 mock 存放目录（放在 /tmp，随容器重启清空亦无妨）
 _MOCK_ROOT = Path("/tmp/photo-agent-oss-mock")
+
+
+def mock_path(oss_key: str) -> Path:
+    """Shared boundary for all local operations; root must be app-owned."""
+    parts = oss_key.split("/")
+    if (
+        not oss_key
+        or any(p in {"", ".", ".."} for p in parts)
+        or any(c in oss_key for c in "\\:\x00")
+    ):
+        raise ValueError("Invalid object key")
+    root = _MOCK_ROOT.resolve()
+    path = root.joinpath(*parts).resolve()
+    if not path.is_relative_to(root) or path == root:
+        raise ValueError("Invalid object key")
+    return path
+
+
+def _mock_signature(method: str, key: str, expires: int, mime: str, limit: int) -> str:
+    payload = f"mock-oss-v1\n{method}\n{key}\n{expires}\n{mime}\n{limit}"
+    return hmac.new(
+        settings.jwt_secret.encode(), payload.encode(), hashlib.sha256
+    ).hexdigest()
+
+
+def mock_signed_url(
+    method: str, key: str, ttl: int, mime: str = "", limit: int = 0
+) -> str:
+    mock_path(key)
+    expires = int(time.time()) + ttl
+    signature = _mock_signature(method, key, expires, mime, limit)
+    return f"/_mock/oss/{key}?" + urlencode(
+        {"expires": expires, "mime": mime, "limit": limit, "signature": signature}
+    )
+
+
+def verify_mock_signature(
+    method: str, key: str, expires: int, mime: str, limit: int, signature: str
+) -> bool:
+    method = "GET" if method == "HEAD" else method
+    return expires >= int(time.time()) and hmac.compare_digest(
+        signature, _mock_signature(method, key, expires, mime, limit)
+    )
 
 
 # ------------------------------------------------------------------------
@@ -92,7 +136,7 @@ def build_oss_key(user_id: str, hash_: str, mime_type: str) -> str:
 @dataclass(slots=True)
 class SignedPut:
     url: str
-    headers: dict[str, str]   # 客户端 PUT 时必须回带这些头
+    headers: dict[str, str]  # 客户端 PUT 时必须回带这些头
     expires_in: int
 
 
@@ -120,7 +164,9 @@ def sign_put_url(
         # 只返回 path，客户端拼上自己看到的 API base url 即可
         # 这样宿主机 curl 和 docker 内部都能用
         return SignedPut(
-            url=f"/_mock/oss/{oss_key}",
+            url=mock_signed_url(
+                "PUT", oss_key, ttl, mime_type, settings.mock_oss_max_bytes
+            ),
             headers=headers,
             expires_in=ttl,
         )
@@ -141,7 +187,7 @@ def sign_get_url(oss_key: str, ttl: int = 3600) -> str:
     if not oss_key:
         return ""
     if _is_mock_mode():
-        return f"/_mock/oss/{oss_key}"
+        return mock_signed_url("GET", oss_key, ttl)
     return _bucket().sign_url("GET", oss_key, ttl, slash_safe=True)
 
 
@@ -158,7 +204,7 @@ class ObjectMeta:
 def _head_object_sync(oss_key: str) -> ObjectMeta | None:
     """检查对象是否存在（同步内部实现）。返回 None 表示不存在。"""
     if _is_mock_mode():
-        path = _MOCK_ROOT / oss_key
+        path = mock_path(oss_key)
         if not path.is_file():
             return None
         return ObjectMeta(
@@ -200,10 +246,22 @@ def _mock_etag(path: Path) -> str:
 # ------------------------------------------------------------------------
 def mock_write_object(oss_key: str, src_stream) -> ObjectMeta:
     """把上传的字节流写入本地 mock 磁盘。"""
-    dst = _MOCK_ROOT / oss_key
+    dst = mock_path(oss_key)
     dst.parent.mkdir(parents=True, exist_ok=True)
-    with dst.open("wb") as f:
-        shutil.copyfileobj(src_stream, f)
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(dir=dst.parent, delete=False) as f:
+            temporary = Path(f.name)
+            size = 0
+            while chunk := src_stream.read(64 * 1024):
+                size += len(chunk)
+                if size > settings.mock_oss_max_bytes:
+                    raise ValueError("Object exceeds size limit")
+                f.write(chunk)
+        os.replace(temporary, mock_path(oss_key))
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
     return ObjectMeta(
         size=dst.stat().st_size,
         content_type="image/jpeg",
@@ -212,7 +270,7 @@ def mock_write_object(oss_key: str, src_stream) -> ObjectMeta:
 
 
 def mock_read_object(oss_key: str) -> bytes | None:
-    path = _MOCK_ROOT / oss_key
+    path = mock_path(oss_key)
     if not path.is_file():
         return None
     return path.read_bytes()
@@ -241,10 +299,13 @@ async def get_object(oss_key: str) -> bytes | None:
     return await oss_breaker.call(asyncio.to_thread, _get_object_sync, oss_key)
 
 
-def _put_object_sync(oss_key: str, data: bytes, content_type: str = "image/jpeg") -> None:
+def _put_object_sync(
+    oss_key: str, data: bytes, content_type: str = "image/jpeg"
+) -> None:
     """写对象（同步内部实现）。worker 用这个上传生成的缩略图。"""
     if _is_mock_mode():
         import io as _io
+
         mock_write_object(oss_key, _io.BytesIO(data))
         return
     _bucket().put_object(
@@ -254,18 +315,22 @@ def _put_object_sync(oss_key: str, data: bytes, content_type: str = "image/jpeg"
     )
 
 
-async def put_object(oss_key: str, data: bytes, content_type: str = "image/jpeg") -> None:
+async def put_object(
+    oss_key: str, data: bytes, content_type: str = "image/jpeg"
+) -> None:
     """写对象（异步，真实模式经熔断器 + to_thread 保护）。"""
     if _is_mock_mode():
         _put_object_sync(oss_key, data, content_type)
         return
-    await oss_breaker.call(asyncio.to_thread, _put_object_sync, oss_key, data, content_type)
+    await oss_breaker.call(
+        asyncio.to_thread, _put_object_sync, oss_key, data, content_type
+    )
 
 
 def _delete_object_sync(oss_key: str) -> None:
     """删除对象（同步内部实现）。"""
     if _is_mock_mode():
-        path = _MOCK_ROOT / oss_key
+        path = mock_path(oss_key)
         if path.is_file():
             path.unlink()
         return

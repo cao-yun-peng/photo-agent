@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
+from typing import Any
 
 from app.config import settings
 from app.services.rollout import agent_variant_for_user
@@ -56,8 +57,14 @@ class AgentState:
     conversation_summary: str = ""
     active_intent: str | None = None
     active_search: dict = field(default_factory=dict)
+    search_feedback: dict = field(default_factory=dict)
+    feedback_batch_id: str | None = None  # request-scoped, never persisted
     pending_clarification: dict | None = None
-    followup_type: str | None = None
+    followup_type: str | None = None  # legacy compatibility only
+    search_action: str | None = None  # request scoped, set only by tool executor
+    emit_event: Any = None  # request scoped callback, never serialized
+    result_batches: list[dict] = field(default_factory=list)
+    feedback_undo: dict | None = None
 
     # 兜底策略已走到第几级（0=未启用，1=线索相册，2=时间线，3=全相册）
     fallback_level: int = 0
@@ -93,6 +100,9 @@ class AgentState:
             "conversation_summary": self.conversation_summary,
             "active_intent": self.active_intent,
             "active_search": self.active_search,
+            "result_batches": self.result_batches,
+            "feedback_undo": self.feedback_undo,
+            "search_feedback": self.search_feedback,
             "pending_clarification": self.pending_clarification,
             "fallback_level": self.fallback_level,
             "total_tokens": self.total_tokens,
@@ -123,6 +133,9 @@ class AgentState:
             conversation_summary=data.get("conversation_summary", ""),
             active_intent=data.get("active_intent"),
             active_search=data.get("active_search", {}),
+            result_batches=data.get("result_batches", []),
+            feedback_undo=data.get("feedback_undo"),
+            search_feedback=data.get("search_feedback", {}),
             pending_clarification=data.get("pending_clarification"),
             fallback_level=data.get("fallback_level", 0),
             total_tokens=data.get("total_tokens", 0),

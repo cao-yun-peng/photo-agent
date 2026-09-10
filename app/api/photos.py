@@ -1,4 +1,5 @@
 """Photos 路由：签名、回调、列表、详情、删除."""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status

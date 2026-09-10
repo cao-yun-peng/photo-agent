@@ -22,6 +22,14 @@
 | [测试与评测](10-testing-and-evaluation.md) | 当前测试资产、Agent/VL 评测模式和质量边界 |
 | [运维手册](runbook.md) | 启停、迁移、检查、备份、告警与故障排查 |
 
+## 设计与改造提案
+
+- [产品与 Agent 演进方案](17-agent-product-evolution-plan.md)：两轮讨论汇总，P0–P7 实施顺序、反馈兜底、可上传修图 Skill、后续相册与验收。
+
+以下为提案，不能作为已实现能力或发布验收依据；各文档单独标明代码基线。
+
+- [优化方案](12-optimization-plan.md)：基于 `d2983f1` 的审查复核、目标架构、实施切片、验证与回滚。
+
 ## 推荐阅读路径
 
 - 第一次接触项目：总览 → 架构 → 数据库 → API。
@@ -36,7 +44,7 @@
 | API 路由 | `app/api/*.py`、`app/main.py` |
 | 请求/响应模型 | `app/schemas/*.py` |
 | 数据库实体 | `app/models/*.py`、`alembic/versions/*.py` |
-| Agent | `app/services/agent*.py`、`turn_resolver.py` |
+| Agent | `app/services/agent*.py`（前置路由已退出主流程） |
 | 照片处理 | `app/workers/tasks.py`、`app/services/image.py`、`ai.py` |
 | 检索 | `app/api/search.py`、`app/services/search*.py` |
 | 图像生成 | `generation_service.py`、`app/workers/gen_tasks.py` |
@@ -44,3 +52,29 @@
 | 客户端 | `web/`、`miniprogram/` |
 
 `docs/1.md` 是一份保留的 TC-001 评测用例讲解，不属于核心设计文档。
+
+- [第一批修复交付与运行说明](13-batch1-delivery.md)：配置、迁移、恢复及测试边界。
+
+- [第二批修复交付说明](14-batch2-delivery.md)：客户端隔离、SSE、模型/参数契约、时区与确定性排序。
+
+- [第三批统一搜索服务交付](15-batch3-delivery.md)
+
+- [第四批SQL相册与缓存性能实测](16-batch4-delivery.md)
+
+- [P2反馈驱动搜索交付](18-feedback-search-delivery.md)：批次计数、分级兜底、客户端兼容与验证边界。
+
+- [P3 Skill包导入交付](19-skill-package-delivery.md)：私有版本、兼容报告、Web上传及迁移限制。
+
+- [P4 Skill 创作方案与执行交付](20-package-execution-delivery.md)：冻结原图/风格参考、标题与确认、Docker 实库验证及模型边界。
+
+- [P5 生成生命周期交付](21-generation-lifecycle-delivery.md)：取消、租约恢复、受限调整和进度展示。
+
+- [P6 选片与明确记忆交付](22-workspace-memory-delivery.md)：稳定选片、结构化记忆、私有相册和版本化撤销。
+
+- [P7 全链路质量与发布复核](23-release-quality-review.md)：费用口径、耗时、真实 TCP 验证、发布 Gate 和回退步骤。
+
+- [真实可用性收尾](26-real-usability-closeout.md)：供应商契约、流程包调用账本、规划去重和核验规则校准。
+
+- [搜索执行时间与共享预算改造](29-search-execution-budget.md)：独立请求计时、累计额度、固定计划有效期、超时续查与真实SQL/Redis验证。
+
+- [Agent loop迁移](30-agent-loop-migration.md)：工具、状态、两端协议、模型对照及未通过的质量Gate。

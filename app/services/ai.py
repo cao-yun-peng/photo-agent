@@ -464,6 +464,9 @@ async def embed_query(text: str) -> list[float]:
                 f"DashScope Embedding(query) HTTP {resp.status_code}: {resp.text[:300]}"
             )
         data = resp.json()
+        from app.services.search_budget import record_provider_usage
+
+        await record_provider_usage(data.get("usage"))
         return data["output"]["embeddings"][0]["embedding"]
 
     return await embedding_breaker.call(_do_call)

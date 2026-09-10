@@ -253,9 +253,7 @@ def start_span(
         yield None
         return
 
-    parent_context = (
-        propagate.extract(dict(parent_carrier)) if parent_carrier else None
-    )
+    parent_context = propagate.extract(dict(parent_carrier)) if parent_carrier else None
     links = []
     for carrier in link_carriers or []:
         linked_context = propagate.extract(dict(carrier))

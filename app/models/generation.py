@@ -10,13 +10,14 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Integer,
+    LargeBinary,
     Numeric,
     String,
     Text,
     UniqueConstraint,
     func,
 )
-from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -24,6 +25,35 @@ from app.database import Base
 
 class Generation(Base):
     __tablename__ = "generations"
+    progress_stage: Mapped[str] = mapped_column(
+        String(32),
+        default="awaiting_confirmation",
+        server_default="awaiting_confirmation",
+        nullable=False,
+    )
+    lease_token: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True), nullable=True
+    )
+    lease_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    parent_generation_id: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("generations.id", ondelete="RESTRICT"),
+        nullable=True,
+    )
+    root_generation_id: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("generations.id", ondelete="RESTRICT"),
+        nullable=True,
+        index=True,
+    )
+    iteration_index: Mapped[int] = mapped_column(
+        Integer, default=0, server_default="0", nullable=False
+    )
+    execution_snapshot: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    execution_digest: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    verification: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     __table_args__ = (
         UniqueConstraint(
             "user_id", "idempotency_key", name="uq_generations_user_idempotency"
@@ -91,3 +121,15 @@ class Generation(Base):
         onupdate=func.now(),
         nullable=False,
     )
+
+
+class GenerationInput(Base):
+    __tablename__ = "generation_inputs"
+    generation_id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("generations.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    position: Mapped[int] = mapped_column(Integer, primary_key=True)
+    content: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
+    media_type: Mapped[str] = mapped_column(String(64), nullable=False)
