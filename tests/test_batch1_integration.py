@@ -400,7 +400,7 @@ async def test_prefetch_worker_cannot_publish_late_results(infra, monkeypatch):
 async def test_migration_has_one_head_and_no_new_schema_drift(infra):
     factory, _, _ = infra
     assert ScriptDirectory.from_config(Config("alembic.ini")).get_heads() == [
-        "20260907_0001"
+        "20260912_0001"
     ]
     async with factory() as db:
         conn = await db.connection()

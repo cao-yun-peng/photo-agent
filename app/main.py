@@ -196,6 +196,12 @@ async def validation_error_handler(
 ) -> JSONResponse:
     """请求参数校验失败."""
     errors = exc.errors()
+    if _.url.path.startswith("/auth/"):
+        # Pydantic errors include raw input (even for invalid SecretStr fields).
+        errors = [
+            {"loc": error["loc"], "type": error["type"], "msg": "认证信息格式不正确"}
+            for error in errors
+        ]
     logger.warning("request validation failed: %s", errors)
     return JSONResponse(
         status_code=422,

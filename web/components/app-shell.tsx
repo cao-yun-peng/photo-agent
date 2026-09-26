@@ -61,10 +61,10 @@ export function AppShell({
         </nav>
 
         <div className={styles.account}>
-          <p className={styles.accountName}>{user.nickname || '开发用户'}</p>
-          <p className={styles.accountMeta}>开发态会话 · 当前标签页</p>
+            <p className={styles.accountName}>{user.nickname || '我的账号'}</p>
+            <p className={styles.accountMeta}>已登录 · 当前标签页</p>
           <button className={styles.logout} type="button" onClick={logout}>
-            退出开发会话
+              退出登录
           </button>
         </div>
       </aside>

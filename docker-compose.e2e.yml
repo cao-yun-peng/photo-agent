@@ -1,4 +1,12 @@
 services:
+  web-runtime:
+    build:
+      args:
+        NEXT_PUBLIC_ENABLE_DEV_LOGIN: "true"
+  web-gateway:
+    build:
+      args:
+        NEXT_PUBLIC_ENABLE_DEV_LOGIN: "true"
   api:
     environment:
       APP_ENV: dev

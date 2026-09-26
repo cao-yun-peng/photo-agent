@@ -1,4 +1,4 @@
-"""User 表：微信 openid 为唯一标识."""
+"""Shared user identity; WeChat and Web credentials are independent login methods."""
 
 from datetime import datetime
 from uuid import UUID, uuid4
@@ -18,8 +18,8 @@ class User(Base):
         primary_key=True,
         default=uuid4,
     )
-    wechat_openid: Mapped[str] = mapped_column(
-        String(128), unique=True, nullable=False, index=True
+    wechat_openid: Mapped[str | None] = mapped_column(
+        String(128), unique=True, nullable=True, index=True
     )
     agent_run_token: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True), nullable=True

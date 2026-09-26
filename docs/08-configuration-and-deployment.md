@@ -76,6 +76,8 @@
 
 ## 4. Web 交付
 
+Web 现支持账号密码注册和登录。部署前需升级数据库至 `20260912_0001`；`WEB_REGISTRATION_ENABLED` 控制注册，Web 构建默认关闭开发入口。具体接口、限流和迁移回滚见 [Web 认证](32-web-authentication.md)。
+
 组合启动：
 
 ```bash

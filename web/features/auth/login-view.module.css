@@ -146,7 +146,37 @@
 .field {
   display: grid;
   gap: 9px;
+  margin-top: 18px;
 }
+
+.field small {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.switchMode {
+  display: block;
+  margin: 20px auto 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent-dark);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 8px;
+}
+
+.switchMode:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.development {
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.development summary { cursor: pointer; }
 
 .field label {
   font-size: 12px;

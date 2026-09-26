@@ -51,7 +51,7 @@ async def run(args):
         json.loads(ledger_path.read_text())
         if ledger_path.exists()
         else {
-            "limit_cny": 10,
+            "limit_cny": args.budget_cny,
             "spent_or_reserved_cny": 0,
             "requests": [],
             "price_source": "https://help.aliyun.com/zh/model-studio/qwen-plus",
@@ -60,6 +60,8 @@ async def run(args):
         }
     )
     original_post = httpx.AsyncClient.post
+    if ledger["limit_cny"] != args.budget_cny:
+        raise RuntimeError("existing ledger cap differs from requested cap")
     request_count = 0
     call_times = []
 
@@ -89,6 +91,8 @@ async def run(args):
         started = time.perf_counter()
         try:
             response = await original_post(client, url, **kw)
+            entry["http_status"] = response.status_code
+            entry["resolved_model"] = response.json().get("model")
             usage = response.json().get("usage", {})
             if (
                 response.status_code == 200
@@ -118,6 +122,8 @@ async def run(args):
         / "evidence"
         / f"{'old' if args.baseline else 'new'}-{args.split}{args.suffix}.json"
     )
+    if report_path.exists():
+        raise RuntimeError("report already exists; refuse implicit paid rerun")
     for repeat in range(args.repeat):
         for case in cases:
             fixtures = []
@@ -205,7 +211,9 @@ async def run(args):
             registry.get("read_workspace").fn = AsyncMock(
                 return_value={"ok": True, "selections": []}
             )
-            st = AgentState(UUID(int=1), UUID(int=2), "", agent_variant="v2")
+            st = AgentState(
+                UUID(int=1), UUID(int=2), "", agent_variant=args.agent_variant
+            )
             db = SimpleNamespace(
                 info={},
                 execute=AsyncMock(
@@ -215,7 +223,9 @@ async def run(args):
             agent = PhotoAgent(
                 db,
                 registry=registry,
-                constraints=AgentConstraints(max_steps=4, max_time_seconds=45),
+                constraints=AgentConstraints()
+                if args.current_settings
+                else AgentConstraints(max_steps=4, max_time_seconds=45),
             )
             tool_times = []
             execute_original = agent._execute_tool
@@ -257,7 +267,8 @@ async def run(args):
                     error = None
                     try:
                         _, events = await asyncio.wait_for(
-                            agent.run(st.user_id, turn["input"], initial_state=st), 55
+                            agent.run(st.user_id, turn["input"], initial_state=st),
+                            agent.constraints.max_time_seconds + 10,
                         )
                     except Exception as exc:
                         error = type(exc).__name__
@@ -361,6 +372,8 @@ async def run(args):
                 if args.text_clarification
                 else "tool_event",
                 "baseline": args.baseline,
+                "agent_variant": args.agent_variant,
+                "constraints": vars(agent.constraints),
                 "split": args.split,
                 "dataset_sha256": hashlib.sha256(dataset_path.read_bytes()).hexdigest(),
                 "source_hashes": source_hashes,
@@ -402,13 +415,22 @@ if __name__ == "__main__":
     parser.add_argument("--repeat", type=int, choices=[1, 2, 3], default=1)
     parser.add_argument("--limit", type=int, default=100)
     parser.add_argument("--suffix", default="")
+    parser.add_argument("--task-dir", default=str(TASK))
+    parser.add_argument("--budget-cny", type=float, default=10)
+    parser.add_argument("--agent-variant", choices=["control", "v2"], default="v2")
+    parser.add_argument("--current-settings", action="store_true")
     import os
+
+    args = parser.parse_args()
+    TASK = Path(args.task_dir).resolve()
+    if not TASK.is_relative_to(ROOT) or not 0 < args.budget_cny <= 30:
+        raise RuntimeError("invalid evaluation output directory or budget")
 
     lock_path = TASK / "evidence/evaluation.lock"
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
     try:
-        asyncio.run(run(parser.parse_args()))
+        asyncio.run(run(args))
     finally:
         os.close(fd)
         lock_path.unlink()

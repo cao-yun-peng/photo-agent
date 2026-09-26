@@ -1,8 +1,9 @@
 # Photo Agent 文档中心
 
-本目录描述当前工作区中的实现，而不是历史规划。文档基线为 Git 提交
-`21ac64c38859120a0f1715b949b12e8453d1bb9e` 加上当前未提交代码；最近校验日期为
-2026-08-24。
+本目录包含当前实现说明、设计提案和历史交付记录。各文档的日期与验证边界以文内说明为准；
+项目阶段、发布 Gate 和验收状态以本地 `.project-to-act/` 台账为准。GitHub 仓库不包含该本地台账，
+可公开查看的当前边界见 [项目 README](../README.md)、[当前模型复测](33-current-model-retest.md)
+和 [发布质量复核](23-release-quality-review.md)。
 
 > 阅读原则：以代码、Alembic 迁移和 OpenAPI 为最终事实来源。本文档会记录已实现能力、
 > 默认关闭的开关和已知风险，不把实验结论写成生产承诺。
@@ -21,6 +22,16 @@
 | [可观测性与安全](09-observability-and-security.md) | LogID、Trace、日志、熔断器、认证与风险清单 |
 | [测试与评测](10-testing-and-evaluation.md) | 当前测试资产、Agent/VL 评测模式和质量边界 |
 | [运维手册](runbook.md) | 启停、迁移、检查、备份、告警与故障排查 |
+
+## 近期实现与评测
+
+- [检索评测](27-retrieval-evaluation.md)：冻结数据、真实模型结果及质量局限。
+- [检索优化](28-search-optimization.md)：实现改动与隔离集成验证。
+- [搜索执行预算](29-search-execution-budget.md)：超时、额度和续查规则。
+- [Agent loop 迁移](30-agent-loop-migration.md)：工具协议和真实模型质量 Gate。
+- [仓库发布文件范围](31-repository-publishing.md)：源码与本地数据的 GitHub 边界。
+- [Web 账号注册与登录](32-web-authentication.md)：接口、迁移、限流和客户端行为。
+- [当前模型回归复测](33-current-model-retest.md)：2026-09-12 的真实调用结果与限制。
 
 ## 设计与改造提案
 
@@ -74,7 +85,3 @@
 - [P7 全链路质量与发布复核](23-release-quality-review.md)：费用口径、耗时、真实 TCP 验证、发布 Gate 和回退步骤。
 
 - [真实可用性收尾](26-real-usability-closeout.md)：供应商契约、流程包调用账本、规划去重和核验规则校准。
-
-- [搜索执行时间与共享预算改造](29-search-execution-budget.md)：独立请求计时、累计额度、固定计划有效期、超时续查与真实SQL/Redis验证。
-
-- [Agent loop迁移](30-agent-loop-migration.md)：工具、状态、两端协议、模型对照及未通过的质量Gate。

@@ -3,6 +3,7 @@ import { expect, type Page } from '@playwright/test';
 export async function login(page: Page, nickname = 'Phase 4 E2E') {
   await page.goto('/login');
   await page.waitForLoadState('networkidle');
+  await page.getByText('本地开发入口', { exact: true }).click();
   await page.getByLabel('开发用户昵称').fill(nickname);
   await page.getByRole('button', { name: '使用开发用户进入' }).click();
   await expect(page).toHaveURL(/\/photos$/);

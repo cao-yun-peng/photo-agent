@@ -11,11 +11,12 @@
 - VL 评测数据：`tests/eval/photo_manifest.json`、`object_aliases.json` 和
   `tests/eval/prompts/vl-analysis-v*.txt`。
 - VL 脚本：`scripts/offline_eval.py`、`scripts/vl_prompt_experiment.py`。
-- 图片资产：`test_photos/`、`test_photos_realistic/`。
+- 本地图片资产：`test_photos/`、`test_photos_realistic/`（Git 忽略，新检出仓库需另行恢复）。
 
-旧 Agent Replay/Real、Agent HTTP E2E 和检索评测脚本、数据集与评分器已于
-2026-08-28 退役，等待重新设计。历史报告只保留在治理记录中作为审计背景，不能作为当前
-Gate 或可复现结论。
+2026-08-28 退役的是旧版 Agent Replay/Real、Agent HTTP E2E 和检索评测体系。
+此后仓库重新加入 Agent 轨迹与检索评测资产；当前结果和边界见
+[检索评测](27-retrieval-evaluation.md)、[Agent loop 迁移](30-agent-loop-migration.md)及
+[当前模型回归复测](33-current-model-retest.md)。历史报告不能自动作为当前发布 Gate。
 
 ## 2. 基础验证
 

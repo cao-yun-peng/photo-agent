@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int = 10080  # 7 天
     jwt_algorithm: str = "HS256"
 
+    # Web accounts: registration can be closed without disabling existing users.
+    web_registration_enabled: bool = True
+
     # WeChat MiniProgram
     wechat_appid: str = ""
     wechat_secret: str = ""

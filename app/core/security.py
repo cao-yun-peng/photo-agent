@@ -52,9 +52,9 @@ def decode_token(token: str) -> UUID:
             raise ValueError("missing sub")
         return UUID(sub)
     except jwt.ExpiredSignatureError as exc:
-        raise ApiError(AUTH_JWT_EXPIRED) from exc
+        raise ApiError(AUTH_JWT_EXPIRED, http_status=401) from exc
     except (JWTError, ValueError) as exc:
-        raise ApiError(AUTH_JWT_INVALID, message=f"Invalid token: {exc}") from exc
+        raise ApiError(AUTH_JWT_INVALID, http_status=401) from exc
 
 
 async def get_current_user(
@@ -67,14 +67,14 @@ async def get_current_user(
     认证成功后自动将userId注入日志上下文，实现全链路追踪。
     """
     if credentials is None:
-        raise ApiError(AUTH_JWT_INVALID, message="Missing Authorization header")
+        raise ApiError(AUTH_JWT_INVALID, http_status=401)
 
     user_id = decode_token(credentials.credentials)
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
 
     if user is None:
-        raise ApiError(AUTH_USER_NOT_FOUND)
+        raise ApiError(AUTH_USER_NOT_FOUND, http_status=401)
 
     # 认证成功：将用户ID注入日志上下文
     set_logging_context(user_id=str(user.id))
